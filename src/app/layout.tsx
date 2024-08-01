@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import ReactQueryProvider from "./ReactQueryProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -13,7 +14,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | reKurd",
+    template: "%s | reKurd.",
     default: "reKurd.",
   },
   description: "The social media app for musicians",
@@ -27,7 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <ReactQueryProvider>
         {children}
+      </ReactQueryProvider>
       </body>
     </html>
   );
