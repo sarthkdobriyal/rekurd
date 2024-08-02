@@ -8,6 +8,7 @@ import UserAvatar from "@/components/UserAvatar"
 import { cn } from "@/lib/utils"
 import LoadingButton from "@/components/LoadingButton"
 import "./styles.css";
+import { useSubmitPostMutation } from "./mutations"
 
 export default function PostEditor() {
 
@@ -24,6 +25,8 @@ export default function PostEditor() {
         ]
     })
 
+    const mutation = useSubmitPostMutation();
+
 
     const input =
     editor?.getText({
@@ -32,8 +35,11 @@ export default function PostEditor() {
 
 
     async function onSubmit() {
-        await submitPost(input);
-        editor?.commands.clearContent();
+        await mutation.mutate(input, {
+          onSuccess: () => {
+            editor?.commands.clearContent();
+          }
+        });
     }
 
 
@@ -55,7 +61,7 @@ export default function PostEditor() {
       <div className="flex items-center justify-end gap-3">
       <LoadingButton
           onClick={onSubmit}
-          loading={false}
+          loading={mutation.isPending}
           // disabled={!input.trim() || isUploading}
           className="min-w-20"
           >
