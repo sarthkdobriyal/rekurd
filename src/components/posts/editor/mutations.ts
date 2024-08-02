@@ -7,10 +7,13 @@ import {
 } from "@tanstack/react-query";
 import { submitPost } from "./actions";
 import next from "next";
+import { useSession } from "@/app/(main)/SessionProvider";
+import { PostsPage } from "@/lib/types";
 
 export function useSubmitPostMutation() {
   const { toast } = useToast();
 
+  const {user} = useSession();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -27,17 +30,17 @@ export function useSubmitPostMutation() {
         },
       } satisfies QueryFilters;
       await queryClient.cancelQueries(queryFilter);
-      queryClient.setQueriesData<InfiniteData<PostPage, string | null>>(
+      queryClient.setQueriesData<InfiniteData<PostsPage,string | null>>(
         queryFilter,
         (oldData) => {
-          const firstPage = oldData.pages[0];
+          const firstPage = oldData?.pages[0];
           if (firstPage) {
             return {
               pageParams: oldData.pageParams,
               pages: [
                 {
                   posts: [newPost, ...firstPage.posts],
-                  nextCursor: oldData.nextCursor,
+                  nextCursor: firstPage.nextCursor,
                 },
                 ...oldData.pages.slice(1),
               ],

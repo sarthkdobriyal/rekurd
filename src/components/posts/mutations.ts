@@ -1,6 +1,6 @@
-import { PostData } from "@/lib/types";
+import { PostData, PostsPage } from "@/lib/types";
 import { useToast } from "../ui/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, QueryFilters, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { deletePost } from "./actions";
 
