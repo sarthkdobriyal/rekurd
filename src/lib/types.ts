@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { get } from "http";
 
 export function getUserDataSelect(loggedInUserId: string) {
   return {
@@ -27,3 +28,4 @@ export type PostData = Prisma.PostGetPayload<{
   include: ReturnType<typeof getPostDataInclude>;
 }>;
 
+export const postDataInclude = getPostDataInclude("");
