@@ -55,7 +55,7 @@ export default function PostEditor() {
       <div className="flex items-center justify-end gap-3">
       <LoadingButton
           onClick={onSubmit}
-          // loading={mutation.isPending}
+          loading={false}
           // disabled={!input.trim() || isUploading}
           className="min-w-20"
           >

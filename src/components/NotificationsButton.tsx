@@ -2,13 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 // import kyInstance from "@/lib/ky";
-import { NotificationCountInfo } from "@/lib/types";
+// import { NotificationCountInfo } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { Bell } from "lucide-react";
 import Link from "next/link";
 
 interface NotificationsButtonProps {
-  initialState: NotificationCountInfo;
+  initialState: {
+    unreadCount: number
+  };
 }
 
 export default function NotificationsButton({
