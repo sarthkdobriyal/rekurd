@@ -22,7 +22,7 @@ export default function Page() {
         <div className="flex h-[40rem] max-h-[40rem] w-[90%] overflow-hidden rounded-2xl bg-card shadow-2xl shadow-muted-foreground md:w-[70%] lg:w-[]">
           <div className="w-full space-y-10  p-10">
             <div className="space-y-1 text-center">
-              <h1 className="text-3xl font-bold">Sign up to <span className="italic font-extralight">rekurd.</span></h1>
+              <h1 className="text-3xl font-bold">Log in to <span className="italic font-extralight">rekurd.</span></h1>
               <p className="text-muted-foreground">
                 A place where  <span className="italic">you</span> can find
                 a tune.
