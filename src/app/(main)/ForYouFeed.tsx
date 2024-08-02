@@ -2,6 +2,7 @@
 
 import InfiniteScrollContainer from "@/components/InfiniteScrollContainer";
 import Post from "@/components/posts/Post";
+import PostsLoadingSkeleton from "@/components/posts/PostsLoadingSkeleton";
 import { Button } from "@/components/ui/button";
 import kyInstance from "@/lib/ky";
 import { PostData, PostsPage } from '@/lib/types';
@@ -20,7 +21,11 @@ export default function ForYouFeed() {
     const posts = data?.pages.flatMap((page) => page.posts) || []
 
     if(status === "pending"){
-        return <div><Loader2 className="mx-auto animate-spin" /></div>
+        return <PostsLoadingSkeleton />
+    }
+
+    if(status === "success" && !posts.length && !hasNextPage){
+        return <p className="text-center text-muted-foreground">No posts to Show </p>
     }
 
     if(status === "error"){
@@ -34,8 +39,10 @@ export default function ForYouFeed() {
       className="space-y-5 "
       onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}
     >
+        
       {posts.map((post) => (
         <Post key={post.id} post={post} />
+         
       ))}
       {isFetchingNextPage && <Loader2 className="mx-auto my-3 animate-spin" />}
     </InfiniteScrollContainer>
