@@ -5,6 +5,9 @@ import ReactQueryProvider from "./ReactQueryProvider";
 import { ThemeProvider } from "next-themes";
 import { Toast } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "./api/uploadthing/core";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,8 +34,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-      <ReactQueryProvider>
-      <ThemeProvider
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+        <ReactQueryProvider>
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
@@ -41,7 +45,7 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
           <Toaster />
-      </ReactQueryProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );
