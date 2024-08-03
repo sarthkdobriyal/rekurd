@@ -15,9 +15,9 @@ export default async function Layout({
 
   return (
     <SessionProvider value={session}>
-      <div className="flex h-screen min-h-screen flex-col overflow-auto">
+      <div className="flex h-screen min-h-screen flex-col overflow-auto relative">
         <Navbar />
-        <div className="mx-auto h-full w-full max-w-7xl flex gap-5 p-5">
+        <div className="mx-auto h-full w-full max-w-7xl flex gap-5 p-5 ">
           <MenuBar className="sticky top-[5.25rem] hidden h-fit flex-none space-y-3 rounded-2xl bg-card px-3 py-5 shadow-sm sm:block lg:px-5 xl:w-80" />
           {children}
         </div>

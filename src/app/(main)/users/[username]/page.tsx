@@ -14,6 +14,7 @@ import { User } from "lucide-react";
 import UserPosts from "./UserPosts";
 import { Metadata } from "next";
 import { get } from 'http';
+import Linkify from "@/components/Linkify";
 
 interface PageProps {
     params: { username: string };
@@ -126,11 +127,11 @@ export default async function Page({ params: { username } }: PageProps) {
         {user.bio && (
           <>
             <hr />
-            {/* <Linkify> */}
+            <Linkify>
               <div className="overflow-hidden whitespace-pre-line break-words">
                 {user.bio}
               </div>
-            {/* </Linkify> */}
+            </Linkify>
           </>
         )}
       </div>

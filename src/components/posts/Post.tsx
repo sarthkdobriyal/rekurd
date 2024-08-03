@@ -6,6 +6,8 @@ import Link from "next/link";
 import UserAvatar from "../UserAvatar";
 import { formatRelativeDate } from "@/lib/utils";
 import PostMoreButton from "./PostMoreButton";
+import Linkify from "../Linkify";
+import UserTooltip from '../UserTooltip';
 
 interface PostProps {
   post: PostData;
@@ -19,16 +21,21 @@ export default function Post({ post }: PostProps) {
 
       
       <div className="flex flex-wrap gap-3">
+        <UserTooltip user={post.user}>
+          
         <Link href={`/users/${post.user.username}`}>
           <UserAvatar avatarUrl={post.user.avatarUrl} />
         </Link>
+        </UserTooltip>
         <div>
+          <UserTooltip user={post.user}>
           <Link
             href={`/users/${post.user.username}`}
             className="block font-medium hover:underline"
-          >
+            >
             {post.user.displayName}
           </Link>
+          </UserTooltip>
           <Link
               href={`/posts/${post.id}`}
               className="block text-sm text-muted-foreground hover:underline"
@@ -42,7 +49,9 @@ export default function Post({ post }: PostProps) {
         </div>
         {user?.id === post.userId && <PostMoreButton className="opacity-0 transition-opacity group-hover/post:opacity-100" post={post} />}
       </div>
+      <Linkify>
       <div className="whitespace-pre-line break-words">{post.content}</div>
+      </Linkify>
     </div>
   );
 }
