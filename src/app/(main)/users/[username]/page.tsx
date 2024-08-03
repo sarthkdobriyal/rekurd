@@ -3,7 +3,7 @@ import FollowButton from "@/components/FollowButton";
 import FollowerCount from "@/components/FollowerCount";
 import UserAvatar from "@/components/UserAvatar";
 import prisma from "@/lib/prisma";
-import { getUserDataSelect } from "@/lib/types";
+import { FollowerInfo, getUserDataSelect, UserData } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
 import { formatDate } from "date-fns";
 import { notFound } from "next/navigation";
@@ -12,6 +12,8 @@ import EditProfileButton from "./EditProfileButton";
 import TrendsSidebar from "@/components/TrendsSidebar";
 import { User } from "lucide-react";
 import UserPosts from "./UserPosts";
+import { Metadata } from "next";
+import { get } from 'http';
 
 interface PageProps {
     params: { username: string };
@@ -78,7 +80,10 @@ export default async function Page({ params: { username } }: PageProps) {
       </main>
     );
   }
-
+  interface UserProfileProps {
+    user: UserData;
+    loggedInUserId: string;
+  }
 
   async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
     const followerInfo: FollowerInfo = {

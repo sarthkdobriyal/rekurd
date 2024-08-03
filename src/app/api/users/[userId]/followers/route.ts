@@ -9,7 +9,7 @@ export async function GET(
 ) {
   try {
     console.log("hello")
-    const { loggedInUser } = await validateRequest();
+    const { user: loggedInUser } = await validateRequest();
     if (!loggedInUser) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -89,7 +89,6 @@ export async function DELETE(
     { params: { userId } }: { params: { userId: string } },
   ) {
       try{
-        console.log("delete hello")
           const { user: loggedInUser } = await validateRequest();
           
           if (!loggedInUser) {
@@ -102,7 +101,6 @@ export async function DELETE(
                     followingId: userId
                 }
             })
-            console.log("deleted hello")
             
             return new Response();
 
