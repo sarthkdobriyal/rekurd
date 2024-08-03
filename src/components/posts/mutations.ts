@@ -3,12 +3,15 @@ import { useToast } from "../ui/use-toast";
 import { InfiniteData, QueryFilters, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { deletePost } from "./actions";
+import { useSession } from "@/app/(main)/SessionProvider";
 
 export function useDeletePostMutation(post: PostData) {
     const {toast} = useToast()
     const queryClient = useQueryClient()
     const router = useRouter()
     const pathname = usePathname()
+
+    const {user} = useSession();
 
     const mutation = useMutation({
         mutationFn: deletePost,
