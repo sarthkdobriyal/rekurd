@@ -3,17 +3,32 @@ import { get } from "http";
 
 export function getUserDataSelect(loggedInUserId: string) {
   return {
+    id: true,
     username: true,
     displayName: true,
     avatarUrl: true,
+    bio: true,
+    createdAt: true,
+    followers: {
+      where: {
+        followerId: loggedInUserId,
+      },
+      select: {
+        followerId: true,
+      },
+    },
+    _count: {
+      select: {
+        posts: true,
+        followers: true,
+      },
+    },
   } satisfies Prisma.UserSelect;
 }
-
 export type UserData = Prisma.UserGetPayload<{
   select: ReturnType<typeof getUserDataSelect>;
 }>;
 
-export const UserDataSelect = getUserDataSelect("");
 
 export function getPostDataInclude(loggedInUserId: string) {
   return {
@@ -33,4 +48,9 @@ export const postDataInclude = getPostDataInclude("");
 export interface PostsPage {
   posts: PostData[];
   nextCursor: string | null;
+}
+
+export interface FollowerInfo {
+  followers: number;
+  isFollowedByUser: boolean;
 }

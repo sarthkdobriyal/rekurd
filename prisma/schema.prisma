@@ -10,8 +10,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -28,6 +28,8 @@ model User {
   updatedAt    DateTime  @updatedAt
   posts        Post[]
   sessions     Session[]
+  followers    Follow[]  @relation("Followers")
+  following    Follow[]  @relation("Following")
 
   @@map("users")
 }
@@ -42,14 +44,26 @@ model Session {
   @@map("sessions")
 }
 
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  follower    User     @relation("Followers", fields: [followerId], references: [id])
+  following   User     @relation("Following", fields: [followingId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([followerId, followingId])
+  @@map("follow")
+}
+
 model Post {
-  id       String   @id @default(cuid())
-  content  String
-  userId  String
-  user User @relation(fields: [userId], references: [id])
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
 
   @@map("posts")
 }

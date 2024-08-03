@@ -32,7 +32,6 @@ export default function ForYouFeed() {
         return <div className="text-center text-destructive">Failed to load posts</div>
     }
 
-    console.log(data)
 
   return (
     <InfiniteScrollContainer
