@@ -64,6 +64,24 @@ model Post {
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  attachments     Media[]
 
   @@map("posts")
+}
+
+model Media {
+  id        String    @id @default(cuid())
+  postId    String?
+  post      Post?     @relation(fields: [postId], references: [id])
+  type      MediaType
+  url       String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("media")
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
 }
