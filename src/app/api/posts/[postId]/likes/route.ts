@@ -70,10 +70,8 @@ export async function POST(
       return Response.json({ error: "Post not found" }, { status: 404 });
     }
 
-
-    console.log(postId, loggedInUser.id, "postid, loggedinuser.id")
-    
-   await prisma.like.upsert({
+    await prisma.$transaction([
+      prisma.like.upsert({
         where: {
           userId_postId: {
             userId: loggedInUser.id,
@@ -85,7 +83,20 @@ export async function POST(
           postId,
         },
         update: {},
-      })
+      }),
+      ...(loggedInUser.id !== post.userId
+        ? [
+            prisma.notification.create({
+              data: {
+                issuerId: loggedInUser.id,
+                recipientId: post.userId,
+                postId,
+                type: "LIKE",
+              },
+            }),
+          ]
+        : []),
+    ]);
 
     return new Response();
   } catch (error) {
@@ -116,12 +127,22 @@ export async function DELETE(
       return Response.json({ error: "Post not found" }, { status: 404 });
     }
 
-    await prisma.like.deleteMany({
+    await prisma.$transaction([
+      prisma.like.deleteMany({
         where: {
           userId: loggedInUser.id,
           postId,
         },
-      })
+      }),
+      prisma.notification.deleteMany({
+        where: {
+          issuerId: loggedInUser.id,
+          recipientId: post.userId,
+          postId,
+          type: "LIKE",
+        },
+      }),
+    ]);
     return new Response();
   } catch (error) {
     console.error(error);

@@ -16,21 +16,25 @@ datasource db {
 }
 
 model User {
-  id           String    @id
-  username     String    @unique
-  displayName  String
-  email        String    @unique
-  passwordHash String?
-  googleId     String?   @unique
-  avatarUrl    String?
-  bio          String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  posts        Post[]
-  sessions     Session[]
-  followers    Follow[]  @relation("Followers")
-  following    Follow[]  @relation("Following")
-  Likes        Like[]
+  id                    String         @id
+  username              String         @unique
+  displayName           String
+  email                 String         @unique
+  passwordHash          String?
+  googleId              String?        @unique
+  avatarUrl             String?
+  bio                   String?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  posts                 Post[]
+  sessions              Session[]
+  followers             Follow[]       @relation("Followers")
+  following             Follow[]       @relation("Following")
+  likes                 Like[]
+  comments              Comment[]
+  bookmarks             Bookmark[]
+  receivedNotifications Notification[] @relation("Recipient")
+  issuedNotifications   Notification[] @relation("Issuer")
 
   @@map("users")
 }
@@ -59,14 +63,17 @@ model Follow {
 }
 
 model Post {
-  id          String   @id @default(cuid())
-  content     String
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  attachments Media[]
-  likes       Like[]
+  id            String         @id @default(cuid())
+  content       String
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  attachments   Media[]
+  likes         Like[]
+  comments      Comment[]
+  bookmarks     Bookmark[]
+  linkedNotifications Notification[]
 
   @@map("posts")
 }
@@ -99,4 +106,52 @@ model Like {
 
   @@unique([userId, postId])
   @@map("likes")
+}
+
+model Comment {
+  id      String @id @default(cuid())
+  content String
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId  String
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("comments")
+}
+
+model Bookmark {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+  @@map("bookmarks")
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  recipientId String
+  recipient   User             @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  issuerId    String
+  issuer      User             @relation("Issuer", fields: [issuerId], references: [id], onDelete: Cascade)
+  postId      String?
+  post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  type        NotificationType
+  read        Boolean          @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+enum NotificationType {
+  LIKE
+  FOLLOW
+  COMMENT
 }
