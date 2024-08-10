@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
           Authorization: `Bearer ${tokens.accessToken}`,
         },
       })
-      .json<{ id: string; name: string }>();
+      .json<{ id: string; name: string, email: string, picture:string }>();
 
       console.log(googleUser)
 

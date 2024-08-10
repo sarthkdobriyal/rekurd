@@ -5,9 +5,11 @@ import Post from '@/components/posts/Post';
 import UserAvatar from '@/components/UserAvatar';
 import UserTooltip from '@/components/UserTooltip';
 import prisma from '@/lib/prisma';
-import { getPostDataInclude } from '@/lib/types';
+import { getPostDataInclude, UserData } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
+import { Metadata } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { cache, FC, Suspense } from 'react'
 
 interface PostDetailsPageProps {
@@ -29,7 +31,7 @@ const getPost = cache(async (postId: string, loggedInUserId: string) => {
 
 export async function generateMetadata({
   params: { postId },
-}: PageProps): Promise<Metadata> {
+}: PostDetailsPageProps): Promise<Metadata> {
   const { user } = await validateRequest();
 
   if (!user) return {};

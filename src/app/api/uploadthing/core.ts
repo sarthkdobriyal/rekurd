@@ -51,7 +51,7 @@ export const ourFileRouter = {
     }),
     attachment: f({
       image: { maxFileSize: "4MB", maxFileCount: 5 },
-      video: { maxFileSize: "80MB", maxFileCount: 5 },
+      video: { maxFileSize: "64MB", maxFileCount: 5 },
     })
       .middleware(async () => {
         const { user } = await validateRequest();

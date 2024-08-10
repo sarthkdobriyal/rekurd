@@ -16,7 +16,6 @@ export async function submitPost(input: {
 
     if (!user) throw Error("Unauthorized");
 
-    console.log(input.length)
 
     const { content, mediaIds } = createPostSchema.parse(input);
 

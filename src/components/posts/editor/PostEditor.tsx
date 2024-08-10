@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import LoadingButton from "@/components/LoadingButton";
 import "./styles.css";
 import { useSubmitPostMutation } from "./mutations";
-import useMediaUpload from "./useMediaUpload";
+import useMediaUpload, { Attachment } from "./useMediaUpload";
 import Image from "next/image";
 import { ImageIcon, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -69,7 +69,7 @@ export default function PostEditor() {
     );
   }
 
-  function onPaste(e: ClipboardEvent<HTMLInputElement>) {
+  function onPaste(e: React.ClipboardEvent<HTMLInputElement>) {
     const files = Array.from(e.clipboardData.items)
       .filter((item) => item.kind === "file")
       .map((item) => item.getAsFile()) as File[];
@@ -126,7 +126,7 @@ export default function PostEditor() {
   );
 }
 
-interface AddAttacchmentsButtonProps {
+interface AddAttachmentsButtonProps {
   onFilesSelected: (files: File[]) => void;
   disabled?: boolean;
 }

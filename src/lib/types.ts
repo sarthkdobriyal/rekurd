@@ -118,6 +118,12 @@ export type NotificationData = Prisma.NotificationGetPayload<{
   include: typeof notificationsInclude;
 }>;
 
+export interface LikeInfo {
+  likes: number;
+  isLikedByUser: boolean;
+}
+
+
 export interface NotificationsPage {
   notifications: NotificationData[];
   nextCursor: string | null;
