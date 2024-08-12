@@ -17,28 +17,28 @@ export async function updateUserProfile(values: UpdateUserProfileValues) {
 
   const { userContact, musicalInfo, ...userProfileData } = validatedValues;
 
-  console.log("editing values")
 
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
-      data: validatedValues,
+      data: userProfileData,
       select: getUserDataSelect(user.id, true),
     });
 
      // Update UserContact model
-  if (userContact) {
-    await prisma.userContact.upsert({
-      where: { userId: user.id },
-      create: userContact,
-      update: userContact,
-    });
-  }
+     if (userContact) {
+      await prisma.userContact.upsert({
+        where: { userId: user.id },
+        update: userContact,
+        create: { ...userContact, userId: user.id }, // Ensure userId is set for creation
+      });
+    }
+  
 
   // Update MusicalInfo model
   if (musicalInfo) {
     await prisma.musicalInfo.upsert({
       where: { userId: user.id },
-      create: musicalInfo,
+      create: { ...musicalInfo, userId: user.id }, // Ensure userId is set for creation
       update: musicalInfo,
     });
   }

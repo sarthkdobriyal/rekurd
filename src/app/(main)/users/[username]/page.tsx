@@ -29,7 +29,7 @@ interface PageProps {
           mode: "insensitive",
         },
       },
-      select: getUserDataSelect(loggedInUserId),
+      select: getUserDataSelect(loggedInUserId, true),
     });
   
     if (!user) notFound();

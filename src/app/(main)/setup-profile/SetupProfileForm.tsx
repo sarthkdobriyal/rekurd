@@ -24,6 +24,7 @@ import { useUpdateProfileMutation } from "../users/[username]/mutations";
 import { UserData } from "@/lib/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useRouter } from "next/navigation";
 
 interface SetupProfileFormProps {
   user: UserData;
@@ -40,9 +41,10 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
       musicalInfo: {
         bio: user.musicalInfo?.bio || "",
         genres: user.musicalInfo?.genres || "",
+        primaryInstrument: user.musicalInfo?.primaryInstrument || "",
         instruments: user.musicalInfo?.instruments || "",
-        interesetedInLearning: user.musicalInfo?.interesetedInLearning || false,
-        interesetedInTutoring: user.musicalInfo?.interesetedInTutoring || false,
+        interesetedInLearning: user.musicalInfo?.interesetedInLearning ,
+        interesetedInTutoring: user.musicalInfo?.interesetedInTutoring ,
         title: user.musicalInfo?.title || "",
         yearsOfExperience: user.musicalInfo?.yearsOfExperience || "",
       },
@@ -50,22 +52,22 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
         city: user.UserContact?.city || "",
         country: user.UserContact?.country || "India",
         phone: user.UserContact?.phone || "",
-        socialLinks: user.UserContact?.socialLinks || {},
+        // socialLinks: user.UserContact?.socialLinks || {},
       },
     },
   });
 
+  const router = useRouter(); 
   const [croppedAvatar, setCroppedAvatar] = useState<Blob | null>(null);
 
   const mutation = useUpdateProfileMutation();
 
    function onSubmit(values: UpdateUserProfileValues) {
-    console.log("clicked on submit")
+    console.log("clicked on submit", values.musicalInfo.interesetedInTutoring, values.musicalInfo.interesetedInLearning )
     const newAvatarFile = croppedAvatar
       ? new File([croppedAvatar], `avatar_${user.id}.webp`)
       : undefined;
 
-      console.log(values)
 
     mutation.mutate(
       {
@@ -75,6 +77,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
       {
         onSuccess: () => {
           setCroppedAvatar(null);
+          // router.push(`/users/${user.username}`);
         },
       },
     );
@@ -100,7 +103,9 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
           <FormField
             control={form.control}
             name="displayName"
-            render={({ field }) => (
+            render={({ field }) => 
+              
+              (
               <FormItem>
                 <FormLabel>Display name</FormLabel>
                 <FormControl>
@@ -266,12 +271,16 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
           <FormField
             control={form.control}
             name="musicalInfo.interestedInTutoring"
-            render={({ field }) => (
+            render={({ field }) => {
+              
+              return(
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
                 <FormControl>
                   <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
+                    {...field}
+                    checked={user.musicalInfo?.interesetedInTutoring}
+                  onCheckedChange={(checked) => form.setValue('musicalInfo.interesetedInTutoring', checked)
+                  }
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -282,7 +291,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
                   </FormDescription>
                 </div>
               </FormItem>
-            )}
+            )}}
           />
           <FormField
             control={form.control}
@@ -291,8 +300,9 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
                 <FormControl>
                   <Checkbox
+                    {...field}
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                  onCheckedChange={(checked) => form.setValue('musicalInfo.interesetedInLearning', checked)}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">

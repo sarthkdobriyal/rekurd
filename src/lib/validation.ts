@@ -31,7 +31,7 @@ export const userContactSchema = z.object({
   phone: z.string().optional(),
   city: z.string().optional(),
   country: z.string().optional(),
-  socialLinks: z.array(z.string()).optional(),
+  // socialLinks: z.array(z.string()).optional(),
 });
 
 export type UserContactValues = z.infer<typeof userContactSchema>;
@@ -52,14 +52,28 @@ export type MusicalInfoValues = z.infer<typeof musicalInfoSchema>;
 export const updateUserProfileSchema = z.object({
   displayName: requiredString,
   bio: z.string().max(1000, "Must be at most 1000 characters"),
+  email: z.string().email("Invalid email address"),
+  username: requiredString.regex(
+    /^[a-zA-Z0-9_-]+$/,
+    "Only letters, numbers, - and _ allowed",
+  ),
+  musicalInfo: musicalInfoSchema,
+  userContact: userContactSchema,
+});
+
+export const setUpProfileSchema = z.object({
+  displayName: requiredString,
+  bio: z.string().max(1000, "Must be at most 1000 characters"),
   email: requiredString.email("Invalid email address"),
   username: requiredString.regex(
     /^[a-zA-Z0-9_-]+$/,
     "Only letters, numbers, - and _ allowed",
   ),
-  userContact: userContactSchema,
+  // userContact: userContactSchema,
   musicalInfo: musicalInfoSchema,
-});
+})
+
+export type setUpProfileValues = z.infer<typeof setUpProfileSchema>;
 
 export type UpdateUserProfileValues = z.infer<typeof updateUserProfileSchema>;
 

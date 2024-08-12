@@ -48,11 +48,13 @@ export default function EditProfileDialog({
     resolver: zodResolver(updateUserProfileSchema),
     defaultValues: {
       displayName: user.displayName,
-      // username: user.username || "",
+      username: user.username || "",
+      email: user.email || "",
       bio: user.bio || "",
     },
   });
 
+  console.log(user)
   const mutation = useUpdateProfileMutation();
 
   const [croppedAvatar, setCroppedAvatar] = useState<Blob | null>(null);
@@ -62,7 +64,7 @@ export default function EditProfileDialog({
       ? new File([croppedAvatar], `avatar_${user.id}.webp`)
       : undefined;
 
-      console.log("values", values)
+    console.log("values", values);
     mutation.mutate(
       {
         values,
@@ -76,8 +78,6 @@ export default function EditProfileDialog({
       },
     );
   }
-
-
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -111,7 +111,36 @@ export default function EditProfileDialog({
                 </FormItem>
               )}
             />
-            
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Your Email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Username must be unique only use alphabets ,numbers, - , _ "
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
             <FormField
               control={form.control}
               name="bio"

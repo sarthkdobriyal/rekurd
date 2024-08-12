@@ -84,14 +84,14 @@ model MusicalInfo {
   id                    String   @id @default(cuid())
   userId                String
   user                  User     @relation(fields: [userId], references: [id])
-  yearsOfExperience     Int
+  yearsOfExperience     String
   title                 String
-  genres                String
-  instruments           String
-  primaryInstrument     String
+  genres                String?
+  instruments           String?
+  primaryInstrument     String?
   bio                   String?
-  interesetedInTutoring Boolean
-  interesetedInLearning Boolean
+  interesetedInTutoring Boolean?
+  interesetedInLearning Boolean?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

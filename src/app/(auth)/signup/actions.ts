@@ -71,15 +71,17 @@ export async function signUp(
     //   });
     // });
 
-    await prisma.user.create({
-      data: {
-        id: userId,
-        username,
-        displayName: username,
-        email,
-        passwordHash,
-      },
-    });
+    
+      await prisma.user.create({
+        data: {
+          id: userId,
+          username,
+          displayName: username,
+          email,
+          passwordHash,
+        },
+      });
+    
 
 
     const session = await lucia.createSession(userId, {});

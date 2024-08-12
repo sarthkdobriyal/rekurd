@@ -1,29 +1,20 @@
 import { validateRequest } from "@/auth"
 import prisma from "@/lib/prisma";
 import { getUserDataSelect } from "@/lib/types";
-import { cache } from "react";
-import EditProfileDialog from "../users/[username]/EditProfileDialog";
 import SetupProfileForm from "./SetupProfileForm";
+
 
 export default async function SetupProfilePage() {
 
-    const loggedInUser = await validateRequest()
-
-    const getUser = cache(async (loggedInUserId: string) => {
-        const user = await prisma.user.findFirst({
-          where: {
-            id: loggedInUserId,
-          },
-          select: getUserDataSelect(loggedInUserId, true)
-        });
-      
-        if (!user) notFound();
-      
-        return user;
-      });
+    const {user:loggedInUser} = await validateRequest()
 
 
-      const user = await getUser(loggedInUser.id);
+    const user = await prisma.user.findFirst({
+      where: {
+        id: loggedInUser.id,
+      },
+      select: getUserDataSelect(loggedInUser.id, true)
+    });
 
       
 
