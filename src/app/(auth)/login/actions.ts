@@ -50,7 +50,15 @@ export async function login(
       sessionCookie.attributes,
     );
 
-    return redirect("/");
+    const isProfileSetup = await prisma.musicalInfo.findFirst({
+      where: {
+        userId: existingUser.id
+      }
+    }) 
+
+    
+
+    return isProfileSetup ? redirect("/") : redirect("/setup-profile");
   } catch (error) {
     if (isRedirectError(error)) throw error;
     console.error(error);

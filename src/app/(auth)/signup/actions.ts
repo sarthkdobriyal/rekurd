@@ -92,7 +92,7 @@ export async function signUp(
       sessionCookie.attributes,
     );
 
-    return redirect("/");
+    return redirect("/setup-profile");
   } catch (error) {
     if (isRedirectError(error)) throw error;
     console.error(error);

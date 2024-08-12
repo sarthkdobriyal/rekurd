@@ -54,10 +54,19 @@ export async function GET(req: NextRequest) {
         sessionCookie.value,
         sessionCookie.attributes,
       );
+
+      const isProfileSetup = await prisma.musicalInfo.findFirst({
+        where: {
+          userId: existingUser.id
+        }
+      }) 
+  
+      console.log(isProfileSetup)
+
       return new Response(null, {
         status: 302,
         headers: {
-          Location: "/",
+          Location: `${isProfileSetup ? "/" : "/setup-profile"}`,
         },
       });
     }
@@ -66,7 +75,7 @@ export async function GET(req: NextRequest) {
 
     const username = slugify(googleUser.name) + "-" + userId.slice(0, 4);
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
         data: {
           id: userId,
           username,
@@ -85,10 +94,16 @@ export async function GET(req: NextRequest) {
       sessionCookie.attributes,
     );
 
+    const isProfileSetup = await prisma.musicalInfo.findFirst({
+      where: {
+        userId: userId
+      }
+    }) 
+
     return new Response(null, {
       status: 302,
       headers: {
-        Location: "/",
+        Location: `${isProfileSetup ? "/" : "/setup-profile"}`,
       },
     });
   } catch (error) {
