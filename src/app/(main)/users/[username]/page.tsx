@@ -3,7 +3,7 @@ import FollowButton from "@/components/FollowButton";
 import FollowerCount from "@/components/FollowerCount";
 import UserAvatar from "@/components/UserAvatar";
 import prisma from "@/lib/prisma";
-import { FollowerInfo, getUserDataSelect, UserData } from "@/lib/types";
+import { ConnectionInfo, FollowerInfo, getUserDataSelect, UserData } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
 import { formatDate } from "date-fns";
 import { notFound } from "next/navigation";
@@ -16,6 +16,8 @@ import { Metadata } from "next";
 import { get } from "http";
 import Linkify from "@/components/Linkify";
 import Link from "next/link";
+import { connect } from 'http2';
+import ConnectionButton from "@/components/ConnectionButton";
 
 interface PageProps {
   params: { username: string };
@@ -84,13 +86,19 @@ interface UserProfileProps {
   loggedInUserId: string;
 }
 
-async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
+export async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
   const followerInfo: FollowerInfo = {
     followers: user._count.followers,
     isFollowedByUser: user.followers.some(
       ({ followerId }) => followerId === loggedInUserId,
     ),
   };
+
+  const connectionInfo: ConnectionInfo = {
+    connections: user._count.sentConnections + user._count.receivedConnections,
+    isUserConnected: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "CONNECTED"),
+    isConnectionPending: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "PENDING"),
+  }
 
   console.log(user);
 
@@ -115,7 +123,8 @@ async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
                 </span>
               </div>
               <div className="flex flex-1 justify-center">
-                <FollowerCount userId={user.id} initialState={followerInfo} />
+              
+                <FollowerCount userId={user.id} username={user.username} initialState={followerInfo} />
               </div>
             </div>
 
@@ -131,7 +140,8 @@ async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
           {user.id === loggedInUserId ? (
             <EditProfileButton user={user} />
           ) : (
-            <FollowButton userId={user.id} initialState={followerInfo} />
+            // <FollowButton userId={user.id} initialState={followerInfo} />
+            <ConnectionButton userId={user.id} initialState={connectionInfo} />
           )}
         </div>
       </div>

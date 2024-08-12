@@ -1,7 +1,11 @@
 import { Prisma } from "@prisma/client";
 import { get } from "http";
+import { connect } from 'http2';
 
-export function getUserDataSelect(loggedInUserId: string, includeUserContact: boolean = false) {
+export function getUserDataSelect(
+  loggedInUserId: string,
+  includeUserContact: boolean = false,
+) {
   return {
     id: true,
     username: true,
@@ -11,15 +15,31 @@ export function getUserDataSelect(loggedInUserId: string, includeUserContact: bo
     createdAt: true,
     followers: {
       where: {
-        followerId: loggedInUserId,
+        followingId: loggedInUserId,
       },
       select: {
         followerId: true,
       },
     },
+    sentConnections:{
+      select: {
+        id: true,
+        recipientId: true,
+        status: true,
+      }
+    },
+    receivedConnections:{
+      select: {
+        id: true,
+        requesterId: true,
+        status: true,
+      }
+    },
     _count: {
       select: {
         posts: true,
+        sentConnections: true,
+        receivedConnections: true,
         followers: true,
       },
     },
@@ -52,7 +72,6 @@ export type UserData = Prisma.UserGetPayload<{
   select: ReturnType<typeof getUserDataSelect>;
 }>;
 
-
 export function getPostDataInclude(loggedInUserId: string) {
   return {
     user: {
@@ -81,7 +100,6 @@ export function getPostDataInclude(loggedInUserId: string) {
         comments: true,
       },
     },
-   
   } satisfies Prisma.PostInclude;
 }
 
@@ -99,6 +117,11 @@ export interface PostsPage {
 export interface FollowerInfo {
   followers: number;
   isFollowedByUser: boolean;
+}
+export interface ConnectionInfo {
+  connections: number;
+  isUserConnected: boolean,
+  isConnectionPending: boolean,
 }
 
 export interface BookmarkInfo {
@@ -145,7 +168,6 @@ export interface LikeInfo {
   likes: number;
   isLikedByUser: boolean;
 }
-
 
 export interface NotificationsPage {
   notifications: NotificationData[];

@@ -11,6 +11,7 @@ import { formatNumber } from "@/lib/utils";
 import FollowButton from "./FollowButton";
 import { getUserDataSelect } from "../lib/types";
 import UserTooltip from "./UserTooltip";
+import ConnectionButton from "./ConnectionButton";
 
 export default function TrendsSidebar() {
   return (
@@ -44,6 +45,7 @@ async function WhoToFollow() {
     select: getUserDataSelect(user.id),
     take: 5,
   });
+
     
   
   return (
@@ -70,7 +72,7 @@ async function WhoToFollow() {
               </div>
             </Link>
           </UserTooltip>
-          <FollowButton
+          {/* <FollowButton
             userId={user.id}
             initialState={{
               followers: user._count.followers,
@@ -78,7 +80,12 @@ async function WhoToFollow() {
                 ({ followerId }) => followerId === user.id,
               ),
             }}
-          />
+          /> */}
+          <ConnectionButton userId={user.id} initialState={{
+            connections: user._count.sentConnections + user._count.receivedConnections,
+            isUserConnected: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "CONNECTED"),
+            isConnectionPending: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "PENDING"),
+          }} />
         </div>
       ))}
     </div>

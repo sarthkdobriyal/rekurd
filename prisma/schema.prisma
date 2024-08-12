@@ -37,6 +37,8 @@ model User {
   issuedNotifications   Notification[] @relation("Issuer")
   musicalInfo           MusicalInfo?
   UserContact           UserContact?
+  sentConnections       Connection[]   @relation("SentConnections")
+  receivedConnections   Connection[]   @relation("ReceivedConnections")
 
   @@map("users")
 }
@@ -49,6 +51,26 @@ model Session {
   user User @relation(references: [id], fields: [userId], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+model Connection {
+  id          String           @id @default(cuid())
+  requesterId String
+  recipientId String
+  status      ConnectionStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  requester User @relation("SentConnections", fields: [requesterId], references: [id])
+  recipient User @relation("ReceivedConnections", fields: [recipientId], references: [id])
+
+  @@unique([requesterId, recipientId])
+  @@map("connections")
+}
+
+enum ConnectionStatus {
+  PENDING
+  CONNECTED
 }
 
 enum SocialLinkPlatform {
@@ -81,16 +103,16 @@ model SocialLink {
 }
 
 model MusicalInfo {
-  id                    String   @id @default(cuid())
-  userId                String
-  user                  User     @relation(fields: [userId], references: [id])
-  yearsOfExperience     String
-  title                 String
-  genres                String?
-  instruments           String?
-  primaryInstrument     String?
-  bio                   String?
-  interestedInTutoring Boolean? 
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id])
+  yearsOfExperience    String
+  title                String
+  genres               String?
+  instruments          String?
+  primaryInstrument    String?
+  bio                  String?
+  interestedInTutoring Boolean?
   interestedInLearning Boolean?
 
   createdAt DateTime @default(now())
