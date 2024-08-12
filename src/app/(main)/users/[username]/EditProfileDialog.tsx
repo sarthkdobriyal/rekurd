@@ -11,6 +11,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -47,6 +48,7 @@ export default function EditProfileDialog({
     resolver: zodResolver(updateUserProfileSchema),
     defaultValues: {
       displayName: user.displayName,
+      // username: user.username || "",
       bio: user.bio || "",
     },
   });
@@ -60,6 +62,7 @@ export default function EditProfileDialog({
       ? new File([croppedAvatar], `avatar_${user.id}.webp`)
       : undefined;
 
+      console.log("values", values)
     mutation.mutate(
       {
         values,
@@ -73,6 +76,8 @@ export default function EditProfileDialog({
       },
     );
   }
+
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -106,6 +111,7 @@ export default function EditProfileDialog({
                 </FormItem>
               )}
             />
+            
             <FormField
               control={form.control}
               name="bio"
@@ -140,7 +146,7 @@ interface AvatarInputProps {
   onImageCropped: (blob: Blob | null) => void;
 }
 
-function AvatarInput({ src, onImageCropped }: AvatarInputProps) {
+export function AvatarInput({ src, onImageCropped }: AvatarInputProps) {
   const [imageToCrop, setImageToCrop] = useState<File>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);

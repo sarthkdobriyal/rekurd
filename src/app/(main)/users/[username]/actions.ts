@@ -15,11 +15,33 @@ export async function updateUserProfile(values: UpdateUserProfileValues) {
 
   if (!user) throw new Error("Unauthorized");
 
+  const { userContact, musicalInfo, ...userProfileData } = validatedValues;
+
+  console.log("editing values")
+
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: validatedValues,
-      select: getUserDataSelect(user.id),
+      select: getUserDataSelect(user.id, true),
     });
+
+     // Update UserContact model
+  if (userContact) {
+    await prisma.userContact.upsert({
+      where: { userId: user.id },
+      create: userContact,
+      update: userContact,
+    });
+  }
+
+  // Update MusicalInfo model
+  if (musicalInfo) {
+    await prisma.musicalInfo.upsert({
+      where: { userId: user.id },
+      create: musicalInfo,
+      update: musicalInfo,
+    });
+  }
     
 
 

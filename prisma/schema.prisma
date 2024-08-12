@@ -35,6 +35,8 @@ model User {
   bookmarks             Bookmark[]
   receivedNotifications Notification[] @relation("Recipient")
   issuedNotifications   Notification[] @relation("Issuer")
+  musicalInfo           MusicalInfo?
+  UserContact           UserContact?
 
   @@map("users")
 }
@@ -47,6 +49,55 @@ model Session {
   user User @relation(references: [id], fields: [userId], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+enum SocialLinkPlatform {
+  INSTAGRAM
+  SPOTIFY
+  SOUNDCLOUD
+}
+
+model UserContact {
+  id          String       @id @default(cuid())
+  userId      String       @unique
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone       String?
+  city        String?
+  country     String?
+  socialLinks SocialLink[]
+
+  @@unique([phone, userId])
+  @@map("user_contacts")
+}
+
+model SocialLink {
+  id            String             @id @default(cuid())
+  platform      SocialLinkPlatform
+  url           String
+  userContactId String
+  UserContact   UserContact        @relation(fields: [userContactId], references: [id])
+
+  @@map("social_links")
+}
+
+model MusicalInfo {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id])
+  yearsOfExperience     Int
+  title                 String
+  genres                String
+  instruments           String
+  primaryInstrument     String
+  bio                   String?
+  interesetedInTutoring Boolean
+  interesetedInLearning Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId])
+  @@map("musical_info")
 }
 
 model Follow {
@@ -63,16 +114,16 @@ model Follow {
 }
 
 model Post {
-  id            String         @id @default(cuid())
-  content       String
-  userId        String
-  user          User           @relation(fields: [userId], references: [id])
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  attachments   Media[]
-  likes         Like[]
-  comments      Comment[]
-  bookmarks     Bookmark[]
+  id                  String         @id @default(cuid())
+  content             String
+  userId              String
+  user                User           @relation(fields: [userId], references: [id])
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  attachments         Media[]
+  likes               Like[]
+  comments            Comment[]
+  bookmarks           Bookmark[]
   linkedNotifications Notification[]
 
   @@map("posts")

@@ -1,3 +1,5 @@
+import { Phone } from "lucide-react";
+import { title } from "process";
 import { z } from "zod";
 
 const requiredString = z.string().trim().min(1, "Required");
@@ -25,12 +27,43 @@ export const createPostSchema = z.object({
   mediaIds: z.array(z.string()).max(5, "Cannot have more than 5 attachments"),
 });
 
+export const userContactSchema = z.object({
+  phone: z.string().optional(),
+  city: z.string().optional(),
+  country: z.string().optional(),
+  socialLinks: z.array(z.string()).optional(),
+});
+
+export type UserContactValues = z.infer<typeof userContactSchema>;
+
+export const musicalInfoSchema = z.object({
+  yearsOfExperience: z.string(),
+  title: requiredString,
+  genres: z.string().optional(),
+  primaryInstrument: z.string(),
+  instruments: z.string().optional(),
+  bio: z.string().max(10000, "Must be at most 10000 characters").optional(),
+  interesetedInTutoring: z.boolean().optional(),
+  interesetedInLearning: z.boolean().optional(),
+});
+
+export type MusicalInfoValues = z.infer<typeof musicalInfoSchema>;
+
 export const updateUserProfileSchema = z.object({
   displayName: requiredString,
   bio: z.string().max(1000, "Must be at most 1000 characters"),
+  email: requiredString.email("Invalid email address"),
+  username: requiredString.regex(
+    /^[a-zA-Z0-9_-]+$/,
+    "Only letters, numbers, - and _ allowed",
+  ),
+  userContact: userContactSchema,
+  musicalInfo: musicalInfoSchema,
 });
 
 export type UpdateUserProfileValues = z.infer<typeof updateUserProfileSchema>;
+
+
 
 export const createCommentSchema = z.object({
   content: requiredString,

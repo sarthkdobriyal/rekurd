@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { get } from "http";
 
-export function getUserDataSelect(loggedInUserId: string) {
+export function getUserDataSelect(loggedInUserId: string, includeUserContact: boolean = false) {
   return {
     id: true,
     username: true,
@@ -23,6 +23,29 @@ export function getUserDataSelect(loggedInUserId: string) {
         followers: true,
       },
     },
+    musicalInfo: {
+      select: {
+        yearsOfExperience: true,
+        title: true,
+        genres: true,
+        instruments: true,
+        bio: true,
+        interesetedInTutoring: true,
+        interesetedInLearning: true,
+        primaryInstrument: true,
+      },
+    },
+    ...(includeUserContact && {
+      email: true,
+      UserContact: {
+        select: {
+          phone: true,
+          city: true,
+          country: true,
+          socialLinks: true,
+        },
+      },
+    }),
   } satisfies Prisma.UserSelect;
 }
 export type UserData = Prisma.UserGetPayload<{
