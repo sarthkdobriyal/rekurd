@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 import { useDropzone } from "@uploadthing/react";
 import { root } from "postcss";
+import Link from "next/link";
 
 export default function PostEditor() {
   const { user } = useSession();
@@ -42,12 +43,11 @@ export default function PostEditor() {
     uploadProgress,
   } = useMediaUpload();
 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: startUpload,
+  });
 
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({
-    onDrop: startUpload
-  })
-
-  const {onClick, ...rootProps } = getRootProps();
+  const { onClick, ...rootProps } = getRootProps();
 
   const input =
     editor?.getText({
@@ -75,26 +75,30 @@ export default function PostEditor() {
       .map((item) => item.getAsFile()) as File[];
     startUpload(files);
   }
-  
 
   return (
     <div className="flex h-fit w-full flex-col gap-5 rounded-2xl bg-card p-5 shadow-sm">
       <div {...rootProps} className="w-full">
-      <div className="flex gap-5">
-        <div className="w-full">
-          <EditorContent
-            editor={editor}
-            className={cn(
-              "max-h-[20rem] w-full overflow-y-auto rounded-2xl border-none bg-background px-5 py-3 outline-none",
-              isDragActive && "outline-dashed",
-            )}
-            onPaste={onPaste}
-          />
+        <div className="flex gap-5">
+          <div className="w-full">
+            <EditorContent
+              editor={editor}
+              className={cn(
+                "max-h-[20rem] w-full overflow-y-auto rounded-2xl border-none bg-background px-5 py-3 outline-none",
+                isDragActive && "outline-dashed",
+              )}
+              onPaste={onPaste}
+            />
+          </div>
+          <Link href={`/users/${user.username}`}>
+            <UserAvatar
+              avatarUrl={user.avatarUrl}
+              className="inline"
+            />
+          </Link>
         </div>
-        <UserAvatar avatarUrl={user.avatarUrl} className="hidden sm:inline" />
-      </div>
 
-      <input {...getInputProps()} />
+        <input {...getInputProps()} />
       </div>
       {!!attachments.length && (
         <AttachmentPreviews

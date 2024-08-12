@@ -15,6 +15,7 @@ import UserPosts from "./UserPosts";
 import { Metadata } from "next";
 import { get } from 'http';
 import Linkify from "@/components/Linkify";
+import Link from "next/link";
 
 interface PageProps {
     params: { username: string };
@@ -96,11 +97,14 @@ export default async function Page({ params: { username } }: PageProps) {
   
     return (
       <div className="h-fit w-full space-y-5 rounded-2xl bg-card p-5 shadow-sm">
+        <Link href={`/users/${user.username}`}>
+        
         <UserAvatar
           avatarUrl={user.avatarUrl}
           size={250}
           className="mx-auto size-full max-h-60 max-w-60 rounded-full"
         />
+        </Link>
         <div className="flex flex-wrap gap-3 sm:flex-nowrap">
           <div className="me-auto space-y-3">
             <div>

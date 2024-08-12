@@ -61,19 +61,7 @@ export const updateUserProfileSchema = z.object({
   userContact: userContactSchema,
 });
 
-export const setUpProfileSchema = z.object({
-  displayName: requiredString,
-  bio: z.string().max(1000, "Must be at most 1000 characters"),
-  email: requiredString.email("Invalid email address"),
-  username: requiredString.regex(
-    /^[a-zA-Z0-9_-]+$/,
-    "Only letters, numbers, - and _ allowed",
-  ),
-  // userContact: userContactSchema,
-  musicalInfo: musicalInfoSchema,
-})
 
-export type setUpProfileValues = z.infer<typeof setUpProfileSchema>;
 
 export type UpdateUserProfileValues = z.infer<typeof updateUserProfileSchema>;
 
