@@ -90,8 +90,8 @@ model MusicalInfo {
   instruments           String?
   primaryInstrument     String?
   bio                   String?
-  interesetedInTutoring Boolean?
-  interesetedInLearning Boolean?
+  interestedInTutoring Boolean?
+  interestedInLearning Boolean?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

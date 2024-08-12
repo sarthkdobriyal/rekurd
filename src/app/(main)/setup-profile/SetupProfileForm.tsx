@@ -43,8 +43,8 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
         genres: user.musicalInfo?.genres || "",
         primaryInstrument: user.musicalInfo?.primaryInstrument || "",
         instruments: user.musicalInfo?.instruments || "",
-        interesetedInLearning: user.musicalInfo?.interesetedInLearning ,
-        interesetedInTutoring: user.musicalInfo?.interesetedInTutoring ,
+        interestedInLearning: user.musicalInfo?.interestedInLearning ,
+        interestedInTutoring: user.musicalInfo?.interestedInTutoring ,
         title: user.musicalInfo?.title || "",
         yearsOfExperience: user.musicalInfo?.yearsOfExperience || "",
       },
@@ -210,7 +210,8 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
           <FormField
             control={form.control}
             name="musicalInfo.primaryInstrument"
-            render={({ field }) => (
+            render={({ field }) => {
+              return(
               <FormItem>
                 <FormLabel>
                   What&apos;s your favorite musical instrument to jam on?
@@ -228,7 +229,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
                 </FormDescription>
                 <FormMessage />
               </FormItem>
-            )}
+            )}}
           />
           <FormField
             control={form.control}
@@ -272,15 +273,14 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
             control={form.control}
             name="musicalInfo.interestedInTutoring"
             render={({ field }) => {
-              
+              console.log(field, "gg")
               return(
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
                 <FormControl>
                   <Checkbox
-                    {...field}
-                    checked={user.musicalInfo?.interesetedInTutoring}
-                  onCheckedChange={(checked) => form.setValue('musicalInfo.interesetedInTutoring', checked)
-                  }
+                    
+                    checked={field.value}
+                  onCheckedChange={field.onChange}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -300,9 +300,8 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
                 <FormControl>
                   <Checkbox
-                    {...field}
                     checked={field.value}
-                  onCheckedChange={(checked) => form.setValue('musicalInfo.interesetedInLearning', checked)}
+                  onCheckedChange={field.onChange}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">

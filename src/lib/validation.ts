@@ -43,8 +43,8 @@ export const musicalInfoSchema = z.object({
   primaryInstrument: z.string(),
   instruments: z.string().optional(),
   bio: z.string().max(10000, "Must be at most 10000 characters").optional(),
-  interesetedInTutoring: z.boolean().optional(),
-  interesetedInLearning: z.boolean().optional(),
+  interestedInTutoring: z.boolean().optional(),
+  interestedInLearning: z.boolean().optional(),
 });
 
 export type MusicalInfoValues = z.infer<typeof musicalInfoSchema>;
