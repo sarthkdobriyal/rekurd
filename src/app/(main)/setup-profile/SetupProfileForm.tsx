@@ -273,7 +273,6 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
             control={form.control}
             name="musicalInfo.interestedInTutoring"
             render={({ field }) => {
-              console.log(field, "gg")
               return(
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
                 <FormControl>
