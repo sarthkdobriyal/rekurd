@@ -26,12 +26,14 @@ import {
   UpdateUserProfileValues,
 } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Camera } from "lucide-react";
+import { Camera, Link2, SquareArrowOutUpRight } from "lucide-react";
 import Image, { StaticImageData } from "next/image";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Resizer from "react-image-file-resizer";
 import { useUpdateProfileMutation } from "./mutations";
+import Link from "next/link";
+import EditProfileButton from './EditProfileButton';
 
 interface EditProfileDialogProps {
   user: UserData;
@@ -85,6 +87,9 @@ export default function EditProfileDialog({
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>
         </DialogHeader>
+        <div className="flex justify-between">
+
+        
         <div className="space-y-1.5">
           <Label>Avatar</Label>
           <AvatarInput
@@ -95,6 +100,12 @@ export default function EditProfileDialog({
             }
             onImageCropped={setCroppedAvatar}
           />
+        </div>
+
+        <Link href='/setup-profile' className="flex text-muted-foreground text-sm gap-1 hover:underline">
+        Edit full Profile
+        <SquareArrowOutUpRight size={16} />
+        </Link>
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
