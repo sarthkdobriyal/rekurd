@@ -16,9 +16,9 @@ export default function FollowerCount({
   const { data } = useFollowerInfo(userId, initialState);
 
   return (
-    <span>
-      Followers:{" "}
-      <span className="font-semibold">{formatNumber(data.followers)}</span>
+    <span className="flex flex-col items-center">
+      <span className="font-semibold text-2xl">{formatNumber(data.followers)}</span>
+      Followers
     </span>
   );
 }
