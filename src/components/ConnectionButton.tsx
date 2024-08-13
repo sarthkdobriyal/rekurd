@@ -2,17 +2,19 @@
 
 import useFollowerInfo from "@/hooks/useFollowerInfo";
 import kyInstance from "@/lib/ky";
-import { ConnectionInfo, FollowerInfo } from "@/lib/types";
+import { ConnectionInfo, FollowerInfo, UserData } from "@/lib/types";
 import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 import { connect } from "http2";
 import useConnectionInfo from "@/hooks/useConnectionInfo";
 import { Trash2 } from "lucide-react";
+import { useSession } from "@/app/(main)/SessionProvider";
+import { useState } from "react";
 
 interface FollowButtonProps {
   userId: string;
-  initialState: FollowerInfo;
+  initialState: ConnectionInfo;
 }
 
 export default function ConnectionButton({
@@ -21,31 +23,45 @@ export default function ConnectionButton({
 }: FollowButtonProps) {
   const { toast } = useToast();
 
+  const { user: loggedInUser } = useSession();
+
   const queryClient = useQueryClient();
+
+  const [decision, setDecision] = useState("");
 
   const { data } = useConnectionInfo(userId, initialState);
 
   const queryKey: QueryKey = ["connection-info", userId];
 
-  console.log(data, "data")
+  const isLoggedInUserReciepient = data.isLoggedInUserReciepient;
+  const isLoggedInUserSender = data.isLoggedInUserSender;
 
+  console.log(data, decision);
 
   const { mutate } = useMutation({
-    mutationFn: () =>
-      data.isUserConnected || data.isConnectionPending
-        ? kyInstance.delete(`/api/users/${userId}/connection`)
-        : kyInstance.post(`/api/users/${userId}/connection`),
+    mutationFn: (decision) =>
+      data.isUserConnected
+      ? kyInstance.delete(`/api/users/${userId}/connection`) :
+      isLoggedInUserReciepient && decision !== "reject"
+        ? kyInstance.patch(`/api/users/${userId}/connection`)
+        : (isLoggedInUserReciepient && decision === "reject") ||
+            (isLoggedInUserSender && data.isConnectionPending)
+          ? kyInstance.delete(`/api/users/${userId}/connection`)
+          : kyInstance.post(`/api/users/${userId}/connection`),
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey });
-
       const previousState = queryClient.getQueryData<ConnectionInfo>(queryKey);
 
       queryClient.setQueryData<ConnectionInfo>(queryKey, () => ({
         connections:
           (previousState?.connections || 0) +
-          (previousState?.isUserConnected || previousState?.isConnectionPending ? -1 : 1),
-        isUserConnected: previousState?.isUserConnected,
-        isConnectionPending: !previousState?.isConnectionPending,
+          ((isLoggedInUserReciepient && decision === "reject") || (isLoggedInUserSender && previousState?.isConnectionPending) || previousState?.isUserConnected
+            ? -1
+            : 1),
+        isUserConnected:previousState?.isUserConnected ? !previousState?.isUserConnected : isLoggedInUserReciepient && decision !== "reject",
+        isConnectionPending: !previousState?.isUserConnected && !previousState?.isConnectionPending,
+        isLoggedInUserReciepient: previousState?.isUserConnected? false :  previousState?.isLoggedInUserReciepient && decision !=="reject",
+        isLoggedInUserSender:  !previousState?.isLoggedInUserReciepient && !previousState?.isLoggedInUserSender,
       }));
 
       return { previousState };
@@ -61,18 +77,55 @@ export default function ConnectionButton({
   });
 
   return (
-    <Button
-      variant={data.isConnectionPending ? "secondary" : data.isUserConnected ? "outline" : "default"}
-      onClick={() => mutate()}
-    >
-      {data.isConnectionPending  ? <div className="flex w-full  justify-between items-center">
-        <span className=" mr-3">Requested</span>
-        <Trash2 size={15} />
-      </div> : data.isUserConnected ? <div className="flex w-full  justify-between items-center">
-        <span className="mr-3">Connected</span>
-        <Trash2 size={15} />
+    <>
+      {isLoggedInUserReciepient && data.isConnectionPending ? (
+        <div className="flex w-full justify-center gap-4">
+          <Button
+            variant={"default"}
+            onClick={() => {
+              setDecision("accept");
+              mutate();
+            }}
+            className="bg-secondary"
+          >
+            Accept
+          </Button>
+          <Button
+            variant={"destructive"}
+            onClick={() => {
+              setDecision("reject");
+              mutate("reject");
+            }}
+          >
+            Reject
+          </Button>
         </div>
-         :  "JAM"}
-    </Button>
+      ) : (
+        <Button
+          variant={
+            data.isConnectionPending
+              ? "secondary"
+              : data.isUserConnected
+                ? "outline"
+                : "default"
+          }
+          onClick={() => mutate()}
+        >
+          {isLoggedInUserSender && data.isConnectionPending ? (
+            <div className="flex w-full items-center justify-between">
+              <span className="mr-3">Requested</span>
+              <Trash2 size={15} />
+            </div>
+          ) : data.isUserConnected ? (
+            <div className="flex w-full items-center justify-between">
+              <span className="mr-3">Connected</span>
+              <Trash2 size={15} />
+            </div>
+          ) : (
+            "JAM"
+          )}
+        </Button>
+      )}
+    </>
   );
 }

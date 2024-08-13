@@ -4,34 +4,46 @@ import { cn } from "@/lib/utils";
 import { NotificationType } from "@prisma/client";
 import { Heart, MessageCircle, User2 } from "lucide-react";
 import Link from "next/link";
+import AcceptJamRequestButton from "./AcceptJamRequestButton";
+import useConnectionInfo from "@/hooks/useConnectionInfo";
+import { cache } from "react";
+import { validateRequest } from "@/auth";
+import { useSession } from "../SessionProvider";
+import prisma from "@/lib/prisma";
 
 interface NotificationProps {
   notification: NotificationData;
 }
 
-export default function Notification({ notification }: NotificationProps) {
+
+
+export default async function Notification({ notification }: NotificationProps) {
   const notificationTypeMap: Record<
     NotificationType,
     { message: string; icon: JSX.Element; href: string }
   > = {
     FOLLOW: {
-      message: `${notification.issuer.displayName} followed you`,
+      message: `has requested to jam with you.`,
       icon: <User2 className="size-7 text-primary" />,
       href: `/users/${notification.issuer.username}`,
     },
     COMMENT: {
-      message: `${notification.issuer.displayName} commented on your post`,
+      message: ` commented on your post`,
       icon: <MessageCircle className="size-7 fill-primary text-primary" />,
       href: `/posts/${notification.postId}`,
     },
     LIKE: {
-      message: `${notification.issuer.displayName} liked your post`,
+      message: ` liked your post`,
       icon: <Heart className="size-7 fill-red-500 text-red-500" />,
       href: `/posts/${notification.postId}`,
     },
   };
 
+
+
   const { message, icon, href } = notificationTypeMap[notification.type];
+
+ 
 
   return (
     <Link href={href} className="block">
@@ -44,7 +56,7 @@ export default function Notification({ notification }: NotificationProps) {
         <div className="my-1">{icon}</div>
         <div className="space-y-3">
           <UserAvatar avatarUrl={notification.issuer.avatarUrl} size={36} />
-          <div>
+          <div className="flex gap-1">
             <span className="font-bold">{notification.issuer.displayName}</span>{" "}
             <span>{message}</span>
           </div>

@@ -98,9 +98,11 @@ export async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
     connections: user._count.sentConnections + user._count.receivedConnections,
     isUserConnected: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "CONNECTED"),
     isConnectionPending: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "PENDING"),
+    isLoggedInUserSender: user.receivedConnections.some(({ requesterId }) => requesterId === loggedInUserId),
+    isLoggedInUserReciepient: user.sentConnections.some(({ recipientId }) => recipientId === loggedInUserId),
   }
 
-  console.log(user);
+  // console.log(user);
 
   return (
     <div className="h-fit w-full space-y-5 rounded-2xl bg-card px-5 py-5 shadow-sm">
@@ -141,7 +143,7 @@ export async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
             <EditProfileButton user={user} />
           ) : (
             // <FollowButton userId={user.id} initialState={followerInfo} />
-            <ConnectionButton userId={user.id} initialState={connectionInfo} />
+            <ConnectionButton  userId={user.id} initialState={connectionInfo} />
           )}
         </div>
       </div>

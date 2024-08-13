@@ -122,6 +122,8 @@ export interface ConnectionInfo {
   connections: number;
   isUserConnected: boolean,
   isConnectionPending: boolean,
+  isLoggedInUserSender: boolean,
+  isLoggedInUserReciepient: boolean,
 }
 
 export interface BookmarkInfo {

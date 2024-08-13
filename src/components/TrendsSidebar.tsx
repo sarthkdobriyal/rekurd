@@ -81,11 +81,11 @@ async function WhoToFollow() {
               ),
             }}
           /> */}
-          <ConnectionButton userId={user.id} initialState={{
+          {/* <ConnectionButton user={user} userId={user.id} initialState={{
             connections: user._count.sentConnections + user._count.receivedConnections,
             isUserConnected: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "CONNECTED"),
             isConnectionPending: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "PENDING"),
-          }} />
+          }} /> */}
         </div>
       ))}
     </div>

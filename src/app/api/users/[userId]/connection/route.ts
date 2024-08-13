@@ -45,10 +45,15 @@ export async function GET(
       },
     });
 
+    console.log("connec", connection)
+
+
     const data: ConnectionInfo = {
       connections: totalConnections,
       isUserConnected: connection && connection.status === 'CONNECTED',
       isConnectionPending: connection && connection.status === 'PENDING',
+      isLoggedInUserSender: connection && connection.recipientId === loggedInUser.id,
+      isLoggedInUserReciepient: connection && connection.requesterId === loggedInUser.id
     };
     return Response.json(data);
   } catch (error) {
