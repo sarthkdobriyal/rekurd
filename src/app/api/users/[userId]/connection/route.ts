@@ -72,6 +72,30 @@ export async function POST(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (loggedInUser.id === userId) {
+      return Response.json({ error: "Not Allowed" }, { status: 400 });
+    }
+
+    const existingConnection = await prisma.connection.findFirst({
+      where: {
+        OR: [
+          {
+            requesterId: loggedInUser.id,
+            recipientId: userId,
+          },
+          {
+            requesterId: userId,
+            recipientId: loggedInUser.id,
+          },
+        ],
+      },
+    });
+
+    if (existingConnection) {
+      return Response.json({ error :  "Connection already exists"}, { status: 400 });
+    }
+
+
     await prisma.$transaction([
       prisma.connection.create({
         data: {

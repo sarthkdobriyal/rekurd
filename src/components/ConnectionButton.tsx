@@ -11,6 +11,8 @@ import useConnectionInfo from "@/hooks/useConnectionInfo";
 import { Trash2 } from "lucide-react";
 import { useSession } from "@/app/(main)/SessionProvider";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 
 interface FollowButtonProps {
   userId: string;
@@ -25,6 +27,7 @@ export default function ConnectionButton({
 
   const { user: loggedInUser } = useSession();
 
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const [decision, setDecision] = useState("");
@@ -68,11 +71,15 @@ export default function ConnectionButton({
     },
     onError(error, variables, context) {
       queryClient.setQueryData(queryKey, context?.previousState);
-      console.error(error);
+      const errorMessage = error.response?.status === 400 ? "Connection already exists! Reload to accept/reject": "Something went wrong!"
+      
       toast({
         variant: "destructive",
-        description: "Something went wrong. Please try again.",
+        description: errorMessage,
       });
+
+      window.location.reload()
+      
     },
   });
 
