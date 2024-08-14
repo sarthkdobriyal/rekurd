@@ -18,45 +18,7 @@ export default async function Connections({user}) {
     if (!loggedInUser) return {};
 
 
-  const connections = await prisma.connection.findMany({
-    where: {
-      OR: [
-        {
-          requesterId: user.id,
-          status: "CONNECTED"
-        },
-        {
-          recipientId: user.id,
-          status: "CONNECTED"
-        }
-      ]
-    },
-    select: {
-      id: true,
-      status: true,
-      createdAt: true,
-      updatedAt: true,
-      requester: {
-        select: {
-          id: true,
-          username: true,
-          displayName: true,
-          avatarUrl: true
-        }
-      },
-      recipient: {
-        select: {
-          id: true,
-          username: true,
-          displayName: true,
-          avatarUrl: true
-        }
-      }
-    }
-  });
-
-
-
+  const connections = user.sentConnections.concat(user.receivedConnections).filter((conn) => conn.status === 'CONNECTED')
 
     return <div className="w-full">
        <div className="space-y-5 rounded-2xl  p-5 shadow-sm">
@@ -69,7 +31,7 @@ export default async function Connections({user}) {
       
       return (
         <div key={connUser.id} className="flex hover:bg-card px-3 py-2 rounded-xl items-center justify-between gap-3">
-          <UserTooltip user={user}>
+          {/* <UserTooltip user={user}> */}
             <Link
               href={`/users/${connUser.username}`}
               className="flex items-center gap-3"
@@ -84,7 +46,7 @@ export default async function Connections({user}) {
                 </p>
               </div>
             </Link>
-          </UserTooltip>
+          {/* </UserTooltip> */}
           
         </div>
       )

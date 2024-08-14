@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { get } from "http";
+import { get, request } from "http";
 import { connect } from 'http2';
 
 export function getUserDataSelect(
@@ -26,13 +26,29 @@ export function getUserDataSelect(
         id: true,
         recipientId: true,
         status: true,
-      }
-    },
+        recipient: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+            avatarUrl: true,
+          },
+        },
+        }
+      },
     receivedConnections:{    
       select: {
         id: true,
         requesterId: true,
         status: true,
+        requester: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+            avatarUrl: true,
+          },
+        }
       }
     },
     _count: {
@@ -40,7 +56,6 @@ export function getUserDataSelect(
         posts: true,
         sentConnections: true,
         receivedConnections: true,
-        followers: true,
       },
     },
     musicalInfo: {
@@ -114,10 +129,7 @@ export interface PostsPage {
   nextCursor: string | null;
 }
 
-export interface FollowerInfo {
-  followers: number;
-  isFollowedByUser: boolean;
-}
+
 export interface ConnectionInfo {
   connections: number;
   isUserConnected: boolean,
