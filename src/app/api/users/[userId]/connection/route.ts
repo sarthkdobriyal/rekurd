@@ -132,7 +132,7 @@ export async function DELETE(
 
     const { followerId } = params;
 
-    const deleteResult = await prisma.connection.deleteMany({
+    const connection = await prisma.connection.findFirst({
       where: {
         OR: [
           {
@@ -145,11 +145,62 @@ export async function DELETE(
           },
         ],
       },
-    });
+    })
 
-    if (deleteResult.count === 0) {
+    if (!connection) {
       return Response.json({ error: "Connection not found" }, { status: 404 });
     }
+
+
+
+    const deleteResult = await prisma.$transaction([
+      prisma.connection.deleteMany({
+      where: {
+        OR: [
+        {
+          requesterId: loggedInUser.id,
+          recipientId: followerId,
+        },
+        {
+          requesterId: followerId,
+          recipientId: loggedInUser.id,
+        },
+        ],
+      },
+      }),
+      prisma.notification.deleteMany({
+      where: {
+        OR: [
+          {
+            issuerId: loggedInUser.id,
+            recipientId: followerId,
+          },
+          {
+            issuerId: followerId,
+            recipientId: loggedInUser.id,
+          },
+          ],
+        type: "FOLLOW",
+      },
+      }),
+      prisma.notification.deleteMany({
+      where: {
+        OR: [
+          {
+            issuerId: loggedInUser.id,
+            recipientId: followerId,
+          },
+          {
+            issuerId: followerId,
+            recipientId: loggedInUser.id,
+          },
+          ],
+        type: "ACCEPT_CONNECTION",
+      },
+      }),
+    ]);
+
+    
 
     return Response.json({ message: "Connection deleted successfully" }, { status: 200 });
   } catch (error) {
@@ -160,7 +211,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { connectionId: string } },
+  { params }: { params: { userId: string } },
 ) {
   try {
     const { user: loggedInUser } = await validateRequest();
@@ -168,18 +219,27 @@ export async function PATCH(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { connectionId } = params;
+    const { userId } = params;
 
-    const updateResult = await prisma.connection.updateMany({
-      where: {
-        id: connectionId,
-        recipientId: loggedInUser.id,
-        status: "PENDING",
-      },
-      data: {
-        status: "CONNECTED",
-      },
-    });
+    const [updateResult, ...result] = await prisma.$transaction([
+      prisma.connection.updateMany({
+        where: {
+          requesterId: userId,
+          recipientId: loggedInUser.id,
+          status: "PENDING",
+        },
+        data: {
+          status: "CONNECTED",
+        },
+      }),
+      prisma.notification.create({
+        data: {
+          issuerId: loggedInUser.id,
+          recipientId: userId,
+          type: "ACCEPT_CONNECTION",
+        },
+      }),
+    ]);
 
     if (updateResult.count === 0) {
       return Response.json({ error: "Connection request not found or already accepted" }, { status: 404 });

@@ -2,7 +2,7 @@ import UserAvatar from "@/components/UserAvatar";
 import { NotificationData } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { NotificationType } from "@prisma/client";
-import { Heart, MessageCircle, User2 } from "lucide-react";
+import { ArrowUpRight, Heart, MessageCircle, User2 } from "lucide-react";
 import Link from "next/link";
 import AcceptJamRequestButton from "./AcceptJamRequestButton";
 import useConnectionInfo from "@/hooks/useConnectionInfo";
@@ -37,6 +37,11 @@ export default async function Notification({ notification }: NotificationProps) 
       icon: <Heart className="size-7 fill-red-500 text-red-500" />,
       href: `/posts/${notification.postId}`,
     },
+    ACCEPT_CONNECTION : {
+      message: `accepted your connection request`,
+      icon: <User2 className="size-7 text-primary" />,
+      href: `/users/${notification.issuer.username}`,
+    }
   };
 
 
@@ -49,17 +54,25 @@ export default async function Notification({ notification }: NotificationProps) 
     <Link href={href} className="block">
       <article
         className={cn(
-          "flex gap-3 rounded-2xl bg-card p-5 shadow-sm transition-colors hover:bg-card/70",
+          "flex gap-3 rounded-2xl bg-card p-5 shadow-sm transition-colors hover:bg-card/70 relative",
           !notification.read && "bg-primary/10",
         )}
       >
         <div className="my-1">{icon}</div>
-        <div className="space-y-3">
+        <div className="space-y-3 ">
           <UserAvatar avatarUrl={notification.issuer.avatarUrl} size={36} />
           <div className="flex gap-1">
             <span className="font-bold">{notification.issuer.displayName}</span>{" "}
             <span>{message}</span>
           </div>
+          {
+              notification.type === NotificationType.FOLLOW && (
+                <span className=" flex gap-1 hover:border-b text-muted-foreground font-light text-xs tracking-tight absolute right-3 top-0">
+                  Visit profile 
+                  <ArrowUpRight size={15}/>
+                </span>
+              )
+            }
           {notification.post && (
             <div className="line-clamp-3 whitespace-pre-line text-muted-foreground">
               {notification.post.content}
