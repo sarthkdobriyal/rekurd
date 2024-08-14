@@ -18,6 +18,7 @@ import Linkify from "@/components/Linkify";
 import Link from "next/link";
 import { connect } from 'http2';
 import ConnectionButton from "@/components/ConnectionButton";
+import ConnectionCount from "@/components/ConnectionCount";
 
 interface PageProps {
   params: { username: string };
@@ -93,13 +94,14 @@ export async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
       ({ followerId }) => followerId === loggedInUserId,
     ),
   };
+  console.log(user);
 
   const connectionInfo: ConnectionInfo = {
-    connections: user._count.sentConnections + user._count.receivedConnections,
-    isUserConnected: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "CONNECTED"),
+    connections: user.sentConnections.concat(user.receivedConnections).reduce((count, conn) => conn.status === "CONNECTED" ? count + 1 : count, 0),
+    isUserConnected: user.sentConnections.concat(user.receivedConnections).some((conn) => conn.status === "CONNECTED" && (conn.recipientId === loggedInUserId || conn.requesterId === loggedInUserId)),
     isConnectionPending: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "PENDING"),
-    isLoggedInUserSender: user.receivedConnections.some(({ requesterId }) => requesterId === loggedInUserId),
-    isLoggedInUserReciepient: user.sentConnections.some(({ recipientId }) => recipientId === loggedInUserId),
+    isLoggedInUserSender: user.receivedConnections.some(({ requesterId, status }) => status === "PENDING" && requesterId === loggedInUserId ),
+    isLoggedInUserReciepient: user.sentConnections.some(({ recipientId, status }) => status === "PENDING" && recipientId === loggedInUserId),
   }
 
   // console.log(user);
@@ -125,8 +127,8 @@ export async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
                 </span>
               </div>
               <div className="flex flex-1 justify-center">
-              
-                <FollowerCount userId={user.id} username={user.username} initialState={followerInfo} />
+                <ConnectionCount userId={user.id} username={user.username} initialState={connectionInfo} />
+                {/* <FollowerCount userId={user.id} username={user.username} initialState={followerInfo} /> */}
               </div>
             </div>
 

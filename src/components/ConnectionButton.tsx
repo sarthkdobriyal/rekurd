@@ -58,13 +58,14 @@ export default function ConnectionButton({
       queryClient.setQueryData<ConnectionInfo>(queryKey, () => ({
         connections:
           (previousState?.connections || 0) +
-          ((isLoggedInUserReciepient && decision === "reject") || (isLoggedInUserSender && previousState?.isConnectionPending) || previousState?.isUserConnected
-            ? -1
-            : 1),
+          (decision === "accept"
+            ? 1 : 
+            previousState?.isUserConnected ? -1 
+            : 0),
         isUserConnected:previousState?.isUserConnected ? !previousState?.isUserConnected : isLoggedInUserReciepient && decision !== "reject",
         isConnectionPending: !previousState?.isUserConnected && !previousState?.isConnectionPending,
-        isLoggedInUserReciepient: previousState?.isUserConnected? false :  previousState?.isLoggedInUserReciepient && decision !=="reject",
-        isLoggedInUserSender:  !previousState?.isLoggedInUserReciepient && !previousState?.isLoggedInUserSender,
+        isLoggedInUserReciepient: previousState?.isUserConnected ? false :  previousState?.isLoggedInUserReciepient && decision !=="reject",
+        isLoggedInUserSender: !previousState?.isUserConnected && !previousState?.isLoggedInUserReciepient && !previousState?.isLoggedInUserSender,
       }));
 
       return { previousState };
@@ -82,6 +83,8 @@ export default function ConnectionButton({
       
     },
   });
+
+  console.log(data);
 
   return (
     <>

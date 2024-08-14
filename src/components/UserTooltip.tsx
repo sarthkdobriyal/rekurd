@@ -14,6 +14,9 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import UserAvatar from "./UserAvatar";
+import ConnectionCount from "./ConnectionCount";
+import ConnectionButton from "./ConnectionButton";
+import { formatNumber } from "@/lib/utils";
 
 interface UserTooltipProps extends PropsWithChildren {
   user: UserData;
@@ -22,12 +25,14 @@ interface UserTooltipProps extends PropsWithChildren {
 export default function UserTooltip({ children, user }: UserTooltipProps) {
   const { user: loggedInUser } = useSession();
 
-  const followerState: FollowerInfo = {
-    followers: user._count.followers,
-    isFollowedByUser: !!user.followers.some(
-      ({ followerId }) => followerId === loggedInUser.id,
-    ),
-  };
+
+  const connectionInfo: ConnectionInfo = {
+    connections: user.sentConnections.concat(user.receivedConnections).reduce((count, conn) => conn.status === "CONNECTED" ? count + 1 : count, 0),
+    isUserConnected: user.sentConnections.concat(user.receivedConnections).some((conn) => conn.status === "CONNECTED" && (conn.recipientId === loggedInUser.id || conn.requesterId === loggedInUser.id)),
+    isConnectionPending: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "PENDING"),
+    isLoggedInUserSender: user.receivedConnections.some(({ requesterId, status }) => status === "PENDING" && requesterId === loggedInUser.id ),
+    isLoggedInUserReciepient: user.sentConnections.some(({ recipientId, status }) => status === "PENDING" && recipientId === loggedInUser.id),
+  }
 
   return (
     <TooltipProvider>
@@ -40,7 +45,7 @@ export default function UserTooltip({ children, user }: UserTooltipProps) {
                 <UserAvatar size={70} avatarUrl={user.avatarUrl} />
               </Link>
               {loggedInUser.id !== user.id && (
-                <FollowButton userId={user.id} initialState={followerState} />
+                <ConnectionButton userId={user.id} initialState={connectionInfo} />
               )}
             </div>
             <div>
@@ -58,7 +63,20 @@ export default function UserTooltip({ children, user }: UserTooltipProps) {
                 </div>
               </Linkify>
             )}
-            <FollowerCount userId={user.id} initialState={followerState} />
+            <div className="flex w-full">
+              <div className="flex flex-1 justify-center">
+                <span className="flex flex-col items-center">
+                  <span className="text-2xl font-semibold">
+                    {formatNumber(user._count.posts)}
+                  </span>
+                  Posts
+                </span>
+              </div>
+              <div className="flex flex-1 justify-center">
+                <ConnectionCount userId={user.id} username={user.username} initialState={connectionInfo} />
+                {/* <FollowerCount userId={user.id} username={user.username} initialState={followerInfo} /> */}
+              </div>
+            </div>
           </div>
         </TooltipContent>
       </Tooltip>

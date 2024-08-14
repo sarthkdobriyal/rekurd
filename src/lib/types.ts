@@ -28,7 +28,7 @@ export function getUserDataSelect(
         status: true,
       }
     },
-    receivedConnections:{
+    receivedConnections:{    
       select: {
         id: true,
         requesterId: true,

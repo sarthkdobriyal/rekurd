@@ -37,23 +37,25 @@ export async function GET(
         OR: [
           {
             recipientId: userId,
+            status: "CONNECTED",
           },
           {
             requesterId: userId,
+            status: "CONNECTED",
           }
         ]
       },
     });
 
-    console.log("connec", connection)
+    console.log("connec", totalConnections)
 
 
     const data: ConnectionInfo = {
       connections: totalConnections,
-      isUserConnected: connection && connection.status === 'CONNECTED',
+      isUserConnected: connection  && connection.status === 'CONNECTED',
       isConnectionPending: connection && connection.status === 'PENDING',
-      isLoggedInUserSender: connection && connection.recipientId === loggedInUser.id,
-      isLoggedInUserReciepient: connection && connection.requesterId === loggedInUser.id
+      isLoggedInUserSender: connection && connection.status === 'PENDING' && connection.recipientId === loggedInUser.id,
+      isLoggedInUserReciepient: connection && connection.status === 'PENDING' &&  connection.requesterId === loggedInUser.id
     };
     return Response.json(data);
   } catch (error) {

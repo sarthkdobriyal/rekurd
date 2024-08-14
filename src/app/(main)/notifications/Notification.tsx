@@ -61,7 +61,7 @@ export default async function Notification({ notification }: NotificationProps) 
         <div className="my-1">{icon}</div>
         <div className="space-y-3 ">
           <UserAvatar avatarUrl={notification.issuer.avatarUrl} size={36} />
-          <div className="flex gap-1">
+          <div className="flex gap-1 flex-wrap break-words ">
             <span className="font-bold">{notification.issuer.displayName}</span>{" "}
             <span>{message}</span>
           </div>
