@@ -1,8 +1,7 @@
 "use client";
 
-import useFollowerInfo from "@/hooks/useFollowerInfo";
 import kyInstance from "@/lib/ky";
-import { ConnectionInfo, FollowerInfo, UserData } from "@/lib/types";
+import { ConnectionInfo, UserData } from "@/lib/types";
 import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
@@ -42,7 +41,7 @@ export default function ConnectionButton({
   console.log(data, decision);
 
   const { mutate } = useMutation({
-    mutationFn: (decision) =>
+    mutationFn: (decision: string) =>
       data.isUserConnected
       ? kyInstance.delete(`/api/users/${userId}/connection`) :
       isLoggedInUserReciepient && decision !== "reject"
@@ -64,7 +63,7 @@ export default function ConnectionButton({
             : 0),
         isUserConnected:previousState?.isUserConnected ? !previousState?.isUserConnected : isLoggedInUserReciepient && decision !== "reject",
         isConnectionPending: !previousState?.isUserConnected && !previousState?.isConnectionPending,
-        isLoggedInUserReciepient: previousState?.isUserConnected ? false :  previousState?.isLoggedInUserReciepient && decision !=="reject",
+        isLoggedInUserReciepient: previousState?.isUserConnected ? false :  !!previousState?.isLoggedInUserReciepient && decision !=="reject",
         isLoggedInUserSender: !previousState?.isUserConnected && !previousState?.isLoggedInUserReciepient && !previousState?.isLoggedInUserSender,
       }));
 
@@ -72,7 +71,7 @@ export default function ConnectionButton({
     },
     onError(error, variables, context) {
       queryClient.setQueryData(queryKey, context?.previousState);
-      const errorMessage = error.response?.status === 400 ? "Connection already exists! Reload to accept/reject": "Something went wrong!"
+      const errorMessage = error.message.includes("400")  ? "Connection already exists! Reload to accept/reject": "Something went wrong!"
       
       toast({
         variant: "destructive",
@@ -94,7 +93,7 @@ export default function ConnectionButton({
             variant={"default"}
             onClick={() => {
               setDecision("accept");
-              mutate();
+              mutate("accept");
             }}
             className="bg-secondary"
           >
@@ -119,7 +118,7 @@ export default function ConnectionButton({
                 ? "outline"
                 : "default"
           }
-          onClick={() => mutate()}
+          onClick={() => mutate("")}
         >
           {isLoggedInUserSender && data.isConnectionPending ? (
             <div className="flex w-full items-center justify-between">

@@ -8,6 +8,10 @@ export default async function SetupProfilePage() {
 
     const {user:loggedInUser} = await validateRequest()
 
+    if(!loggedInUser){
+      return null
+    }
+
 
     const user = await prisma.user.findFirst({
       where: {
@@ -16,6 +20,10 @@ export default async function SetupProfilePage() {
       select: getUserDataSelect(loggedInUser.id, true)
     });
 
+
+    if(!user){
+      return null
+    }
       
 
     return (

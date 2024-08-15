@@ -1,15 +1,14 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Followers from "./Connections";
 import { cache } from "react";
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
-import { UserProfile } from "../page";
 import { get } from "http";
 import { getUserDataSelect } from "@/lib/types";
 import TrendsSidebar from "@/components/TrendsSidebar";
 import { ArrowLeft, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import Connections from "./Connections";
+import { notFound } from "next/navigation";
 
 interface PageProps {
   params: { username: string };

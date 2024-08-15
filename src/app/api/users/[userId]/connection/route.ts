@@ -1,7 +1,7 @@
 "use server";
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
-import { FollowerInfo } from "@/lib/types";
+import { ConnectionInfo } from "@/lib/types";
 
 export async function GET(
   request: Request,
@@ -15,7 +15,7 @@ export async function GET(
 
     const { userId } = params;
 
-    const connection = await prisma.connection.findUnique({
+    const connection = await prisma.connection.findFirst({
       where: {
         OR: [
           {
@@ -52,10 +52,10 @@ export async function GET(
 
     const data: ConnectionInfo = {
       connections: totalConnections,
-      isUserConnected: connection  && connection.status === 'CONNECTED',
-      isConnectionPending: connection && connection.status === 'PENDING',
-      isLoggedInUserSender: connection && connection.status === 'PENDING' && connection.recipientId === loggedInUser.id,
-      isLoggedInUserReciepient: connection && connection.status === 'PENDING' &&  connection.requesterId === loggedInUser.id
+      isUserConnected: connection?.status === 'CONNECTED',
+      isConnectionPending: connection?.status === 'PENDING',
+      isLoggedInUserSender:  connection?.status === 'PENDING' && connection.recipientId === loggedInUser.id,
+      isLoggedInUserReciepient:  connection?.status === 'PENDING' &&  connection.requesterId === loggedInUser.id
     };
     return Response.json(data);
   } catch (error) {

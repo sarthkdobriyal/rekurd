@@ -1,11 +1,9 @@
 "use client";
 
 import { useSession } from "@/app/(main)/SessionProvider";
-import { FollowerInfo, UserData } from "@/lib/types";
+import {  ConnectionInfo, UserData } from "@/lib/types";
 import Link from "next/link";
 import { PropsWithChildren } from "react";
-import FollowButton from "./FollowButton";
-import FollowerCount from "./FollowerCount";
 import Linkify from "./Linkify";
 import {
   Tooltip,
@@ -26,13 +24,41 @@ export default function UserTooltip({ children, user }: UserTooltipProps) {
   const { user: loggedInUser } = useSession();
 
 
-  const connectionInfo: ConnectionInfo = {
-    connections: user.sentConnections.concat(user.receivedConnections).reduce((count, conn) => conn.status === "CONNECTED" ? count + 1 : count, 0),
-    isUserConnected: user.sentConnections.concat(user.receivedConnections).some((conn) => conn.status === "CONNECTED" && (conn.recipientId === loggedInUser.id || conn.requesterId === loggedInUser.id)),
-    isConnectionPending: user.sentConnections.concat(user.receivedConnections).some(({ status }) => status === "PENDING"),
-    isLoggedInUserSender: user.receivedConnections.some(({ requesterId, status }) => status === "PENDING" && requesterId === loggedInUser.id ),
-    isLoggedInUserReciepient: user.sentConnections.some(({ recipientId, status }) => status === "PENDING" && recipientId === loggedInUser.id),
-  }
+  const totalConnections =
+  user.sentConnections.filter((conn) => conn.status === "CONNECTED").length +
+  user.receivedConnections.filter((conn) => conn.status === "CONNECTED")
+    .length;
+
+const connectionInfo: ConnectionInfo = {
+  connections: totalConnections,
+  isUserConnected:
+    user.sentConnections.some(
+      (conn) =>
+        conn.status === "CONNECTED" && conn.recipientId === loggedInUser.id,
+    ) ||
+    user.receivedConnections.some(
+      (conn) =>
+        conn.status === "CONNECTED" && conn.requesterId === loggedInUser.id,
+    ),
+  isConnectionPending:
+    user.sentConnections.some(
+      ({ status, recipientId }) =>
+        status === "PENDING" && recipientId === loggedInUser.id,
+    ) ||
+    user.receivedConnections.some(
+      ({ status, requesterId }) =>
+        status === "PENDING" && requesterId === loggedInUser.id,
+    ),
+  isLoggedInUserSender: user.receivedConnections.some(
+    ({ requesterId, status }) =>
+      status === "PENDING" && requesterId === loggedInUser.id,
+  ),
+  isLoggedInUserReciepient: user.sentConnections.some(
+    ({ recipientId, status }) =>
+      status === "PENDING" && recipientId === loggedInUser.id,
+  ),
+};
+
 
   return (
     <TooltipProvider>

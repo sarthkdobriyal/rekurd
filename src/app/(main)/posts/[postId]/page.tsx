@@ -1,11 +1,11 @@
 import { validateRequest } from '@/auth';
-import FollowButton from '@/components/FollowButton';
+import ConnectionButton from '@/components/ConnectionButton';
 import Linkify from '@/components/Linkify';
 import Post from '@/components/posts/Post';
 import UserAvatar from '@/components/UserAvatar';
 import UserTooltip from '@/components/UserTooltip';
 import prisma from '@/lib/prisma';
-import { getPostDataInclude, UserData } from '@/lib/types';
+import { ConnectionInfo, getPostDataInclude, UserData } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 import { Metadata } from 'next';
 import Link from 'next/link';
@@ -81,6 +81,19 @@ async function UserInfoSidebar({ user }: UserInfoSidebarProps) {
 
   if (!loggedInUser) return null;
 
+  const totalConnections = user.sentConnections.filter((conn) => conn.status === "CONNECTED").length + user.receivedConnections.filter((conn) => conn.status === "CONNECTED").length
+
+  const connectionInfo: ConnectionInfo = {
+    connections: totalConnections,
+    isUserConnected: user.sentConnections.some((conn) => conn.status === "CONNECTED" && (conn.recipientId === loggedInUser.id)) ||
+                 user.receivedConnections.some((conn) => conn.status === "CONNECTED" && (conn.requesterId === loggedInUser.id)),
+    isConnectionPending:user.sentConnections.some(({ status, recipientId }) => status === "PENDING" && recipientId=== loggedInUser.id) ||
+user.receivedConnections.some(({ status, requesterId }) => status === "PENDING" && requesterId === loggedInUser.id),
+    isLoggedInUserSender: user.receivedConnections.some(({ requesterId, status }) => status === "PENDING" && requesterId === loggedInUser.id ),
+    isLoggedInUserReciepient: user.sentConnections.some(({ recipientId, status }) => status === "PENDING" && recipientId === loggedInUser.id),
+  }
+
+
   return (
     <div className="space-y-5 rounded-2xl bg-card p-5 shadow-sm">
       <div className="text-xl font-bold">About this user</div>
@@ -106,15 +119,7 @@ async function UserInfoSidebar({ user }: UserInfoSidebarProps) {
         </div>
       </Linkify>
       {user.id !== loggedInUser.id && (
-        <FollowButton
-          userId={user.id}
-          initialState={{
-            followers: user._count.followers,
-            isFollowedByUser: user.followers.some(
-              ({ followerId }) => followerId === loggedInUser.id,
-            ),
-          }}
-        />
+        <ConnectionButton  userId={user.id} initialState={connectionInfo} />
       )}
     </div>
   );

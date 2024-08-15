@@ -1,7 +1,6 @@
 "use client";
 
 import useConnectionInfo from "@/hooks/useConnectionInfo";
-import useFollowerInfo from "@/hooks/useFollowerInfo";
 import { ConnectionInfo } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
 import Link from "next/link";
@@ -16,7 +15,7 @@ export default function ConnectionCount({
   userId,
   username,
   initialState,
-}: FollowerCountProps) {
+}: ConnectionCountProps) {
   const { data } = useConnectionInfo(userId, initialState);
 
   return (

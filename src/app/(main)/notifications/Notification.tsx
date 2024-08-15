@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import { NotificationType } from "@prisma/client";
 import { ArrowUpRight, Heart, MessageCircle, User2 } from "lucide-react";
 import Link from "next/link";
-import AcceptJamRequestButton from "./AcceptJamRequestButton";
 import useConnectionInfo from "@/hooks/useConnectionInfo";
 import { cache } from "react";
 import { validateRequest } from "@/auth";
