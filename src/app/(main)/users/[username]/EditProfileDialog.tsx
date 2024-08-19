@@ -56,7 +56,6 @@ export default function EditProfileDialog({
     },
   });
 
-  console.log(user)
   const mutation = useUpdateProfileMutation();
 
   const [croppedAvatar, setCroppedAvatar] = useState<Blob | null>(null);
