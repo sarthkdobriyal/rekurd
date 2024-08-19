@@ -50,7 +50,7 @@ async function Artists() {
       !discoverUsers.length ? <div>No users to follow</div> :
       
       discoverUsers.map((user) => (
-        <div key={user.id} className="flex items-center justify-between gap-3 hover:bg-zinc-900  px-5 py-3 rounded-lg">
+        <div key={user.id} className="flex items-center justify-between gap-3 hover:bg-card  px-5 py-3 rounded-lg">
           <UserTooltip user={user}>
             <Link
               href={`/users/${user.username}`}
