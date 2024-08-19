@@ -11,7 +11,7 @@ export default function Navbar() {
           <span className="text-3xl font-light italic">reKurd.</span>
         </Link>
         <div className="flex gap-2">
-          <SearchField />
+          {/* <SearchField /> */}
           <UserButton />
         </div>
       </div>

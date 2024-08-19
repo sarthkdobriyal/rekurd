@@ -1,7 +1,7 @@
 import { validateRequest } from "@/auth";
 import { Button } from "@/components/ui/button";
 import prisma from "@/lib/prisma";
-import { Bookmark, Home } from "lucide-react";
+import { Bookmark, Home, UserRoundSearch } from "lucide-react";
 import Link from "next/link";
 import MessagesButton from "../../components/MessagesButton";
 import NotificationsButton from "./NotificationsButton";
@@ -41,7 +41,20 @@ export default async function MenuBar({ className }: MenuBarProps) {
       <NotificationsButton
         initialState={{ unreadCount: unreadNotificationsCount }}
       />
-      <MessagesButton initialState={{ unreadCount: unreadMessagesCount }} />
+      {/* <MessagesButton initialState={{ unreadCount: unreadMessagesCount }} /> */}
+
+      <Button
+        variant="ghost"
+        className="flex items-center justify-start gap-3"
+        title="Bookmarks"
+        asChild
+      >
+        <Link href="/discover">
+          <UserRoundSearch />
+          <span className="hidden lg:inline">Discover</span>
+        </Link>
+      </Button>
+
       <Button
         variant="ghost"
         className="flex items-center justify-start gap-3"
