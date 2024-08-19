@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ReactQueryProvider from "./ReactQueryProvider";
@@ -18,12 +18,49 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
 });
 
+const APP_NAME = "reKurd.";
+const APP_DEFAULT_TITLE = "reKurd.";
+const APP_TITLE_TEMPLATE = "%s | reKurd.";
+const APP_DESCRIPTION = "The social media app for musicians";
+
 export const metadata: Metadata = {
+  applicationName: APP_NAME,
   title: {
     template: "%s | reKurd.",
     default: "reKurd.",
   },
   description: "The social media app for musicians",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: APP_DEFAULT_TITLE,
+    // startUpImage: [],
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    siteName: APP_NAME,
+    title: {
+      default: APP_DEFAULT_TITLE,
+      template: APP_TITLE_TEMPLATE,
+    },
+    description: APP_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary",
+    title: {
+      default: APP_DEFAULT_TITLE,
+      template: APP_TITLE_TEMPLATE,
+    },
+    description: APP_DESCRIPTION,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#FFFFFF",
 };
 
 export default function RootLayout({
