@@ -223,6 +223,17 @@ model Notification {
   @@map("notifications")
 }
 
+model Instruments {
+  id   String @id @default(cuid())
+  name String
+  category String
+}
+model Genres {
+  id   String @id @default(cuid())
+  genre String
+  subgenre String
+}
+
 enum NotificationType {
   LIKE
   FOLLOW
