@@ -60,10 +60,23 @@ import {
   MultiSelectorList,
   MultiSelectorTrigger,
 } from "@/components/ui/MultiSelector";
+import { useToast } from "@/components/ui/use-toast";
 
 interface SetupProfileFormProps {
   user: UserData;
 }
+
+const GEOCODING_API = process.env.NEXT_PUBLIC_GEOCODING_API;
+
+type GeoapifyResponse = {
+  features: Array<{
+    properties: {
+      city: string;
+      country: string;
+    };
+  }>;
+};
+
 
 export default function SetupProfileForm({ user }: SetupProfileFormProps) {
   const form = useForm<UpdateUserProfileValues>({
@@ -98,8 +111,11 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
 
   const router = useRouter();
   const [croppedAvatar, setCroppedAvatar] = useState<Blob | null>(null);
+  const [isLocationLoading, setIsLocationLoading] = useState(false);
 
   const mutation = useUpdateProfileMutation();
+
+  const {toast} = useToast();
 
   function onSubmit(values: UpdateUserProfileValues) {
     const newAvatarFile = croppedAvatar
@@ -119,6 +135,43 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
       },
     );
   }
+  const getCityUsingLocation = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setIsLocationLoading(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const response = await kyInstance.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&apiKey=${GEOCODING_API}`).json<GeoapifyResponse>();
+          const city = response.features[0].properties.city;
+          const country = response.features[0].properties.country;
+          form.setValue('userContact.city', city);
+          form.setValue('userContact.country', country);
+        } catch (error) {
+          console.error('Error fetching city:', error);
+          toast({
+            title: 'Error fetching city',
+            description: 'Please enter your city manually.',
+            variant: "destructive",
+          });
+        } finally {
+          setIsLocationLoading(false);
+        }
+      }, (error) => {
+        console.error('Geolocation error:', error);
+        toast({
+          title: 'Error fetching city',
+          description: 'Please enter your city manually.',
+          variant: "destructive",
+        });
+        setIsLocationLoading(false);
+      });
+    } else {
+      alert('Geolocation is not supported by this browser. Please enter your city manually.');
+      setIsLocationLoading(false);
+    }
+  };
+
 
   const results = useQueries({
     queries: [
@@ -148,9 +201,6 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
   const isLoadingGenres = results[1].isLoading;
   const genres = results[1].data?.genres;
 
-  console.log(results[0]);
-
-  // You can now use isLoadingInstruments and isLoadingGenres to handle loading states in your UI
 
   return (
     <div className="flex flex-col gap-4 py-3 pb-24">
@@ -364,7 +414,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
                       values={field.value?.map((instrument) => instrument)!}
                     >
                       <MultiSelectorTrigger>
-                        <MultiSelectorInput placeholder={`${isLoadingInstruments ? "" : "Choose instruments"}`} />
+                        <MultiSelectorInput placeholder={`${isLoadingInstruments ? "" : "Search instruments"}`} />
                         {isLoadingInstruments && (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         )}
@@ -407,7 +457,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
                       values={field.value?.map((genre) => genre)!}
                     >
                       <MultiSelectorTrigger>
-                        <MultiSelectorInput placeholder={`${isLoadingGenres ? "" : "Type here"}`} />
+                        <MultiSelectorInput placeholder={`${isLoadingGenres ? "" : "Search Genres"}`} />
                         {isLoadingGenres && (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         )}
@@ -539,7 +589,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
               <FormItem>
                 <FormLabel>Country</FormLabel>
                 <FormControl>
-                  <Input placeholder="India" {...field} />
+                  <Input placeholder="Enter automatically using button below" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -552,9 +602,10 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
               <FormItem>
                 <FormLabel>City</FormLabel>
                 <FormControl>
-                  <Input placeholder="For eg- Dehradun" {...field} />
+                  <Input placeholder="Enter automatically using button below" {...field} />
                 </FormControl>
                 <FormMessage />
+                  <LoadingButton onClick={(e) => getCityUsingLocation(e)} loading={isLocationLoading} className="bg-secondary" >Enter Location</LoadingButton> 
               </FormItem>
             )}
           />
