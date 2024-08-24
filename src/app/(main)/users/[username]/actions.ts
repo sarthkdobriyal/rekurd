@@ -43,13 +43,14 @@ export async function updateUserProfile(values: UpdateUserProfileValues) {
       update: {
         ...musicalInfoData,
         primaryInstrument: {
-          connect: { id: musicalInfo.primaryInstrument.id },
+          connect: { id: musicalInfo.primaryInstrument?.id },
         },
       },
+      // @ts-ignore
       create: {
         ...musicalInfoData,
         primaryInstrument: {
-          connect: { id: musicalInfo.primaryInstrument.id },
+          connect: { id: musicalInfo.primaryInstrument?.id },
         },
         user: {
           connect: { id: user.id },
