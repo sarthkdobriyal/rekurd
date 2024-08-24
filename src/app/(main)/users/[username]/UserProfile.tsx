@@ -51,8 +51,6 @@ export default function UserProfile({
     ),
   };
 
- 
-
   return (
     <div className="h-fit w-full space-y-5 rounded-2xl bg-card px-5 py-5 shadow-sm">
       <div className="flex items-center justify-between">
@@ -122,7 +120,7 @@ export default function UserProfile({
             <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
               Primary Instrument:
             </span>{" "}
-            {user.musicalInfo.primaryInstrument}
+            {user.musicalInfo.primaryInstrument.name}
           </p>
           {user.musicalInfo.instruments && (
             <p className="mb-2 text-lg italic">
@@ -130,7 +128,7 @@ export default function UserProfile({
               <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
                 Other Instruments:
               </span>{" "}
-              {user.musicalInfo.instruments}
+              {user.musicalInfo.instruments.join(", ")}
             </p>
           )}
           <p className="mb-2 text-lg italic">

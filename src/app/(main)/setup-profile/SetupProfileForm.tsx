@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, cache } from "react";
 import { AvatarInput } from "../users/[username]/EditProfileDialog";
 import {
   Form,
@@ -25,7 +25,41 @@ import { UserData } from "@/lib/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/navigation";
-import avatarPlaceholder from '@/assets/avatar-placeholder.png';
+import avatarPlaceholder from "@/assets/avatar-placeholder.png";
+import kyInstance from "@/lib/ky";
+import { useQuery } from "@tanstack/react-query";
+import { Instrument } from "@prisma/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  MultiSelector,
+  MultiSelectorContent,
+  MultiSelectorInput,
+  MultiSelectorItem,
+  MultiSelectorList,
+  MultiSelectorTrigger,
+} from "@/components/ui/MultiSelector";
 
 interface SetupProfileFormProps {
   user: UserData;
@@ -42,10 +76,14 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
       musicalInfo: {
         bio: user.musicalInfo?.bio || "",
         genres: user.musicalInfo?.genres || "",
-        primaryInstrument: user.musicalInfo?.primaryInstrument || "",
-        instruments: user.musicalInfo?.instruments || "",
-        interestedInLearning: user.musicalInfo?.interestedInLearning || false ,
-        interestedInTutoring: user.musicalInfo?.interestedInTutoring  || false,
+        primaryInstrument: user.musicalInfo?.primaryInstrument || {
+          id: "",
+          name: "",
+          category: "",
+        },
+        instruments: user.musicalInfo?.instruments  || [],
+        interestedInLearning: user.musicalInfo?.interestedInLearning || false,
+        interestedInTutoring: user.musicalInfo?.interestedInTutoring || false,
         title: user.musicalInfo?.title || "",
         yearsOfExperience: user.musicalInfo?.yearsOfExperience || "",
       },
@@ -58,16 +96,15 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
     },
   });
 
-  const router = useRouter(); 
+  const router = useRouter();
   const [croppedAvatar, setCroppedAvatar] = useState<Blob | null>(null);
 
   const mutation = useUpdateProfileMutation();
 
-   function onSubmit(values: UpdateUserProfileValues) {
+  function onSubmit(values: UpdateUserProfileValues) {
     const newAvatarFile = croppedAvatar
       ? new File([croppedAvatar], `avatar_${user.id}.webp`)
       : undefined;
-
 
     mutation.mutate(
       {
@@ -82,6 +119,21 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
       },
     );
   }
+
+  const {
+    data: instruments,
+    isLoading: isLoadingInstruments,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["instruments"],
+    queryFn: () => kyInstance.get(`/api/instruments`).json<{
+      instruments: Instrument[];
+      count: number;
+    }>(),
+    staleTime: Infinity,
+  });
+
+  console.log(instruments);
 
   return (
     <div className="flex flex-col gap-4 py-3 pb-24">
@@ -103,9 +155,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
           <FormField
             control={form.control}
             name="displayName"
-            render={({ field }) => 
-              
-              (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Display name</FormLabel>
                 <FormControl>
@@ -210,18 +260,68 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
           <FormField
             control={form.control}
             name="musicalInfo.primaryInstrument"
-            render={({ field }) => {
-              return(
-              <FormItem>
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
                 <FormLabel>
                   What&apos;s your favorite musical instrument to jam on?
                 </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Your top musical instrument here"
-                    {...field}
-                  />
-                </FormControl>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          "justify-between",
+                          !field.value.name && "text-muted-foreground",
+                        )}
+                      >
+                        {isLoadingInstruments ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> // Render spinner while loading
+                        ) : field.value.name ? (
+                          instruments?.instruments.find(
+                            (instrument) => instrument.name === field.value.name,
+                          )?.name
+                        ) : (
+                          "Choose Your Instrument"
+                        )}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0">
+                    <Command>
+                      <CommandInput placeholder="Search instrument..." />
+                      <CommandList>
+                        <CommandEmpty>No Instrument found.</CommandEmpty>
+                        <CommandGroup>
+                          {instruments?.instruments.map((instrument) => (
+                            <CommandItem
+                              value={instrument.name}
+                              key={instrument.id}
+                              onSelect={() => {
+                                form.setValue(
+                                  "musicalInfo.primaryInstrument",
+                                  instrument,
+                                );
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  instrument.name === field.value.name
+                                    ? "opacity-100"
+                                    : "opacity-0",
+                                )}
+                              />
+                              {instrument.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 <FormDescription>
                   If you&apos;re still finding your groove, let us know which
                   instrument you love and which one you&apos;re excited to try
@@ -229,18 +329,41 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
                 </FormDescription>
                 <FormMessage />
               </FormItem>
-            )}}
+            )}
           />
-          <FormField
+           <FormField
             control={form.control}
             name="musicalInfo.instruments"
-            render={({ field }) => (
+            render={({ field }) => {
+              console.log("multi", field.value); 
+              return(
               <FormItem>
                 <FormLabel>
                   What other instruments are you eyeing to jam with?
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="List here" {...field} />
+                  {/* <Input placeholder="List here" {...field} /> */}
+                  <MultiSelector
+                    onValuesChange={field.onChange} 
+                    // @ts-ignore
+                    values={field.value?.map((instrument) => instrument)}
+                  >
+                    <MultiSelectorTrigger>
+                      <MultiSelectorInput placeholder="Choose instruments" />
+                    </MultiSelectorTrigger>
+                    <MultiSelectorContent>
+                      <MultiSelectorList>
+                        {instruments?.instruments.map((option, i) => (
+                          <MultiSelectorItem
+                            key={option.id}
+                            value={option.name}
+                          >
+                            {option.name}
+                          </MultiSelectorItem>
+                        ))}
+                      </MultiSelectorList>
+                    </MultiSelectorContent>
+                  </MultiSelector>
                 </FormControl>
                 <FormDescription>
                   Feel free to leave it blank if you&apos;re just jamming with
@@ -248,8 +371,10 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
                 </FormDescription>
                 <FormMessage />
               </FormItem>
-            )}
+            )}}
           />
+         
+
           <FormField
             control={form.control}
             name="musicalInfo.genres"
@@ -273,24 +398,24 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
             control={form.control}
             name="musicalInfo.interestedInTutoring"
             render={({ field }) => {
-              return(
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-                <FormControl>
-                  <Checkbox
-                    
-                    checked={field.value}
-                  onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Ready to share your musical wisdom?</FormLabel>
-                  <FormDescription>
-                    Check this if you’re open to tutoring and helping fellow
-                    musicians grow!
-                  </FormDescription>
-                </div>
-              </FormItem>
-            )}}
+              return (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Ready to share your musical wisdom?</FormLabel>
+                    <FormDescription>
+                      Check this if you’re open to tutoring and helping fellow
+                      musicians grow!
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              );
+            }}
           />
           <FormField
             control={form.control}
@@ -300,7 +425,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
                 <FormControl>
                   <Checkbox
                     checked={field.value}
-                  onCheckedChange={field.onChange}
+                    onCheckedChange={field.onChange}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">

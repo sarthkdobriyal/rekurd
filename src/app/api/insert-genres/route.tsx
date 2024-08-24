@@ -28,7 +28,7 @@ export const POST = async (req: Request): Promise<Response> => {
           // console.log('Genres:', Genres);
         // Insert data into the database
         try {
-          await prisma.genres.createMany({
+          await prisma.genre.createMany({
             data: Genres,
           });
           console.log('Genres inserted successfully');

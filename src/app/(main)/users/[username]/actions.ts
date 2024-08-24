@@ -32,14 +32,29 @@ export async function updateUserProfile(values: UpdateUserProfileValues) {
         create: { ...userContact, userId: user.id }, // Ensure userId is set for creation
       });
     }
-  
+    
+    console.log(musicalInfo);
 
   // Update MusicalInfo model
   if (musicalInfo) {
+    const { primaryInstrument, ...musicalInfoData } = musicalInfo;
     await prisma.musicalInfo.upsert({
       where: { userId: user.id },
-      create: { ...musicalInfo, userId: user.id }, // Ensure userId is set for creation
-      update: musicalInfo,
+      update: {
+        ...musicalInfoData,
+        primaryInstrument: {
+          connect: { id: musicalInfo.primaryInstrument.id },
+        },
+      },
+      create: {
+        ...musicalInfoData,
+        primaryInstrument: {
+          connect: { id: musicalInfo.primaryInstrument.id },
+        },
+        user: {
+          connect: { id: user.id },
+        },
+      },
     });
   }
     

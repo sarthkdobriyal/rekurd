@@ -103,20 +103,22 @@ model SocialLink {
 }
 
 model MusicalInfo {
-  id                   String   @id @default(cuid())
+  id                   String     @id @default(cuid())
   userId               String
-  user                 User     @relation(fields: [userId], references: [id])
+  user                 User       @relation(fields: [userId], references: [id])
   yearsOfExperience    String
   title                String
   genres               String?
-  instruments          String?
-  primaryInstrument    String?
+  instruments          String[]
+  primaryInstrumentId  String
+  primaryInstrument    Instrument @relation(fields: [primaryInstrumentId], references: [id])
   bio                  String?
   interestedInTutoring Boolean?
   interestedInLearning Boolean?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
 
   @@unique([userId])
   @@map("musical_info")
@@ -223,14 +225,16 @@ model Notification {
   @@map("notifications")
 }
 
-model Instruments {
-  id   String @id @default(cuid())
-  name String
-  category String
+model Instrument {
+  id           String        @id @default(cuid())
+  name         String
+  category     String
+  MusicalInfo  MusicalInfo[]
 }
-model Genres {
-  id   String @id @default(cuid())
-  genre String
+
+model Genre {
+  id       String @id @default(cuid())
+  genre    String
   subgenre String
 }
 
