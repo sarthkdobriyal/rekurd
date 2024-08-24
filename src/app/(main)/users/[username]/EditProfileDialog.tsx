@@ -76,6 +76,9 @@ export default function EditProfileDialog({
           setCroppedAvatar(null);
           onOpenChange(false);
         },
+        onError: (error) => {
+          console.error(error);
+        }
       },
     );
   }

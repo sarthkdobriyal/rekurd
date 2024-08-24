@@ -136,7 +136,7 @@ export default function UserProfile({
             <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
               Genres:
             </span>{" "}
-            {user.musicalInfo.genres}
+            {user.musicalInfo.genres.join(", ")}
           </p>
           <div className="mb-4 text-lg italic">
             🎤{" "}

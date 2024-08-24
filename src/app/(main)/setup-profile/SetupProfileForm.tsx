@@ -75,7 +75,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
       email: user.email || "",
       musicalInfo: {
         bio: user.musicalInfo?.bio || "",
-        genres: user.musicalInfo?.genres || "",
+        genres: user.musicalInfo?.genres || [],
         primaryInstrument: user.musicalInfo?.primaryInstrument || {
           id: "",
           name: "",
@@ -290,15 +290,15 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
                         role="combobox"
                         className={cn(
                           "justify-between",
-                          !field.value.name && "text-muted-foreground",
+                          !field.value?.name && "text-muted-foreground",
                         )}
                       >
                         {isLoadingInstruments ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" /> // Render spinner while loading
-                        ) : field.value.name ? (
+                        ) : field.value?.name ? (
                           instruments?.find(
                             (instrument) =>
-                              instrument.name === field.value.name,
+                              instrument.name === field.value?.name,
                           )?.name
                         ) : (
                           "Choose Your Instrument"
@@ -327,7 +327,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
                               <Check
                                 className={cn(
                                   "mr-2 h-4 w-4",
-                                  instrument.name === field.value.name
+                                  instrument.name === field.value?.name
                                     ? "opacity-100"
                                     : "opacity-0",
                                 )}
@@ -392,25 +392,47 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
               );
             }}
           />
-
-          <FormField
+            <FormField
             control={form.control}
             name="musicalInfo.genres"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>What genres set your soul on fire?</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Drop your favorite genres here, separated by commas"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>
+                  What genres set your soul on fire?
+                  </FormLabel>
+                  <FormControl>
+                    <MultiSelector
+                      onValuesChange={field.onChange}
+                      values={field.value?.map((genre) => genre)!}
+                    >
+                      <MultiSelectorTrigger>
+                        <MultiSelectorInput placeholder={`${isLoadingGenres ? "" : "Type here"}`} />
+                        {isLoadingGenres && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                      </MultiSelectorTrigger>
+                      <MultiSelectorContent>
+                        <MultiSelectorList>
+                          {genres?.map((option) => (
+                            <MultiSelectorItem
+                              key={option.id}
+                              value={option.subgenre}
+                            >
+                              {option.subgenre}
+                            </MultiSelectorItem>
+                          ))}
+                        </MultiSelectorList>
+                      </MultiSelectorContent>
+                    </MultiSelector>
+                  </FormControl>
+                  <FormDescription>
                   Help us feel your musical groove!
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
           <FormField
             control={form.control}

@@ -108,7 +108,7 @@ model MusicalInfo {
   user                 User       @relation(fields: [userId], references: [id])
   yearsOfExperience    String
   title                String
-  genres               String?
+  genres               String[]
   instruments          String[]
   primaryInstrumentId  String
   primaryInstrument    Instrument @relation(fields: [primaryInstrumentId], references: [id])
@@ -116,9 +116,8 @@ model MusicalInfo {
   interestedInTutoring Boolean?
   interestedInLearning Boolean?
 
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId])
   @@map("musical_info")
@@ -226,16 +225,17 @@ model Notification {
 }
 
 model Instrument {
-  id           String        @id @default(cuid())
-  name         String
-  category     String
-  MusicalInfo  MusicalInfo[]
+  id          String        @id @default(cuid())
+  name        String
+  category    String
+  MusicalInfo MusicalInfo[]
 }
 
 model Genre {
-  id       String @id @default(cuid())
-  genre    String
-  subgenre String
+  id            String       @id @default(cuid())
+  genre         String
+  subgenre      String
+  
 }
 
 enum NotificationType {

@@ -37,14 +37,14 @@ export const userContactSchema = z.object({
 export type UserContactValues = z.infer<typeof userContactSchema>;
 
 export const musicalInfoSchema = z.object({
-  yearsOfExperience: z.string(),
-  title: requiredString,
-  genres: z.string().optional(),
+  yearsOfExperience: z.string().optional(),
+  title: z.string().optional(),
+  genres: z.array(z.string()).optional(),
   primaryInstrument: z.object({
     id: z.string(),
     name: z.string(),
     category: z.string(),
-  }),
+  }).optional(),
   instruments: z.array(z.string()).optional(),
   bio: z.string().max(10000, "Must be at most 10000 characters").optional(),
   interestedInTutoring: z.boolean().optional(),
@@ -64,8 +64,8 @@ export const updateUserProfileSchema = z.object({
     /^[a-zA-Z0-9_-]+$/,
     "Only letters, numbers, - and _ allowed",
   ),
-  musicalInfo: musicalInfoSchema,
-  userContact: userContactSchema,
+  musicalInfo: musicalInfoSchema || null,
+  userContact: userContactSchema || null,
 });
 
 
