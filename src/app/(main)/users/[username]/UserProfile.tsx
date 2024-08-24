@@ -108,39 +108,42 @@ export default function UserProfile({
             {user.musicalInfo.title}
           </p>
           <p className="mb-2 text-lg italic">
-            🎶{" "}
-            <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
-              Experience:
-            </span>{" "}
+            
             {user.musicalInfo.yearsOfExperience} Years of{" "}
-            {user.musicalInfo.genres} Mastery
+            {user.musicalInfo.primaryInstrument.name} Mastery
           </p>
-          <p className="mb-2 text-lg italic">
+          {/* <p className="mb-2 text-lg italic">
             🎷{" "}
             <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
               Primary Instrument:
             </span>{" "}
             {user.musicalInfo.primaryInstrument.name}
-          </p>
+          </p> */}
           {user.musicalInfo.instruments && (
-            <p className="mb-2 text-lg italic">
-              🥁{" "}
+            <div className="mb-2 flex flex-col gap-1 text-lg italic">
+              
               <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
-                Other Instruments:
-              </span>{" "}
+              Also Plays 
+              </span>
+              <span className="">
               {user.musicalInfo.instruments.join(", ")}
-            </p>
+              </span>
+            </div>
           )}
-          <p className="mb-2 text-lg italic">
-            🎼{" "}
+          {
+            user.musicalInfo.genres
+             && <div className="mb-2 flex flex-col gap-1 text-lg italic">
             <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
+            🎼{" "}
               Genres:
             </span>{" "}
+            <span>
             {user.musicalInfo.genres.join(", ")}
-          </p>
-          <div className="mb-4 text-lg italic">
-            🎤{" "}
+            </span>
+          </div>}
+           { user.musicalInfo.bio && <div className="mb-4 flex flex-col gap-1 text-lg italic">
             <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
+            🎤{" "}
               Musical Journey:
             </span>
             <Linkify>
@@ -148,7 +151,7 @@ export default function UserProfile({
                 {user.musicalInfo.bio}
               </p>
             </Linkify>
-          </div>
+          </div>}
           {user.musicalInfo.interestedInLearning && (
             <p className="mb-2 text-lg italic text-green-600">
               📚 Available to jam and learn from fellow musicians
@@ -177,3 +180,5 @@ export default function UserProfile({
     </div>
   );
 }
+
+
