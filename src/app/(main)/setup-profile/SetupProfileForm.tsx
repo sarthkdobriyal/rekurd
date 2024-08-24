@@ -27,8 +27,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/navigation";
 import avatarPlaceholder from "@/assets/avatar-placeholder.png";
 import kyInstance from "@/lib/ky";
-import { useQuery } from "@tanstack/react-query";
-import { Instrument } from "@prisma/client";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import { Genre, Instrument } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -81,7 +81,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
           name: "",
           category: "",
         },
-        instruments: user.musicalInfo?.instruments  || [],
+        instruments: user.musicalInfo?.instruments || [],
         interestedInLearning: user.musicalInfo?.interestedInLearning || false,
         interestedInTutoring: user.musicalInfo?.interestedInTutoring || false,
         title: user.musicalInfo?.title || "",
@@ -120,20 +120,37 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
     );
   }
 
-  const {
-    data: instruments,
-    isLoading: isLoadingInstruments,
-    isSuccess,
-  } = useQuery({
-    queryKey: ["instruments"],
-    queryFn: () => kyInstance.get(`/api/instruments`).json<{
-      instruments: Instrument[];
-      count: number;
-    }>(),
-    staleTime: Infinity,
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: ["instruments"],
+        queryFn: () =>
+          kyInstance.get(`/api/instruments`).json<{
+            instruments: Instrument[];
+            count: number;
+          }>(),
+        staleTime: Infinity,
+      },
+      {
+        queryKey: ["genres"],
+        queryFn: () =>
+          kyInstance.get(`/api/genres`).json<{
+            genres: Genre[];
+            count: number;
+          }>(),
+        staleTime: Infinity,
+      },
+    ],
   });
 
-  console.log(instruments);
+  const isLoadingInstruments = results[0].isLoading;
+  const instruments = results[0].data?.instruments;
+  const isLoadingGenres = results[1].isLoading;
+  const genres = results[1].data?.genres;
+
+  console.log(results[0]);
+
+  // You can now use isLoadingInstruments and isLoadingGenres to handle loading states in your UI
 
   return (
     <div className="flex flex-col gap-4 py-3 pb-24">
@@ -279,8 +296,9 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
                         {isLoadingInstruments ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" /> // Render spinner while loading
                         ) : field.value.name ? (
-                          instruments?.instruments.find(
-                            (instrument) => instrument.name === field.value.name,
+                          instruments?.find(
+                            (instrument) =>
+                              instrument.name === field.value.name,
                           )?.name
                         ) : (
                           "Choose Your Instrument"
@@ -295,7 +313,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
                       <CommandList>
                         <CommandEmpty>No Instrument found.</CommandEmpty>
                         <CommandGroup>
-                          {instruments?.instruments.map((instrument) => (
+                          {instruments?.map((instrument) => (
                             <CommandItem
                               value={instrument.name}
                               key={instrument.id}
@@ -331,49 +349,49 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
               </FormItem>
             )}
           />
-           <FormField
+          <FormField
             control={form.control}
             name="musicalInfo.instruments"
             render={({ field }) => {
-              console.log("multi", field.value); 
-              return(
-              <FormItem>
-                <FormLabel>
-                  What other instruments are you eyeing to jam with?
-                </FormLabel>
-                <FormControl>
-                  {/* <Input placeholder="List here" {...field} /> */}
-                  <MultiSelector
-                    onValuesChange={field.onChange} 
-                    // @ts-ignore
-                    values={field.value?.map((instrument) => instrument)}
-                  >
-                    <MultiSelectorTrigger>
-                      <MultiSelectorInput placeholder="Choose instruments" />
-                    </MultiSelectorTrigger>
-                    <MultiSelectorContent>
-                      <MultiSelectorList>
-                        {instruments?.instruments.map((option, i) => (
-                          <MultiSelectorItem
-                            key={option.id}
-                            value={option.name}
-                          >
-                            {option.name}
-                          </MultiSelectorItem>
-                        ))}
-                      </MultiSelectorList>
-                    </MultiSelectorContent>
-                  </MultiSelector>
-                </FormControl>
-                <FormDescription>
-                  Feel free to leave it blank if you&apos;re just jamming with
-                  what you have!
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}}
+              return (
+                <FormItem>
+                  <FormLabel>
+                    What other instruments are you eyeing to jam with?
+                  </FormLabel>
+                  <FormControl>
+                    <MultiSelector
+                      onValuesChange={field.onChange}
+                      values={field.value?.map((instrument) => instrument)!}
+                    >
+                      <MultiSelectorTrigger>
+                        <MultiSelectorInput placeholder={`${isLoadingInstruments ? "" : "Choose instruments"}`} />
+                        {isLoadingInstruments && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                      </MultiSelectorTrigger>
+                      <MultiSelectorContent>
+                        <MultiSelectorList>
+                          {instruments?.map((option) => (
+                            <MultiSelectorItem
+                              key={option.id}
+                              value={option.name}
+                            >
+                              {option.name}
+                            </MultiSelectorItem>
+                          ))}
+                        </MultiSelectorList>
+                      </MultiSelectorContent>
+                    </MultiSelector>
+                  </FormControl>
+                  <FormDescription>
+                    Feel free to leave it blank if you&apos;re just jamming with
+                    what you have!
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
-         
 
           <FormField
             control={form.control}
