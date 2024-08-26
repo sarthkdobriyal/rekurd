@@ -5,11 +5,11 @@ import { ConnectionInfo, getUserDataSelect, UserData } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
 import { formatDate } from "date-fns";
 import { notFound } from "next/navigation";
-import { cache } from "react";
+import { cache, lazy, Suspense } from "react";
 import EditProfileButton from "./EditProfileButton";
 import TrendsSidebar from "@/components/TrendsSidebar";
-import { User } from "lucide-react";
-import UserPosts from "./UserPosts";
+import { Loader2, User } from "lucide-react";
+
 import { Metadata } from "next";
 import { get } from "http";
 import Linkify from "@/components/Linkify";
@@ -18,10 +18,13 @@ import { connect } from 'http2';
 import ConnectionButton from "@/components/ConnectionButton";
 import ConnectionCount from "@/components/ConnectionCount";
 import UserProfile from "./UserProfile";
+import PostsLoadingSkeleton from "@/components/posts/PostsLoadingSkeleton";
 
 interface PageProps {
   params: { username: string };
 }
+
+const UserPosts = lazy(() => import('./UserPosts'));
 
 const getUser = cache(async (username: string, loggedInUserId: string) => {
   const user = await prisma.user.findFirst({
@@ -75,7 +78,9 @@ export default async function Page({ params: { username } }: PageProps) {
             {user.displayName}&apos;s posts
           </h2>
         </div>
+        <Suspense fallback={<PostsLoadingSkeleton />}>
         <UserPosts userId={user.id} />
+      </Suspense>
       </div>
       <TrendsSidebar />
     </main>

@@ -33,10 +33,9 @@ export async function updateUserProfile(values: UpdateUserProfileValues) {
       });
     }
     
-    console.log(musicalInfo);
 
   // Update MusicalInfo model
-  if (musicalInfo) {
+  if (musicalInfo.yearsOfExperience) {
     const { primaryInstrument, ...musicalInfoData } = musicalInfo;
     await prisma.musicalInfo.upsert({
       where: { userId: user.id },

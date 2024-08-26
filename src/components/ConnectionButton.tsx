@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 import { connect } from "http2";
 import useConnectionInfo from "@/hooks/useConnectionInfo";
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { useSession } from "@/app/(main)/SessionProvider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -31,14 +31,13 @@ export default function ConnectionButton({
 
   const [decision, setDecision] = useState("");
 
-  const { data } = useConnectionInfo(userId, initialState);
+  const { data, isLoading: isConnectionInfoLoading } = useConnectionInfo(userId, initialState);
 
   const queryKey: QueryKey = ["connection-info", userId];
 
   const isLoggedInUserReciepient = data.isLoggedInUserReciepient;
   const isLoggedInUserSender = data.isLoggedInUserSender;
 
-  console.log(data, decision);
 
   const { mutate } = useMutation({
     mutationFn: (decision: string) =>
@@ -83,7 +82,14 @@ export default function ConnectionButton({
     },
   });
 
-  console.log(data);
+  if (isConnectionInfoLoading) {
+    return (
+      <div className="flex justify-center items-center">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
+  }
+
 
   return (
     <>

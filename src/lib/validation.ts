@@ -64,9 +64,10 @@ export const updateUserProfileSchema = z.object({
     /^[a-zA-Z0-9_-]+$/,
     "Only letters, numbers, - and _ allowed",
   ),
-  musicalInfo: musicalInfoSchema || null,
-  userContact: userContactSchema || null,
+  musicalInfo: musicalInfoSchema ,
+  userContact: userContactSchema ,
 });
+
 
 
 

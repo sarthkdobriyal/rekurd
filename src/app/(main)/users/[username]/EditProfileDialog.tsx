@@ -41,6 +41,8 @@ interface EditProfileDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+
+
 export default function EditProfileDialog({
   user,
   open,
@@ -53,6 +55,8 @@ export default function EditProfileDialog({
       username: user.username || "",
       email: user.email || "",
       bio: user.bio || "",
+      musicalInfo: {},
+      userContact: {}
     },
   });
 
