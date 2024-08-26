@@ -1,12 +1,40 @@
 {
   "name": "rekurd",
   "short_name": "reKurd",
-  "theme_color": "#e63950",
+  "protocol_handlers": [
+    {
+      "protocol": "",
+      "url": ""
+    }
+  ],
+  "display_override": [],
+  "description": "reKurd is a social media for musicians",
+  "theme_color": "#000000",
   "background_color": "#000",
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
+  "shortcuts" : [
+    {
+      "name": "reKurd",
+      "url": "/",
+      "icons": [
+        {
+          "src": "images/icons/icon-72x72.png",
+          "sizes": "72x72",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
   "icons": [
     {
       "src": "images/icons/icon-72x72.png",
