@@ -27,6 +27,11 @@ const nextConfig = {
         hostname: "lh3.googleusercontent.com",
         pathname: `/a/*`,
       },
+      {
+        protocol: "https",
+        hostname: "randomuser.me",
+        pathname: `/api/portraits/*`,
+      },
     ],
   },
 };
