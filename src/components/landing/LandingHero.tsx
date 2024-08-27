@@ -39,7 +39,7 @@ export const LandingHero: React.FC<Props> = ({
           <div className="mt-6 flex  gap-3">
             <LandingButton
               href={buttonLink || '/signup'}
-              className="flex gap-1 w-[50%] items-center justify-center bg-black"
+              className="flex gap-1 w-[50%] items-center justify-center bg-background"
               rel="noopener"
               size="lg"
             >
@@ -53,18 +53,15 @@ export const LandingHero: React.FC<Props> = ({
           {socialProof && <div className="mt-6">{socialProof}</div>}
         </div>
 
-        <div className="lg:absolute relative right-0 top-0 w-4/5 lg:w-1/2 h-full shadow-inner shadow-black z-10">
+        <div className="lg:absolute  w-full  right-0 top-0  lg:w-1/2 h-full">
           <Image
-            src={pictureUrl || '/hero.png'}
+            src={pictureUrl || '/hero2.png'}
             alt='hero'
-            width={800}
-            height={800}
-            className="mask-stripes object-cover w-full h-full  rounded-full aspect-square "
+            width={1000}
+            height={1000}
+            className="mask-stripes object-contain w-full h-full aspect-auto"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black opacity-0 from-1%" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black opacity-60 from-1%" />
-          <div className="absolute inset-0 bg-gradient-to-l from-black opacity-30 from-1%" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black opacity-30 from-1%" />
+
         </div>
       </div>
     </section>

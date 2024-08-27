@@ -30,7 +30,7 @@ export const Logo: React.FC<Props> = ({
         onClick={() => goTo('/home')}
       />
       {isLabel && (
-        <Typography.Title level={4} style={{ margin: '0px' }}>
+        <Typography.Title level={4} style={{ margin: '0px', color:"white" }}>
           reKurd.
         </Typography.Title>
       )}

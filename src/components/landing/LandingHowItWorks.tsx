@@ -32,7 +32,7 @@ export const LandingHowItWorks: React.FC<Props> = ({
         <div className="max-w-xl space-y-8 mt-12 mx-auto">
           {steps.map((item, idx) => (
             <div key={idx} className="flex items-start">
-              <div className="flex-shrink-0 w-16 h-16 bg-gray-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-2xl font-bold ">
+              <div className="flex-shrink-0 w-12 h-12 bg-gray-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-2xl font-bold ">
                 {idx + 1}
               </div>
               <div className="ml-4 text-left">

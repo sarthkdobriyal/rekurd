@@ -21,7 +21,7 @@ export const LandingFooter: React.FC<Props> = ({ ...props }) => {
   ]
   return (
     <div className="relative mt-16" {...props}>
-      <div className="border-t border-neutral-100  dark:border-neutral-800 px-8 pt-20 pb-32 relative bg-white dark:bg-black">
+      <div className="border-t border-neutral-100  dark:border-neutral-800 px-8 pt-20 pb-32 relative bg-white dark:bg-background">
         <div className="max-w-7xl mx-auto  flex sm:flex-row flex-col justify-between items-start ">
           <div>
             <div className="mr-4  md:flex mb-4">

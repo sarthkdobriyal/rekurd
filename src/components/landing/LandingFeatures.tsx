@@ -36,7 +36,7 @@ export const LandingFeatures: React.FC<Props> = ({
         <div className="grid sm:grid-cols-2 md:grid-cols-3 mt-16 gap-16">
           {features.map((item, idx) => (
             <div key={idx + 'feature'} className="flex gap-4 items-start">
-              <div className="mt-1 bg-black dark:bg-slate-800 rounded-full  p-2 pt-1 w-8 h-8 text-white">
+              <div className="mt-1 bg-background dark:bg-slate-800 rounded-full  p-2 pt-1 w-8 h-8 text-white">
                 {item.icon}
               </div>
               <div>

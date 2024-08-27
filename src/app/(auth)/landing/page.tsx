@@ -251,11 +251,11 @@ export default function LandingPage() {
           subtitle="Connect, Collaborate, and Create with Musicians Worldwide"
           buttonText="Get Started"
           buttonLink="/signup"
-          pictureUrl="/hero.png"
+          pictureUrl="/hero2.png"
           socialProof={
             <LandingSocialRating
               avatarItems={avatarItems}
-              numberOfUsers={1000}
+              numberOfUsers={100}
               suffixText="from happy musicians"
             />
           }

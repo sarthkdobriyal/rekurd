@@ -31,7 +31,7 @@ export const LandingMobileNavbar = ({ navItems }: any) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '-100%' }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-white dark:bg-black z-50 flex flex-col items-start justify-start space-y-10 pt-5 text-xl text-zinc-600 transition duration-200 hover:text-zinc-800"
+            className="fixed inset-0 bg-white dark:bg-background z-50 flex flex-col items-start justify-start space-y-10 pt-5 text-xl text-zinc-600 transition duration-200 hover:text-zinc-800"
           >
             <div className="flex items-center justify-between w-full px-5">
               <Logo isLabel height={40} />
@@ -88,7 +88,7 @@ export const LandingMobileNavbar = ({ navItems }: any) => {
                   <LandingButton href="/register" size="sm">
                     Sign Up
                   </LandingButton>
-                  <LandingButton href="/login" size="sm">
+                  <LandingButton href="/login" size="sm" type='outline'>
                     Login
                   </LandingButton>
                 </>

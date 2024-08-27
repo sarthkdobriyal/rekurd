@@ -23,7 +23,7 @@ export const LandingCTA: React.FC<Props> = ({
       {...props}
     >
       <div className="max-w-7xl mx-auto ">
-        <div className="bg-black p-8 md:px-20 md:py-20 mt-20 mx-auto max-w-5xl rounded-lg flex flex-col items-center text-center">
+        <div className="bg-background p-8 md:px-20 md:py-20 mt-20 mx-auto max-w-5xl rounded-lg flex flex-col items-center text-center">
           <h2 className="text-white text-4xl lg:text-5xl font-bold lg:tracking-tight">
             {title}
           </h2>
