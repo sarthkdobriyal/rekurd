@@ -78,3 +78,30 @@ export type UpdateUserProfileValues = z.infer<typeof updateUserProfileSchema>;
 export const createCommentSchema = z.object({
   content: requiredString,
 });
+
+// Zod schemas
+export const MessageSchema = z.object({
+  role: z.enum(['user', 'assistant']),
+  content: z.string(),
+});
+
+export const ChatRequestSchema = z.object({
+  message: z.string(),
+});
+
+export const ChatResponseSchema = z.object({
+  message: z.string(),
+});
+
+// TypeScript types
+export type Message = z.infer<typeof MessageSchema>;
+export type ChatRequest = z.infer<typeof ChatRequestSchema>;
+export type ChatResponse = z.infer<typeof ChatResponseSchema>;
+
+export interface ChatStorageHook {
+  messages: Message[];
+  addMessage: (message: Message) => void;
+  clearMessages: () => void;
+  syncToCloud: boolean;
+  toggleCloudSync: () => void;
+}

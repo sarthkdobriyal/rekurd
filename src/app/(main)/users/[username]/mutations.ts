@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { updateUserProfile } from "./actions";
+import { revalidatePath } from "next/cache";
 
 export function useUpdateProfileMutation() {
   const { toast } = useToast();
@@ -68,8 +69,7 @@ export function useUpdateProfileMutation() {
         },
       );
 
-      router.refresh();
-
+      router.push(`/users/${updatedUser.username}`)
       toast({
         description: "Profile updated",
       });

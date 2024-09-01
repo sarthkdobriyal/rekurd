@@ -130,7 +130,7 @@ export default function SetupProfileForm({ user }: SetupProfileFormProps) {
       {
         onSuccess: () => {
           setCroppedAvatar(null);
-          router.push(`/users/${user.username}`);
+          
         },
       },
     );
