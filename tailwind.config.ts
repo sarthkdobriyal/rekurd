@@ -19,6 +19,11 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-geist-sans)', 'sans-serif'],
+        mono: ['var(--font-geist-mono)', 'monospace'],
+        spartan: ['var(--font-league-spartan)', 'sans-serif'], // Add League Spartan font
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
