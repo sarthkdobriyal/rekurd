@@ -4,6 +4,7 @@ export default function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    if(typeof window === 'undefined') return;
     const mediaQuery = window.matchMedia('(max-width: 768px)');
     const handleMediaQueryChange = (event: MediaQueryListEvent) => {
       setIsMobile(event.matches);

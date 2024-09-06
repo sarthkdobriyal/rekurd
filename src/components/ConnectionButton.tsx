@@ -76,10 +76,8 @@ export default function ConnectionButton({
         variant: "destructive",
         description: errorMessage,
       });
-
-      window.location.reload()
-      
-    },
+      if(typeof window !== "undefined") window.location.reload()
+      },
   });
 
   if (isConnectionInfoLoading) {

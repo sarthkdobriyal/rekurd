@@ -39,6 +39,8 @@ model User {
   UserContact           UserContact?
   sentConnections       Connection[]   @relation("SentConnections")
   receivedConnections   Connection[]   @relation("ReceivedConnections")
+  conversations         Conversation[] @relation("UsersInConversation")
+  Message               Message[]
 
   @@map("users")
 }
@@ -121,6 +123,26 @@ model MusicalInfo {
 
   @@unique([userId])
   @@map("musical_info")
+}
+
+model Conversation {
+  id        String    @id @default(uuid())
+  title     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  users     User[]    @relation("UsersInConversation")
+  messages  Message[]
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  content        String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversationId String
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id])
 }
 
 model Follow {
@@ -232,10 +254,9 @@ model Instrument {
 }
 
 model Genre {
-  id            String       @id @default(cuid())
-  genre         String
-  subgenre      String
-  
+  id       String @id @default(cuid())
+  genre    String
+  subgenre String
 }
 
 enum NotificationType {
