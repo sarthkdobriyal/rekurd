@@ -4,6 +4,7 @@ import { Lucia, Session, User } from "lucia";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import prisma from "./lib/prisma";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const adapter = new PrismaAdapter(prisma.session, prisma.user);
 
@@ -90,3 +91,42 @@ export const validateRequest = cache(
     return result;
   },
 );
+
+export const validateRequestForPages = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
+  const sessionId = req.cookies[lucia.sessionCookieName] ?? null;
+
+  if (!sessionId) {
+    return {
+      user: null,
+      session: null,
+    };
+  }
+
+  const result = await lucia.validateSession(sessionId);
+
+  try {
+    if (result.session && result.session.fresh) {
+      const sessionCookie = lucia.createSessionCookie(result.session.id);
+      res.setHeader(
+        "Set-Cookie",
+        `${sessionCookie.name}=${sessionCookie.value}; ${Object.entries(sessionCookie.attributes)
+          .map(([key, value]) => `${key}=${value}`)
+          .join("; ")}`
+      );
+    }
+    if (!result.session) {
+      const sessionCookie = lucia.createBlankSessionCookie();
+      res.setHeader(
+        "Set-Cookie",
+        `${sessionCookie.name}=${sessionCookie.value}; ${Object.entries(sessionCookie.attributes)
+          .map(([key, value]) => `${key}=${value}`)
+          .join("; ")}`
+      );
+    }
+  } catch {}
+
+  return result;
+};

@@ -142,6 +142,8 @@ export async function getConnectedUsers(userId: string): Promise<ConnectedUser[]
         conversationId: chatId,
       },
     });
+
+    
   
     revalidatePath(`/chats/${chatId}`)
   }

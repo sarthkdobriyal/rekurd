@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
-import { get, request } from "http";
-import { connect } from 'http2';
+import { Server as NetServer, Socket } from 'net';
+import { NextApiResponse } from "next";
+import { Server as SocketIOServer } from 'socket.io';
 
 export function getUserDataSelect(
   loggedInUserId: string,
@@ -196,3 +197,10 @@ export interface MessageCountInfo {
   unreadCount: number;
 }
 
+export type SockerIoApiResponse = NextApiResponse & {
+  socket: Socket & {
+    server: NetServer & {
+      io: SocketIOServer;
+    };
+  };
+};

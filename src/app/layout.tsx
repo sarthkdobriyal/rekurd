@@ -2,13 +2,14 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { League_Spartan } from "next/font/google";
 import "./globals.css";
-import ReactQueryProvider from "./ReactQueryProvider";
+import ReactQueryProvider from "./providers/ReactQueryProvider";
 import { ThemeProvider } from "next-themes";
 import { Toast } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
+import { WebSocketProvider } from "./providers/web-socket";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -79,6 +80,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} ${leagueSpartan.variable}`}>
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <ReactQueryProvider>
+          
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

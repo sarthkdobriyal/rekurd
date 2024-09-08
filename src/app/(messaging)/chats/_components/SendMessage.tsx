@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Loader2, SendIcon } from "lucide-react";
 import { FC, useState, useTransition } from "react";
 import { sendMessage } from "../actions";
+import kyInstance from "@/lib/ky";
+import axios from "axios";
 
 interface SendMessageProps {
   chatId: string;
@@ -17,15 +19,24 @@ const SendMessage: FC<SendMessageProps> = ({ chatId }) => {
 
   const handleSendMessage = async () => {
     if (!message) return setError(() => "Empty message");
-    startTransition(() => {
+    startTransition(async () => {
       if (message !== "") {
-        sendMessage(chatId, message);
-        setMessage("");
+        try {
+          const res = await axios.post('/api/web-socket/messages', {
+            content : message,
+            chatId : chatId
+          })
+          console.log(res)
+          if(res.status === 201) setMessage("");
+          else setError("Error sending message");
+        } catch (err) {
+          console.log(err)
+          setError("Failed to send message");
+        }
       }
     });
   };
 
-  console.log(error, "eror");
 
   return (
     <form action={handleSendMessage} className="sticky bottom-2 left-0 flex  w-full items-center space-x-2 p-3">

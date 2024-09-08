@@ -1,49 +1,89 @@
-import prisma from '@/lib/prisma'
-"use client"
-import { MessageCircle } from 'lucide-react'
-import { FC, useEffect, useRef } from 'react'
+"use client";
 
-import { validateRequest } from '@/auth'
-import { useToast } from '@/components/ui/use-toast'
-import { Message as MessageType } from '@prisma/client'
-import Message from './Message'
-import { useSession } from '@/app/(main)/SessionProvider'
+import { MessageCircle } from "lucide-react";
+import { FC, useEffect, useRef } from "react";
+import prisma from "@/lib/prisma";
+
+import { validateRequest } from "@/auth";
+import { useToast } from "@/components/ui/use-toast";
+import { Message as MessageType } from "@prisma/client";
+import Message from "./Message";
+import { useSession } from "@/app/(main)/SessionProvider";
+import { useChatFetcher } from "@/hooks/useChatFetcher";
+import DotAnimatedLoader from "@/components/DotAnimatedLoader";
+import { useChatSocketConnection } from "@/hooks/useChatSocketConnection";
+import MessagesSkeleton from "@/components/MessagesSkeleton";
 
 interface ConversationProps {
-  messages: Partial<MessageType>[]
+  chatId: string;
 }
 
+const Conversation: FC<ConversationProps> = ({ chatId }) => {
+  const { user: loggedInUser } = useSession();
 
-const Conversation: FC<ConversationProps> = ({messages}) => {
+  const {
+    data,
+    status,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+  } = useChatFetcher({
+    apiUrl: "/api/messages",
+    queryKey: "chat-messages",
+    pageSize: 15,
+    paramKey: "chatId",
+    paramValue: chatId,
+  });
 
-  const { user: loggedInUser } = useSession()
-  
+  useChatSocketConnection({
+    queryKey: "chat-messages",
+    addKey: `chat-${chatId}-messages`,
+    paramValue: chatId,
+  });
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+  console.log(data, " data");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [messages]);
+  useEffect(scrollToBottom, [data]);
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
-  return <div className="flex-1 max-h-[90vh] h-[90vh] border overflow-y-auto py-4 px-2 overflow-hidden flex-2 scrollbar-hide ">
-  <div className="flex flex-col gap-4">
-    {messages.length === 0 ? (
-      <div className="text-center text-muted-foreground flex justify-center items-center flex-col gap-y-2">
-        <MessageCircle />
-        Start a conversation
+  if (status === "pending") {
+    return <div className="h-full">
+      <MessagesSkeleton />
+    </div>
+  }
+
+  if (status === "error") {
+    return <div className="h-full w-full">Error Occured</div>;
+  }
+
+  const renderMessages = () =>
+    data.pages.map((page) =>
+      page.messages.map((message) => (
+        <Message
+          key={message.id}
+          loggedInUserId={loggedInUser.id}
+          message={message}
+        />
+      )),
+    );
+
+  return (
+    <div className="scrollbar-hide h-[90vh] max-h-[90vh] overflow-hidden overflow-y-auto px-2 py-4">
+      <div className="flex flex-col gap-4">
+        <div className="mt-auto flex flex-col-reverse gap-y-4">
+          {renderMessages()}
+        </div>
+        <div ref={messagesEndRef} />
       </div>
-    ) : (
-      messages.map((message) => (
-        <Message key={message.id} loggedInUserId={loggedInUser.id} message={message} />
-      ))
-    )}
-  </div>
-  <div ref={messagesEndRef} />
-</div>
-}
+    </div>
+  );
+};
 
-export default Conversation
+export default Conversation;

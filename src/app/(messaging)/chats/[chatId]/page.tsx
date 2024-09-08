@@ -25,11 +25,13 @@ const ChatPage: FC<ChatPageProps> = async ({ params }) => {
   const { user: loggedInUser } = await validateRequest();
   if (!loggedInUser) return null;
 
+
   const conversation = await prisma.conversation.findUnique({
     where: {
       id: params.chatId,
     },
     select: {
+      id: true,
       users: {
         select: {
           id: true,
@@ -60,7 +62,7 @@ const ChatPage: FC<ChatPageProps> = async ({ params }) => {
   );
 
   return (
-    <div className="flex w-full h-screen flex-col border  relative ">
+    <div className="flex w-full h-screen flex-col  relative ">
       <div className=" sticky w-full top-0 left-0 flex items-center justify-between border-b bg-background px-4 py-2">
         <div className="flex items-center gap-4">
           <Link href='/chats'>
@@ -87,7 +89,7 @@ const ChatPage: FC<ChatPageProps> = async ({ params }) => {
 
 
 
-      <Conversation messages={conversation.messages} />
+      <Conversation chatId={conversation.id}/>
 
       
 
