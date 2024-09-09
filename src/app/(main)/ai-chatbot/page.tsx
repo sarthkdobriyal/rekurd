@@ -55,7 +55,6 @@ const MusicChatbot: React.FC = () => {
     onSuccess: (data: ChatResponse) => {
       addMessage({ role: "user", content: input });
       addMessage({ role: "assistant", content: data.message });
-      console.log(data.message);
       setInput("");
     },
     onError: (error: Error) => {

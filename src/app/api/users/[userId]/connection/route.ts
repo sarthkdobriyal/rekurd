@@ -30,7 +30,6 @@ export async function GET(
       },
     });
 
-    console.log("connection", connection)
 
     const totalConnections = await prisma.connection.count({
       where: {
@@ -47,7 +46,6 @@ export async function GET(
       },
     });
 
-    console.log("connec", totalConnections)
 
 
     const data: ConnectionInfo = {

@@ -1,21 +1,19 @@
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
+import { MessagePage } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 
-function getPagination(page: number, size: number) {
-    const limit = size ? +size : 10;
-    const from = page ? page * limit : 0;
-    const to = page ? from + limit - 1 : limit - 1;
-  
-    return { from, to };
-  }
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
     try {
+
+      const cursor = req.nextUrl.searchParams.get("cursor") || undefined;
+      const pageSize = 15;
+
         const {user} = await validateRequest();
-        const { searchParams } = new URL(req.url);
-        const chatId = searchParams.get('chatId');
+       
+        const chatId = req.nextUrl.searchParams.get('chatId');
     
         if (!user) {
           return new Response('Unauthorized', { status: 401 });
@@ -24,11 +22,8 @@ export async function GET(req: Request) {
         if (!chatId) {
           return new Response('Bad Request', { status: 400 });
         }
-    
-        const page = Number(searchParams.get('page'));
-        const size = Number(searchParams.get('size'));
-    
-        const { from, to } = getPagination(page, size);
+
+
     
         const messages = await prisma.message.findMany({
             where: {
@@ -37,16 +32,19 @@ export async function GET(req: Request) {
             include: {
               sender: true, // Include the related User model
             },
-            skip: from,
-            take: to - from + 1,
+            cursor: cursor ? { id: cursor } : undefined,
+            take: pageSize + 1,
             orderBy: {
               createdAt: 'desc',
             },
           });
-          
-          console.log(messages.length)
-    
-        return NextResponse.json({messages});
+          const nextCursor = messages.length > pageSize ? messages[pageSize].id : null;
+          const data: MessagePage = {
+            messages: messages.slice(0, pageSize),
+            nextCursor,
+          };
+
+        return NextResponse.json(data);
       } catch (error) {
         console.log('SERVER ERROR: ', error);
         return new Response('Internal Server Error', { status: 500 });

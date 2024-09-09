@@ -20,7 +20,6 @@ export default async function handler(
 
     const { chatId, content } = req.body;
 
-    console.log(user.username, chatId, content);
 
     if (content === '') {
       return res.status(400).json({ message: 'Message content empty' });

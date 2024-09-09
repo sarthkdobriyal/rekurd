@@ -13,6 +13,7 @@ import { useChatFetcher } from "@/hooks/useChatFetcher";
 import DotAnimatedLoader from "@/components/DotAnimatedLoader";
 import { useChatSocketConnection } from "@/hooks/useChatSocketConnection";
 import MessagesSkeleton from "@/components/MessagesSkeleton";
+import { Button } from "@/components/ui/button";
 
 interface ConversationProps {
   chatId: string;
@@ -31,8 +32,6 @@ const Conversation: FC<ConversationProps> = ({ chatId }) => {
   } = useChatFetcher({
     apiUrl: "/api/messages",
     queryKey: "chat-messages",
-    pageSize: 15,
-    paramKey: "chatId",
     paramValue: chatId,
   });
 
@@ -41,8 +40,6 @@ const Conversation: FC<ConversationProps> = ({ chatId }) => {
     addKey: `chat-${chatId}-messages`,
     paramValue: chatId,
   });
-
-  console.log(data, " data");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -54,14 +51,17 @@ const Conversation: FC<ConversationProps> = ({ chatId }) => {
   const { toast } = useToast();
 
   if (status === "pending") {
-    return <div className="h-full">
-      <MessagesSkeleton />
-    </div>
+    return (
+      <div className="h-full">
+        <MessagesSkeleton />
+      </div>
+    );
   }
 
   if (status === "error") {
     return <div className="h-full w-full">Error Occured</div>;
   }
+
 
   const renderMessages = () =>
     data.pages.map((page) =>
@@ -75,13 +75,27 @@ const Conversation: FC<ConversationProps> = ({ chatId }) => {
     );
 
   return (
-    <div className="scrollbar-hide h-[90vh] max-h-[90vh] overflow-hidden overflow-y-auto px-2 py-4">
-      <div className="flex flex-col gap-4">
-        <div className="mt-auto flex flex-col-reverse gap-y-4">
+    <div className="scrollbar-hide h-[90vh] max-h-[90vh] overflow-hidden  px-2 py-4 mb-4">
+      
+
+        
+      
+        <div className="mt-auto flex h-full flex-col-reverse overflow-auto scrollbar-hide gap-y-4">
           {renderMessages()}
+          {!hasNextPage && <div className="text-center text-muted tracking-widest text-xl">--END--</div>}
+          {hasNextPage && (
+        <div className="flex justify-center ">
+          {isFetchingNextPage ? (
+            <DotAnimatedLoader />
+          ) : (
+            <Button variant="link" onClick={() => fetchNextPage()}>
+              Load Previous Messages
+            </Button>
+          )}
+        </div>
+      )}
         </div>
         <div ref={messagesEndRef} />
-      </div>
     </div>
   );
 };

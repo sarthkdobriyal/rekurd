@@ -26,7 +26,6 @@ const SendMessage: FC<SendMessageProps> = ({ chatId }) => {
             content : message,
             chatId : chatId
           })
-          console.log(res)
           if(res.status === 201) setMessage("");
           else setError("Error sending message");
         } catch (err) {

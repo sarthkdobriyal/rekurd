@@ -24,7 +24,6 @@ export const POST = async (req: Request): Promise<Response> => {
       })
       .on('end', async () => {
         console.log('CSV file successfully processed');
-          console.log('Instruments:', instruments);
         // Insert data into the database
         try {
           await prisma.instrument.createMany({

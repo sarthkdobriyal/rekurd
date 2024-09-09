@@ -7,7 +7,6 @@ function PWAPrompt() {
   useEffect(() => {
     if(typeof window === 'undefined') return;
     window.addEventListener("beforeinstallprompt", (e: any) => {
-      console.log(e);
       // e.prompt()
     });
   }, []);

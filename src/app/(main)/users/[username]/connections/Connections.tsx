@@ -18,7 +18,6 @@ export default  function Connections({user}: ConnectionsProps) {
     const sentConnections = user.sentConnections.filter((conn) => conn.status === 'CONNECTED');
     const receivedConnections = user.receivedConnections.filter((conn) => conn.status === 'CONNECTED');
     const connections = [...sentConnections, ...receivedConnections];
-       console.log(connections)
 
     return <div className="w-full">
        <div className="space-y-5 rounded-2xl  p-5 shadow-sm">

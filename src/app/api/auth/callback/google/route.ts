@@ -38,7 +38,6 @@ export async function GET(req: NextRequest) {
       })
       .json<{ id: string; name: string, email: string, picture:string }>();
 
-      console.log(googleUser)
 
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -61,7 +60,6 @@ export async function GET(req: NextRequest) {
         }
       }) 
   
-      console.log(isProfileSetup)
 
       return new Response(null, {
         status: 302,

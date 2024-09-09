@@ -14,20 +14,20 @@ const Message: FC<MessageProps> = ({ message, loggedInUserId }) => {
       className={`flex w-fit max-w-[65%] flex-col gap-1 break-words ${
         isSender ? "ml-auto bg-primary text-primary-foreground" : "bg-muted"
       } rounded-xl px-4 py-2 text-base`}
-      style={{
-        alignSelf: isSender ? "flex-end" : "flex-start",
-        marginBottom: "8px",
-        padding: "10px",
-        borderRadius: "20px",
-      }}
+      
     >
-      <div className="flex items-end justify-between">
-        <p className="prose-sm font-sans">{message.content}</p>
-        <span
-          className={`text-xs font-light ${isSender ? "text-muted" : "text-muted-foreground"} ml-2`}
+      <div className="flex items-center gap-x-2">
+      {!isSender && <span
+          className={`tracking-tighter text-xs font-light ${isSender ? "text-muted" : "text-muted-foreground"}`}
         >
           {formatTimestampTo24Hr(message.createdAt!)}
-        </span>
+        </span>}
+        <p className="prose-sm text-base font-sans">{message.content}</p>
+        {isSender && <span
+          className={`tracking-tighter text-xs font-light ${isSender ? "text-muted" : "text-muted-foreground"}`}
+        >
+          {formatTimestampTo24Hr(message.createdAt!)}
+        </span>}
       </div>
     </div>
   );

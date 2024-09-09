@@ -28,7 +28,6 @@ export const WebSocketProvider: FC<{ children: ReactNode }> = ({
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
 
-  console.log(socket,"socket")
 
   useEffect(() => {
     const siteUrl = process.env.NEXT_PUBLIC_BASE_URL;

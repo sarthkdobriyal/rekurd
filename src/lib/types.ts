@@ -1,7 +1,7 @@
-import { Prisma } from "@prisma/client";
-import { Server as NetServer, Socket } from 'net';
+import { Message, Prisma } from "@prisma/client";
+import { Server as NetServer, Socket } from "net";
 import { NextApiResponse } from "next";
-import { Server as SocketIOServer } from 'socket.io';
+import { Server as SocketIOServer } from "socket.io";
 
 export function getUserDataSelect(
   loggedInUserId: string,
@@ -22,7 +22,7 @@ export function getUserDataSelect(
         followerId: true,
       },
     },
-    sentConnections:{
+    sentConnections: {
       select: {
         id: true,
         recipientId: true,
@@ -35,9 +35,9 @@ export function getUserDataSelect(
             avatarUrl: true,
           },
         },
-        }
       },
-    receivedConnections:{    
+    },
+    receivedConnections: {
       select: {
         id: true,
         requesterId: true,
@@ -49,8 +49,8 @@ export function getUserDataSelect(
             displayName: true,
             avatarUrl: true,
           },
-        }
-      }
+        },
+      },
     },
     _count: {
       select: {
@@ -129,14 +129,17 @@ export interface PostsPage {
   posts: PostData[];
   nextCursor: string | null;
 }
-
+export interface MessagePage {
+  messages: Message[];
+  nextCursor: string | null;
+}
 
 export interface ConnectionInfo {
   connections: number;
-  isUserConnected: boolean,
-  isConnectionPending: boolean,
-  isLoggedInUserSender: boolean,
-  isLoggedInUserReciepient: boolean,
+  isUserConnected: boolean;
+  isConnectionPending: boolean;
+  isLoggedInUserSender: boolean;
+  isLoggedInUserReciepient: boolean;
 }
 
 export interface BookmarkInfo {
