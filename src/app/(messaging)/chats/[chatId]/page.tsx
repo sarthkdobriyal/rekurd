@@ -68,12 +68,14 @@ const ChatPage: FC<ChatPageProps> = async ({ params }) => {
           <Link href='/chats'>
           <ArrowLeft />
           </Link>
+          <Link href={`/users/${externalUser?.username}`} className="flex gap-x-2 items-center">
           <UserAvatar avatarUrl={externalUser?.avatarUrl} className="h-10 w-10" />
           <div className="grid gap-0.5">
             <div className="font-medium">{externalUser?.displayName}</div>
             <div className="text-sm text-muted-foreground">Active 2h ago</div>
             {/* TODO: Add isOnline functionality  */}
           </div>
+          </Link>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon">

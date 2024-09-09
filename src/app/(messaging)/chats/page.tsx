@@ -25,7 +25,9 @@ const ChatsPage: FC<ChatsPageProps> = async ({}) => {
 
   return <div className="min-h-full w-full  overflow-hidden">
     <div className="flex h-14 items-center justify-between border-b px-4">
+      <Link href={`/`}>
     <ArrowLeft />
+      </Link>
     <div className="font-medium text-xl ">All your Chats</div>
     <CreateChatDialog  connectedUsers={connectedUsers}/>
   </div>

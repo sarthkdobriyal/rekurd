@@ -80,7 +80,7 @@ const ChatList: FC<ChatListProps> = async ({}) => {
           </div>
           <div className="ml-auto text-xs text-muted-foreground">
             {
-              formatRelativeDate(
+              chat.messages[0]?.content && formatRelativeDate(
                 chat.messages[0]?.createdAt
               )
             }

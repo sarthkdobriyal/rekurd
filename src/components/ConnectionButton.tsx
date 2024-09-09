@@ -11,6 +11,7 @@ import { Loader2, Trash2 } from "lucide-react";
 import { useSession } from "@/app/(main)/SessionProvider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ViewConversation from "./ViewConversation";
 
 
 interface FollowButtonProps {
@@ -130,7 +131,7 @@ export default function ConnectionButton({
               <Trash2 size={15} />
             </div>
           ) : data.isUserConnected ? (
-            <div className="flex w-full items-center justify-between">
+            <div className="flex w-full items-center justify-between ">
               <span className="mr-3">Connected</span>
               <Trash2 size={15} />
             </div>
@@ -139,6 +140,7 @@ export default function ConnectionButton({
           )}
         </Button>
       )}
+      
     </>
   );
 }

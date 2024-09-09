@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { Mail } from "lucide-react";
+import { Mail, MessageCircle } from "lucide-react";
 import Link from "next/link";
 
 interface MessagesButtonProps {
@@ -23,9 +23,9 @@ export default function MessagesButton({ initialState }: MessagesButtonProps) {
       title="Messages"
       asChild
     >
-      <Link href="/messages">
+      <Link href="/chats">
         <div className="relative">
-          <Mail />
+        <MessageCircle />
           {!!data.unreadCount && (
             <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 text-xs font-medium tabular-nums text-primary-foreground">
               {data.unreadCount}

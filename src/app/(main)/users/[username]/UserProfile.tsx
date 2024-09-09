@@ -6,6 +6,9 @@ import ConnectionButton from "@/components/ConnectionButton";
 import Linkify from "@/components/Linkify";
 import UserAvatar from "@/components/UserAvatar";
 import { formatDate } from "date-fns";
+import MessagesButton from "@/components/MessagesButton";
+import { Button } from "@/components/ui/button";
+import ViewConversation from "@/components/ViewConversation";
 
 interface UserProfileProps {
   user: UserData;
@@ -51,8 +54,10 @@ export default function UserProfile({
     ),
   };
 
+  
+
   return (
-    <div className="h-fit w-full space-y-5 rounded-2xl bg-card px-5 py-5 shadow-sm">
+    <div className="h-fit w-full space-y-5 rounded-2xl  px-5 py-5 shadow-sm">
       <div className="flex items-center justify-between">
         <UserAvatar
           avatarUrl={user.avatarUrl}
@@ -93,8 +98,16 @@ export default function UserProfile({
           {user.id === loggedInUserId ? (
             <EditProfileButton user={user} />
           ) : (
-            // <FollowButton userId={user.id} initialState={followerInfo} />
-            <ConnectionButton userId={user.id} initialState={connectionInfo} />
+            <>
+              {connectionInfo.isUserConnected && (
+                <ViewConversation externalUserId={user.id} />
+              )}
+
+              <ConnectionButton
+                userId={user.id}
+                initialState={connectionInfo}
+              />
+            </>
           )}
         </div>
       </div>
@@ -108,7 +121,6 @@ export default function UserProfile({
             {user.musicalInfo.title}
           </p>
           <p className="mb-2 text-lg italic">
-            
             {user.musicalInfo.yearsOfExperience} Years of{" "}
             {user.musicalInfo.primaryInstrument.name} Mastery
           </p>
@@ -121,37 +133,34 @@ export default function UserProfile({
           </p> */}
           {user.musicalInfo.instruments && (
             <div className="mb-2 flex flex-col gap-1 text-lg italic">
-              
               <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
-              Also Plays 
+                Also Plays
               </span>
               <span className="">
-              {user.musicalInfo.instruments.join(", ")}
+                {user.musicalInfo.instruments.join(", ")}
               </span>
             </div>
           )}
-          {
-            user.musicalInfo.genres
-             && <div className="mb-2 flex flex-col gap-1 text-lg italic">
-            <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
-            🎼{" "}
-              Genres:
-            </span>{" "}
-            <span>
-            {user.musicalInfo.genres.join(", ")}
-            </span>
-          </div>}
-           { user.musicalInfo.bio && <div className="mb-4 flex flex-col gap-1 text-lg italic">
-            <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
-            🎤{" "}
-              Musical Journey:
-            </span>
-            <Linkify>
-              <p className="flex flex-wrap overflow-hidden whitespace-pre-line break-words px-4">
-                {user.musicalInfo.bio}
-              </p>
-            </Linkify>
-          </div>}
+          {user.musicalInfo.genres && (
+            <div className="mb-2 flex flex-col gap-1 text-lg italic">
+              <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
+                🎼 Genres:
+              </span>{" "}
+              <span>{user.musicalInfo.genres.join(", ")}</span>
+            </div>
+          )}
+          {user.musicalInfo.bio && (
+            <div className="mb-4 flex flex-col gap-1 text-lg italic">
+              <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
+                🎤 Musical Journey:
+              </span>
+              <Linkify>
+                <p className="flex flex-wrap overflow-hidden whitespace-pre-line break-words px-4">
+                  {user.musicalInfo.bio}
+                </p>
+              </Linkify>
+            </div>
+          )}
           {user.musicalInfo.interestedInLearning && (
             <p className="mb-2 text-lg italic text-green-600">
               📚 Available to jam and learn from fellow musicians
@@ -180,5 +189,3 @@ export default function UserProfile({
     </div>
   );
 }
-
-

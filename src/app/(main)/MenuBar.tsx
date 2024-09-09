@@ -24,7 +24,6 @@ export default async function MenuBar({ className }: MenuBarProps) {
     },
   })
 
-  const unreadMessagesCount = 2
   return (
     <div className={className}>
       <Button
@@ -41,7 +40,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
       <NotificationsButton
         initialState={{ unreadCount: unreadNotificationsCount }}
       />
-      {/* <MessagesButton initialState={{ unreadCount: unreadMessagesCount }} /> */}
+      <MessagesButton initialState={{ unreadCount: 0 }} />
 
       <Button
         variant="ghost"

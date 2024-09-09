@@ -132,6 +132,7 @@ model Conversation {
   updatedAt DateTime  @updatedAt
   users     User[]    @relation("UsersInConversation")
   messages  Message[]
+
 }
 
 model Message {
