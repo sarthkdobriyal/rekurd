@@ -11,7 +11,7 @@ interface ChatBotAvatarProps {
 const ChatBotAvatar: FC<ChatBotAvatarProps> = ({}) => {
 
     const pathname = usePathname()
-    if (pathname === '/ai-chatbot') return <></>
+    if (pathname === '/ai-chatbot' || pathname?.startsWith('/radio')) return <></>
 
   return <div className="lg:right-12 cursor-pointer hover:bg-background fixed bottom-20 right-3 z-50 flex aspect-square h-20 w-20 items-center justify-center rounded-full bg-muted lg:h-24 lg:w-24">
   <BotMessageSquare className={cn("h-14 w-14 ${} text-muted-foreground")} />

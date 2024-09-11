@@ -16,33 +16,93 @@ datasource db {
 }
 
 model User {
-  id                    String         @id
-  username              String         @unique
+  id                    String             @id
+  username              String             @unique
   displayName           String
-  email                 String         @unique
+  email                 String             @unique
   passwordHash          String?
-  googleId              String?        @unique
+  googleId              String?            @unique
   avatarUrl             String?
   bio                   String?
-  createdAt             DateTime       @default(now())
-  updatedAt             DateTime       @updatedAt
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
   posts                 Post[]
   sessions              Session[]
-  followers             Follow[]       @relation("Followers")
-  following             Follow[]       @relation("Following")
+  followers             Follow[]           @relation("Followers")
+  following             Follow[]           @relation("Following")
   likes                 Like[]
   comments              Comment[]
   bookmarks             Bookmark[]
-  receivedNotifications Notification[] @relation("Recipient")
-  issuedNotifications   Notification[] @relation("Issuer")
+  receivedNotifications Notification[]     @relation("Recipient")
+  issuedNotifications   Notification[]     @relation("Issuer")
   musicalInfo           MusicalInfo?
   UserContact           UserContact?
-  sentConnections       Connection[]   @relation("SentConnections")
-  receivedConnections   Connection[]   @relation("ReceivedConnections")
-  conversations         Conversation[] @relation("UsersInConversation")
+  sentConnections       Connection[]       @relation("SentConnections")
+  receivedConnections   Connection[]       @relation("ReceivedConnections")
+  conversations         Conversation[]     @relation("UsersInConversation")
   Message               Message[]
+  RadioChatMessage      RadioChatMessage[]
+  RadioSongRequest      RadioSongRequest[]
+  RadioModerator        RadioModerator?
 
   @@map("users")
+}
+
+// Radio 
+
+model RadioModerator {
+  id     String @id @default(cuid())
+  userId String @unique // Ensure a user can only be a moderator once
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("radio_moderators")
+}
+
+model RadioChatMessage {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("radio_chat_messages")
+}
+
+model RadioSongRequest {
+  id                 String               @id @default(cuid())
+  title              String // Song title
+  fileUrl            String // URL of the mp3 file from Uploadthing
+  duration           Int? // Song duration in seconds
+  isReviewed         Boolean              @default(false) // If the song has been reviewed by a moderator
+  albumArtUrl        String? // Optional URL of the album art
+  userId             String // User who requested/uploaded the song
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt          DateTime             @default(now())
+  RadioQueue         RadioQueue[]
+  RadioPlaybackState RadioPlaybackState[]
+
+  @@map("radio_song_requests")
+}
+
+model RadioQueue {
+  id       String           @id @default(cuid())
+  songId   String
+  song     RadioSongRequest @relation(fields: [songId], references: [id], onDelete: Cascade)
+  position Int // Order in the queue
+
+  @@map("radio_queue_entries")
+}
+
+model RadioPlaybackState {
+  id        String           @id @default(cuid())
+  songId    String // Song currently playing
+  song      RadioSongRequest @relation(fields: [songId], references: [id], onDelete: Cascade)
+  startedAt DateTime // Time when the song started playing
+  paused    Boolean          @default(false) // If playback is paused
+
+  @@map("radio_playback_state")
 }
 
 model Session {
@@ -132,7 +192,6 @@ model Conversation {
   updatedAt DateTime  @updatedAt
   users     User[]    @relation("UsersInConversation")
   messages  Message[]
-
 }
 
 model Message {

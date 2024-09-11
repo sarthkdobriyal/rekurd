@@ -105,3 +105,12 @@ export interface ChatStorageHook {
   syncToCloud: boolean;
   toggleCloudSync: () => void;
 }
+
+export const submitSongSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  fileUrl: z.string().url("Invalid URL"),
+  duration: z.number().min(1, "Duration must be at least 1 second"),
+  albumArtUrl: z.string().url("Invalid URL").optional(),
+});
+
+export type SubmitSongValues = z.infer<typeof submitSongSchema>;
