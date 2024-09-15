@@ -8,10 +8,9 @@ import kyInstance from "@/lib/ky";
 import axios from "axios";
 
 interface SendMessageProps {
-  chatId: string;
 }
 
-const SendMessage: FC<SendMessageProps> = ({ chatId }) => {
+const SendMessage: FC<SendMessageProps> = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -24,7 +23,6 @@ const SendMessage: FC<SendMessageProps> = ({ chatId }) => {
         try {
           const res = await axios.post('/api/web-socket/radio-global-chat', {
             content : message,
-            chatId : chatId
           })
           if(res.status === 201) setMessage("");
           else setError("Error sending message");

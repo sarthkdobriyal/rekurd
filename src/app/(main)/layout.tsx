@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import ChatBotAvatar from "@/components/ChatBotAvatar";
+import { WebSocketProvider } from "../providers/web-socket";
 
 export default async function Layout({
   children,
@@ -25,6 +26,7 @@ export default async function Layout({
 
   return (
     <SessionProvider value={session}>
+
       <div className="relative flex h-screen min-h-screen flex-col ">
         <Navbar />
         <div className="mx-auto flex h-full w-full max-w-7xl gap-5 p-5">

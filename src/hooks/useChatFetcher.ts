@@ -1,6 +1,6 @@
 import { useSocket } from "@/app/providers/web-socket";
 import kyInstance from "@/lib/ky";
-import { MessagePage } from "@/lib/types";
+import { MessagePage, RadioMessagePage } from "@/lib/types";
 import { Message } from "@prisma/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -8,20 +8,18 @@ import axios from "axios";
 type ChatFetcherProps = {
   queryKey: string;
   apiUrl: string;
-
   paramValue: string;
-
 };
 
 export const useChatFetcher = ({
   apiUrl,
   queryKey,
-  paramValue,
+  paramValue
 }: ChatFetcherProps) => {
   const { isConnected } = useSocket();
 
 
-  return useInfiniteQuery<MessagePage>({
+  return useInfiniteQuery<MessagePage | RadioMessagePage>({
     queryKey: [queryKey, paramValue],
     queryFn: ({ pageParam }) => {
       if (pageParam) {
@@ -33,7 +31,7 @@ export const useChatFetcher = ({
               cursor: pageParam, // Ensure cursor is either a string or undefined
             },
           })
-          .json<MessagePage>();
+          .json<MessagePage | RadioMessagePage>();
       } else {
         return kyInstance
           .get(apiUrl, {
@@ -41,7 +39,7 @@ export const useChatFetcher = ({
               chatId: paramValue,
             },
           })
-          .json<MessagePage>();
+          .json<MessagePage | RadioMessagePage>();
       }
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,

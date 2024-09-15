@@ -134,6 +134,23 @@ export interface MessagePage {
   nextCursor: string | null;
 }
 
+export type RadioMessage = {
+  user: {
+      id: string;
+      username: string;
+      avatarUrl: string | null;
+  };
+} & {
+  id: string;
+  content: string;
+  createdAt: Date;
+  userId: string;
+}
+export interface RadioMessagePage {
+  messages: RadioMessage[];
+  nextCursor: string | null;
+}
+
 export interface ConnectionInfo {
   connections: number;
   isUserConnected: boolean;

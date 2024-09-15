@@ -1,4 +1,5 @@
 import { useSocket } from '@/app/providers/web-socket';
+import { RadioMessage } from '@/lib/types';
 import { Message } from '@prisma/client';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -18,28 +19,9 @@ export const useChatSocketConnection = ({
   const { socket } = useSocket();
   const queryClient = useQueryClient();
 
-  const handleUpdateMessage = (message: any) => {
-    queryClient.setQueryData([queryKey, paramValue], (prev: any) => {
-      if (!prev || !prev.pages || !prev.pages.length) return prev;
+ 
 
-      const newData = prev.pages.map((page: any) => ({
-        ...page,
-        data: page.data.map((data: Message) => {
-          if (data.id === message.id) {
-            return message;
-          }
-          return data;
-        }),
-      }));
-
-      return {
-        ...prev,
-        pages: newData,
-      };
-    });
-  };
-
-  const handleNewMessage = (message: Message) => {
+  const handleNewMessage = (message: Message | RadioMessage) => {
     queryClient.setQueryData([queryKey, paramValue], (prev: any) => {
       if (!prev || !prev.pages || prev.pages.length === 0) return prev;
       const newPages = [...prev.pages];
