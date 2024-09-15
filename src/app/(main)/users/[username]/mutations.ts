@@ -19,7 +19,7 @@ export function useUpdateProfileMutation() {
 
   const queryClient = useQueryClient();
 
-  const { startUpload: startAvatarUpload } = useUploadThing("avatar");
+  const { startUpload: startAvatarUpload,  } = useUploadThing("avatar");
 
   const mutation = useMutation({
     mutationFn: async ({

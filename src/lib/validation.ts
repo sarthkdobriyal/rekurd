@@ -109,8 +109,11 @@ export interface ChatStorageHook {
 export const submitSongSchema = z.object({
   title: z.string().min(1, "Title is required"),
   fileUrl: z.string().url("Invalid URL"),
-  duration: z.number().min(1, "Duration must be at least 1 second"),
   albumArtUrl: z.string().url("Invalid URL").optional(),
+});
+export const submitSongFormSchema = z.object({
+  title: z.string().min(1, "Title is required"),
 });
 
 export type SubmitSongValues = z.infer<typeof submitSongSchema>;
+export type SubmitSongFormValues = z.infer<typeof submitSongFormSchema>;
