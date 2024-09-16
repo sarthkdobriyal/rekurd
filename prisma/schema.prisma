@@ -88,7 +88,7 @@ model RadioSongRequest {
 
 model RadioQueue {
   id       String           @id @default(cuid())
-  songId   String
+  songId   String           @unique
   song     RadioSongRequest @relation(fields: [songId], references: [id], onDelete: Cascade)
   position Int // Order in the queue
 

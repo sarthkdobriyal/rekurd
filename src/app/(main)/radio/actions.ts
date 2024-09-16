@@ -3,6 +3,8 @@
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import { submitSongSchema, SubmitSongValues } from "@/lib/validation";
+import { redirect } from "next/navigation";
+
 
 export const addSongRequest = async (songDetails: SubmitSongValues) => {
     try {
@@ -29,4 +31,21 @@ export const addSongRequest = async (songDetails: SubmitSongValues) => {
         console.error(error);
         throw error;
       }
+}
+
+export const isAuthUserRadioModerator = async () => {
+
+  const { user } = await  validateRequest()
+  if(!user) throw Error("Unauthorized")
+
+  const isRadioModerator = await prisma.radioModerator.findUnique({
+    where: {
+      userId: user.id
+    }
+  })
+ 
+
+  if(isRadioModerator === null) return redirect('/radio')
+
+  return user
 }

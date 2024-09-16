@@ -12,9 +12,11 @@ import { Button } from "@/components/ui/button";
 import RadioMessagesSkeleton from "@/components/RadioMessagesSkeleton";
 import { useChatSocketConnection } from "@/hooks/useChatSocketConnection";
 
-interface RadioChatProps {}
+interface RadioChatProps {
+  isModerator? : boolean
+}
 
-const RadioChat: FC<RadioChatProps> = ({}) => {
+const RadioChat: FC<RadioChatProps> = ({isModerator}) => {
   const { user: loggedInUser } = useSession();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -69,8 +71,8 @@ const RadioChat: FC<RadioChatProps> = ({}) => {
   console.log(data);
 
   return (
-    <div className="flex h-full max-h-[40%] w-full flex-col justify-between gap-y-2 ">
-      <div className="scrollbar-hide flex h-full flex-col-reverse gap-y-2 overflow-y-scroll">
+    <div className={`flex  ${isModerator ? "max-h-[20%]" : "max-h-[40%]"} w-full flex-col justify-between gap-y-2 `}>
+      <div className="scrollbar-hide  flex h-full flex-col-reverse gap-y-2 overflow-y-scroll">
       
       <div className="mt-auto flex h-full flex-col-reverse overflow-auto scrollbar-hide gap-y-4">
         {renderMessages()}

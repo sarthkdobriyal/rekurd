@@ -12,7 +12,7 @@ interface RadioPageProps {}
 
 const RadioPage: FC<RadioPageProps> = ({}) => {
   return (
-    <div className="flex h-full  max-h-[80%] w-full flex-col items-start gap-y-2">
+    <div className="flex h-full  max-h-[95%] w-full flex-col items-start gap-y-2">
       <div className="flex w-full items-center gap-x-1">
         <span className="text-2xl font-bold">Tune In Radio</span>
         <Image
