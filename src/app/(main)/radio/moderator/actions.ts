@@ -33,20 +33,33 @@ export async function DeleteSong(songId: string) {
 }
 
 export async function AddSongToQueue(songId: string) {
-  const user = await isAuthUserRadioModerator();
+    const user = await isAuthUserRadioModerator();
+  
+    if (!user) throw new Error("Unauthorized");
+  
+    await prisma.$transaction(async (tx) => {
+      // Fetch the current last position in the queue
+      const lastSong = await tx.radioQueue.findFirst({
+        orderBy: {
+          position: 'desc',
+        },
+      });
+  
+      const newPosition = lastSong ? Math.floor(lastSong.position / 1000) * 1000 + 1000 : 1000;
+  
+      await tx.radioQueue.create({
+        data: {
+          songId,
+          position: newPosition,
+        },
+      });
+    });
+  
+    revalidatePath("/radio/moderator/manage");
+  }
 
-  if (!user) throw new Error("Unauthorized");
 
-  await prisma.radioQueue.create({
-    data: {
-      songId,
-      position: (await prisma.radioQueue.count()) + 1,
-    },
-  });
-
-  revalidatePath("/radio/moderator/manage");
-}
-
+  
 export async function IsSongInQueue(songId: string) {
   const user = await isAuthUserRadioModerator();
 

@@ -6,7 +6,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
+  previewFeatures = ["fullTextSearch","postgresqlExtensions"]
 }
 
 datasource db {
@@ -90,7 +90,7 @@ model RadioQueue {
   id       String           @id @default(cuid())
   songId   String           @unique
   song     RadioSongRequest @relation(fields: [songId], references: [id], onDelete: Cascade)
-  position Int // Order in the queue
+  position Float // Order in the queue
 
   @@map("radio_queue_entries")
 }

@@ -34,21 +34,25 @@ const CurrentQueue: FC<CurrentQueueProps> = ({}) => {
   if (!user) return null;
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading queue</div>;
+  if (!data || data.length === 0)
+    return (
+      <div className="flex w-full items-start justify-center py-4 text-muted-foreground">
+        No songs in queue
+      </div>
+    );
 
   if (!user) return null;
   if (!data) return null;
 
   const handleReorderQueue = async (newOrder: string[]) => {
-    console.log(newOrder)
-
-
+    console.log(newOrder);
 
     // Update the database
     queueReorderMutation.mutate({
-      ...newOrder
+      ...newOrder,
     });
-  }
-  console.log(data);
+  };
+  console.log(data[0]);
   return (
     <div className="h-full max-h-[95%] w-full">
       <Reorder.Group
@@ -97,7 +101,11 @@ const CurrentQueue: FC<CurrentQueueProps> = ({}) => {
                       <Play className="mr-2 size-4" />
                     </Button>
                     <RemoveSongFromQueueButton songId={song.songId} />
-                    <Button onPointerDown={(e) => controls.start(e)} variant="ghost" className="flex flex-col">
+                    <Button
+                      onPointerDown={(e) => controls.start(e)}
+                      variant="ghost"
+                      className="flex flex-col"
+                    >
                       <ArrowDownUp />
                     </Button>
                   </div>

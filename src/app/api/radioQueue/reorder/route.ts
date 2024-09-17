@@ -24,89 +24,45 @@ export async function POST(req: Request) {
 
     const { newOrder } = body;
 
-    // Convert newOrder object to an array of song IDs
-    const newOrderArray = Object.values(newOrder);
+     // Convert newOrder object to an array of song IDs
+     const newOrderArray = Object.values(newOrder);
 
-    // Retry mechanism for handling deadlocks
-    const maxRetries = 5;
-    let attempt = 0;
-    let success = false;
-
-    // Fetch current positions to update in ascending order
-    const currentPositions = await prisma.radioQueue.findMany({
-      where: {
-        id: { in: newOrderArray },
-      },
-      select: {
-        id: true,
-        position: true,
-      },
-      orderBy: {
-        position: "asc",
-      },
-    });
-
-    // Function to update positions in smaller batches
-    const updatePositionsInBatches = async (batchSize: number) => {
-      for (let i = 0; i < newOrderArray.length; i += batchSize) {
-        const batch = newOrderArray.slice(i, i + batchSize);
-        const updatePromises = batch.map((id, index) => {
-          const currentPosition = currentPositions.find(
-            (item) => item.id === id,
-          )?.position;
-          return prisma.radioQueue.update({
-            where: { id },
-            data: { position: i + index },
-          });
-        });
-        await prisma.$transaction(updatePromises);
-      }
-    };
-
-    while (attempt < maxRetries && !success) {
-      try {
-        // Check if the last item is being moved to the first position
-        const lastItemId = newOrderArray[newOrderArray.length - 1];
-        const firstItemId = newOrderArray[0];
-        const lastItemCurrentPosition = currentPositions.find(
-          (item) => item.id === lastItemId,
-        )?.position;
-
-        if (
-          lastItemCurrentPosition === newOrderArray.length - 1 &&
-          lastItemId === firstItemId
-        ) {
-          // Move the last item to the first position separately
-          await prisma.radioQueue.update({
-            where: { id: lastItemId },
-            data: { position: 0 },
-          });
-
-          // Update the rest of the items
-          await updatePositionsInBatches(10);
-        } else {
-          // Update positions in batches of 10
-          await updatePositionsInBatches(10);
-        }
-
-        success = true;
-      } catch (error) {
-        if (isPrismaDeadlockError(error)) {
-          // Deadlock detected
-          attempt++;
-          if (attempt < maxRetries) {
-            console.log(
-              `Deadlock detected, retrying... (${attempt}/${maxRetries})`,
-            );
-            await new Promise((resolve) => setTimeout(resolve, 100 * attempt)); // Exponential backoff
-          } else {
-            throw error;
-          }
-        } else {
-          throw error;
-        }
-      }
-    }
+     // Fetch current positions
+     const currentPositions = await prisma.radioQueue.findMany({
+       where: {
+         id: { in: newOrderArray },
+       },
+       select: {
+         id: true,
+         position: true,
+       },
+       orderBy: {
+         position: "asc",
+       },
+     });
+ 
+     // Calculate new positions using floating-point values
+     const newPositions = newOrderArray.map((id, index) => {
+       const prevPosition = index > 0 ? currentPositions[index - 1].position : 0;
+       const nextPosition =
+         index < currentPositions.length - 1
+           ? currentPositions[index + 1].position
+           : currentPositions.length;
+       return {
+         id,
+         position: (prevPosition + nextPosition) / 2,
+       };
+     });
+ 
+     // Update positions in the database
+     await prisma.$transaction(
+       newPositions.map(({ id, position }) =>
+         prisma.radioQueue.update({
+           where: { id },
+           data: { position },
+         })
+       )
+     );
 
     return new Response("Queue order updated successfully", { status: 200 });
   } catch (error) {
