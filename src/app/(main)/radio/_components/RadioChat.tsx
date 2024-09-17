@@ -68,7 +68,7 @@ const RadioChat: FC<RadioChatProps> = ({isModerator}) => {
       )),
     );
 
-  console.log(data);
+
 
   return (
     <div className={`flex  ${isModerator ? "max-h-[20%]" : "max-h-[40%]"} w-full flex-col justify-between gap-y-2 `}>

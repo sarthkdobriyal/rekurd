@@ -51,7 +51,7 @@ const AllRequestedSongs: FC<AllRequestedSongsProps> = async ({}) => {
       songs.map(async (song) => {
         const isInQueue = await checkIfInQueue(song.id);
         return (
-          <div className="px-4 py-3 border-b flex items-center" key={song.id}>
+          <div className="px-4 py-3 shadow-sm shadow-gray-700 flex items-center" key={song.id}>
             <Image
               src={song.albumArtUrl || "/record.jpg"}
               alt={song.title}

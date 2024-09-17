@@ -134,6 +134,30 @@ export interface MessagePage {
   nextCursor: string | null;
 }
 
+export type RadioQueue = ({
+  song: {
+    user: {
+      id: string;
+      username: string;
+      avatarUrl: string | null;
+  };
+} & {
+      id: string;
+      title: string;
+      fileUrl: string;
+      duration: number | null;
+      isReviewed: boolean;
+      albumArtUrl: string | null;
+      userId: string;
+      createdAt: Date;
+  };
+} & {
+  id: string;
+  songId: string;
+  position: number;
+})[]
+
+
 export type RadioMessage = {
   user: {
       id: string;
