@@ -134,7 +134,9 @@ export interface MessagePage {
   nextCursor: string | null;
 }
 
-export type RadioQueue = ({
+export type RadioQueue = RadioSong[]
+
+export type RadioSong = ({
   song: {
     user: {
       id: string;
@@ -155,7 +157,7 @@ export type RadioQueue = ({
   id: string;
   songId: string;
   position: number;
-})[]
+})
 
 
 export type RadioMessage = {
