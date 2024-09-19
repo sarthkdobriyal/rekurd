@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Trash2, SquareGanttChart, CirclePlus } from "lucide-react";
+import { Trash2, SquareGanttChart, CirclePlus, CirclePlay } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FC } from "react";
 import CurrentQueue from "./CurrentQueue";
+import StartRadio from "./StartRadio";
 
 interface RadioQueueProps {}
 
@@ -15,6 +16,7 @@ const RadioQueue: FC<RadioQueueProps> = ({}) => {
           Radio Queue
         </div>
         <div className="flex gap-x-2">
+            <StartRadio />
             <Button variant="ghost">
               <Link href='/radio/moderator/manage'>
               <CirclePlus />

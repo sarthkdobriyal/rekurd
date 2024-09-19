@@ -53,7 +53,6 @@ const CurrentQueue: FC<CurrentQueueProps> = ({}) => {
       ...newOrder,
     });
   };
-  console.log(data[0]);
   return (
     <div className="h-full max-h-[95%] w-full">
       <Reorder.Group

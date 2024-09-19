@@ -1,26 +1,39 @@
 import { useState, useEffect, useMemo } from "react";
 import { Howl } from "howler";
 
-const useAudio = (url: string) => {
-  const [isPlaying, setIsPlaying] = useState(false);
+const useAudio = (url: string, onEnd?: () => void) => {
+
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+
 
   const audio = useMemo(() => new Howl({
     src: [url],
     loop: false,
     preload: true,
-  }), [url]);
+    onend: onEnd,
+  }), [url, onEnd]);
+
+
+  const isPlaying = () => audio.playing();
+ 
+  const playFrom = (time: number) => {
+    if (audio) {
+      audio.seek(time);
+      audio.play();
+    }
+  };
 
 
    const playPauseSong = () => {
     if (audio.playing()) {
       audio.fade(1, 0, 1000);
       setTimeout(() => {
-        setIsPlaying(false);
+
         audio.pause(); // Stop the audio to reset it to the beginning
       }, 1000);
     } else {
       audio.play();
-      setIsPlaying(true);
     }
   };
    const playStopSong = () => {
@@ -28,41 +41,42 @@ const useAudio = (url: string) => {
       audio.fade(1, 0, 1000);
       setTimeout(() => {
         audio.stop(); // Stop the audio to reset it to the beginning
-        setIsPlaying(false);
+
       }, 1000);
     } else {
       audio.play();
-      setIsPlaying(true);
     }
   };
 
   const play = () => {
     audio.play();
-    setIsPlaying(true);
+
   };
 
   const pause = () => {
-    audio.pause();
-    setIsPlaying(false);
-  };
 
+      const pausedAt = audio.seek();
+      audio.pause();
+      return pausedAt;
+  };
   const stop = () => {
     audio.fade(1, 0, 1000);
     setTimeout(() => {
       audio.stop();
-      setIsPlaying(false);
     }, 1000);
   };
 
-  useEffect(() => {
-    audio.on('end', () => {
-      setIsPlaying(false);
-    });
 
-    return () => {
-      audio.off('end');
-    };
-  }, [audio]);
+
+  const muteUnmute = () => {
+    if (isMuted) {
+      audio.mute(false);
+      setIsMuted(false);
+    } else {
+      audio.mute(true);
+      setIsMuted(true);
+    }
+  };
 
   return {
     isPlaying,
@@ -70,7 +84,13 @@ const useAudio = (url: string) => {
     pause,
     stop,
     playPauseSong,
-    playStopSong
+    playStopSong,
+    playFrom,
+    duration: audio.duration(),
+    muteUnmute,
+    currentTime,
+    isMuted,
+    setCurrentTime
   };
 };
 

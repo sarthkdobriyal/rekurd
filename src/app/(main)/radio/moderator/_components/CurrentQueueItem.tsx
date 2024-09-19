@@ -37,7 +37,7 @@ interface CurrentQueueItemProps {
 
 const CurrentQueueItem: FC<CurrentQueueItemProps> = ({ song, user }) => {
   const controls = useDragControls();
-  const { isPlaying, playStopSong } = useAudio(song.fileUrl);
+  const { isPlaying, playStopSong } = useAudio(song.fileUrl, );
 
 
 
@@ -62,7 +62,7 @@ const CurrentQueueItem: FC<CurrentQueueItemProps> = ({ song, user }) => {
       </div>
       <div className="ml-auto flex items-center space-x-3 px-3">
         <Button onClick={playStopSong} variant="ghost" className="flex items-center" size="sm">
-          {isPlaying ? <Pause className="mr-2 size-4" /> : <Play className="mr-2 size-4" />}
+          {isPlaying() ? <Pause className="mr-2 size-4" /> : <Play className="mr-2 size-4" />}
         </Button>
         <RemoveSongFromQueueButton songId={song.id} />
         <Button onPointerDown={(e) => controls.start(e)} variant="ghost" className="flex flex-col">

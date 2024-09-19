@@ -101,6 +101,7 @@ model RadioPlaybackState {
   song      RadioSongRequest @relation(fields: [songId], references: [id], onDelete: Cascade)
   startedAt DateTime // Time when the song started playing
   paused    Boolean          @default(false) // If playback is paused
+  pausedAt  Int?
 
   @@map("radio_playback_state")
 }

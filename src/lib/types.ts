@@ -134,6 +134,14 @@ export interface MessagePage {
   nextCursor: string | null;
 }
 
+export type RadioSongPlaybackState = {
+  paused: boolean,
+  startedAt: Date,
+  id: string,
+  songId: string,
+  pausedAt: number
+} & RadioSong
+
 export type RadioQueue = RadioSong[]
 
 export type RadioSong = ({
