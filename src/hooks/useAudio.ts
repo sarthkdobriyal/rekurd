@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Howl } from "howler";
 
-const useAudio = (url: string, onEnd?: () => void) => {
+const useAudio = (url: string, onEnd?: () => void,  onPause?: () => void) => {
 
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -12,7 +12,9 @@ const useAudio = (url: string, onEnd?: () => void) => {
     loop: false,
     preload: true,
     onend: onEnd,
-  }), [url, onEnd]);
+    onpause: onPause
+
+  }), [url, onEnd, onPause]);
 
 
   const isPlaying = () => audio.playing();
@@ -54,11 +56,15 @@ const useAudio = (url: string, onEnd?: () => void) => {
   };
 
   const pause = () => {
-
-      const pausedAt = audio.seek();
       audio.pause();
-      return pausedAt;
   };
+
+  const seek = () => {
+    const pauseAt = audio.seek();
+    return pauseAt;
+  }
+
+
   const stop = () => {
     audio.fade(1, 0, 1000);
     setTimeout(() => {
@@ -90,6 +96,7 @@ const useAudio = (url: string, onEnd?: () => void) => {
     muteUnmute,
     currentTime,
     isMuted,
+    seek,
     setCurrentTime
   };
 };
