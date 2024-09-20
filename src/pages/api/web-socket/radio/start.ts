@@ -50,6 +50,35 @@ export default async function handler(
           startedAt: new Date(),
           paused: false,
         },
+        include: {
+          song: {
+            include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatarUrl: true,
+
+              }
+            }
+          }
+        }
+        }
+      });
+
+      const nextQueueEntry = await prisma.radioQueue.findFirst({
+        orderBy: { position: 'asc' },
+        include: { song: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatarUrl: true,
+              },
+            },
+          },
+        } },
       });
   
     //   // Emit the new playback state to all clients
@@ -57,7 +86,10 @@ export default async function handler(
     //     song: firstQueueEntry.song,
     //     startedAt: newPlaybackState.startedAt,
     //   };
-    //   res?.socket?.server?.io?.emit('global-radio-playback-state', message);
+      res?.socket?.server?.io?.emit('global-radio-playback-state', {
+        currentPlaybackState: newPlaybackState,
+        lastQueueEntry: nextQueueEntry,
+      });
   
       return res.status(201).json({ message: 'Playback started', data: newPlaybackState });
   } catch (error) {

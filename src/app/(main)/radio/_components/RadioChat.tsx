@@ -74,7 +74,7 @@ const RadioChat: FC<RadioChatProps> = ({isModerator}) => {
     <div className={`flex  ${isModerator ? "max-h-[20%]" : "max-h-[40%]"} w-full flex-col justify-between gap-y-2 `}>
       <div className="scrollbar-hide  flex h-full flex-col-reverse gap-y-2 overflow-y-scroll">
       
-      <div className="mt-auto flex h-full flex-col-reverse overflow-auto scrollbar-hide gap-y-4">
+      <div className="mt-auto flex h-full flex-col-reverse overflow-auto scrollbar-hide gap-y-2">
         {renderMessages()}
         {hasNextPage && (
           <div className="flex justify-center">

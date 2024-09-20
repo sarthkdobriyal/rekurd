@@ -30,6 +30,7 @@ export default async function handler(
   
        // Fetch the current playback state
     const currentPlaybackState = await prisma.radioPlaybackState.findFirst({
+     
       });
   
       if (!currentPlaybackState) {
@@ -40,10 +41,26 @@ export default async function handler(
       const updatedPlaybackState = await prisma.radioPlaybackState.update({
         where: { id: currentPlaybackState.id },
         data: { paused: false },
+        include: {
+          song: {
+            include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatarUrl: true,
+
+              }
+            }
+          }
+        }
+        }
       });
   
       // Emit the updated playback state to all clients
-    //   res?.socket?.server?.io?.emit('global-radio-playback-state', updatedPlaybackState);
+      res?.socket?.server?.io?.emit('global-radio-playback-state', {
+        currentPlaybackState: updatedPlaybackState,
+      });
   
       return res.status(200).json({ message: 'Playback resumed', data: updatedPlaybackState });
   } catch (error) {

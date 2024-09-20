@@ -64,10 +64,27 @@ export default async function handler(
           startedAt: new Date(),
           paused: false,
         },
+        include: {
+          song: {
+            include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatarUrl: true,
+
+              }
+            }
+          }
+        }
+        }
       });
   
       // Emit the updated playback state to all clients
-    //   res?.socket?.server?.io?.emit('global-radio-playback-state', newPlaybackState);
+      res?.socket?.server?.io?.emit('global-radio-playback-state', {
+        currentPlaybackState: newPlaybackState,
+        lastQueueEntry: nextQueueEntry,
+      });
   
       return res.status(200).json({ message: 'Playing next song', data: newPlaybackState });
   } catch (error) {

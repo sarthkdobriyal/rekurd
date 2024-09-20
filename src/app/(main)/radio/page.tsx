@@ -7,10 +7,16 @@ import RadioChat from "./_components/RadioChat";
 import SubmitSongDialog from "./_components/SubmitSongDialog";
 import { Button } from "@/components/ui/button";
 import PublicRadioPlayer from "./_components/PublicRadioPlayer";
+import { isAuthUserRadioModerator } from "./actions";
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
+
 
 interface RadioPageProps {}
 
-const RadioPage: FC<RadioPageProps> = ({}) => {
+const RadioPage: FC<RadioPageProps> = async ({}) => {
+
+
   return (
     <div className="flex h-full  max-h-[95%] w-full flex-col items-start gap-y-2">
       <div className="flex w-full items-center gap-x-1 mb-3">
@@ -22,7 +28,7 @@ const RadioPage: FC<RadioPageProps> = ({}) => {
           width={50}
           height={50}
         />
-        <div className="ml-auto">
+        <div className="ml-auto flex gap-x-2">         
           <ListeningCount />
         </div>
       </div>

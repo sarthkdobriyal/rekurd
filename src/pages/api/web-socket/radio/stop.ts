@@ -44,7 +44,7 @@ export default async function handler(
     });
 
     // Emit the updated playback state to all clients
-    // res?.socket?.server?.io?.emit('global-radio-playback-state', { song: null });
+    res?.socket?.server?.io?.emit('global-radio-playback-state', {});
 
     return res.status(200).json({ message: 'Playback stopped' });
   } catch (error) {
