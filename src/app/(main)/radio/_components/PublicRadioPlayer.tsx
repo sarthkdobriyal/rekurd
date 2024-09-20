@@ -4,7 +4,7 @@ import { UseRadioSocketConnection } from "@/hooks/useRadioSocketConnection";
 import kyInstance from "@/lib/ky";
 import { PublicRadioData, RadioSongPlaybackState } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
-import { Pause, Volume, Volume2 } from "lucide-react";
+import { BoomBox, Pause, Volume, Volume2 } from "lucide-react";
 import Image from "next/image";
 import { FC } from "react";
 
@@ -54,11 +54,17 @@ const PublicRadioPlayer: FC<PublicRadioPlayerProps> = ({}) => {
     );
   }
 
-  if (!data) {
+  if (!data?.currentPlaybackState) {
     return (
-      <div className="flex w-full items-center justify-center text-center text-muted-foreground">
-        Radio is Currently Off
-      </div>
+      <div className="flex w-full h-[30%] justify-center items-center flex-col gap-y-4">
+      
+
+      <BoomBox size={36} strokeWidth={1.75} absoluteStrokeWidth />
+      <span className="font-semibold font-sans ">
+        Radio is currently off
+      </span>
+
+    </div>
     );
   }
 
