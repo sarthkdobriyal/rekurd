@@ -3,7 +3,7 @@ import { isAuthUserRadioModerator } from "../actions";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import ListeningCount from "../_components/ListeningCount";
-import Player from "../_components/Player";
+import Player from "../_components/PublicRadioPlayer";
 import SubmitSongDialog from "../_components/SubmitSongDialog";
 import { Button } from "@/components/ui/button";
 import RadioChat from "../_components/RadioChat";

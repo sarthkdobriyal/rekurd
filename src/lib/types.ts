@@ -134,6 +134,12 @@ export interface MessagePage {
   nextCursor: string | null;
 }
 
+export type PublicRadioData = {
+  currentPlaybackState: RadioSongPlaybackState | null;
+  lastQueueEntry: RadioSong | null;
+
+}
+
 export type RadioSongPlaybackState = {
   paused: boolean,
   startedAt: Date,
