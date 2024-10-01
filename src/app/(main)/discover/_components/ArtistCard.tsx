@@ -34,7 +34,7 @@ const ArtistCard: FC<ArtistCardProps> = ({ artist }) => {
         
         <p className="mb-2 text-lg">
 
-            <span className="italic mx-2">
+            <span className="italic mx-2 font-bold">
             {artist.musicalInfo?.primaryInstrument.name}
             </span>
              Enthusiast
@@ -73,7 +73,7 @@ const ArtistCard: FC<ArtistCardProps> = ({ artist }) => {
           </div>
 
           {artist.musicalInfo &&  artist.musicalInfo.bio && (
-            <div className="mb-4 flex flex-col gap-1 text-lg italic">
+            <div className="mb-4 flex flex-col gap-1 text-sm font-extralight font-sans">
               <Linkify>
                 <p className="flex flex-wrap overflow-hidden whitespace-pre-line break-words ">
                   {artist.musicalInfo.bio}
