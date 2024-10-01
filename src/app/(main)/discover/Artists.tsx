@@ -1,74 +1,89 @@
+"use client"
+
+
 import { validateRequest } from '@/auth';
 import UserAvatar from '@/components/UserAvatar';
 import UserTooltip from '@/components/UserTooltip';
 import prisma from '@/lib/prisma';
-import { getUserDataSelect } from '@/lib/types';
+import { DiscoverUsers, getUserDataSelect } from '@/lib/types';
 import Link from 'next/link';
 import React from 'react'
+import { useSession } from '../SessionProvider';
+import { useQuery } from '@tanstack/react-query';
+import kyInstance from '@/lib/ky';
+import ArtistCard from './_components/ArtistCard';
+import ArtistsCardSkeleton from './_components/ArtistsCardSkeleton';
 
-async function Artists() {
+ function Artists() {
 
-    const { user: loggedInUser } = await validateRequest();
+    const { user: loggedInUser } = useSession()
 
   if (!loggedInUser) return null;
 
-  const discoverUsers = await prisma.user.findMany({
-    where: {
-      id: {
-        not: loggedInUser.id,
-      },
-      AND: [
-        {
-          NOT: {
-            sentConnections: {
-              some: {
-                recipientId: loggedInUser.id,
-              },
-            },
-          },
-        },
-        {
-          NOT: {
-            receivedConnections: {
-              some: {
-                requesterId: loggedInUser.id,
-              },
-            },
-          },
-        },
-      ],
-    },
-    select: getUserDataSelect(loggedInUser.id)
+  // const discoverUsers = await prisma.user.findMany({
+  //   where: {
+  //     id: {
+  //       not: loggedInUser.id,
+  //     },
+  //     AND: [
+  //       {
+  //         NOT: {
+  //           sentConnections: {
+  //             some: {
+  //               recipientId: loggedInUser.id,
+  //             },
+  //           },
+  //         },
+  //       },
+  //       {
+  //         NOT: {
+  //           receivedConnections: {
+  //             some: {
+  //               requesterId: loggedInUser.id,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   select: getUserDataSelect(loggedInUser.id)
+  // });
+  const { data, isError, isLoading } = useQuery({
+    queryKey: ["discover-users"],
+    queryFn: () =>
+      kyInstance
+        .get("/api/find-nearby-users")
+        .json<DiscoverUsers>(),
   });
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-[80%] p-3 gap-x-3 flex overflow-x-scroll scroll-smooth snap-x snap-mandatory max-w-full scrollbar-hide">
+        {[...Array(5)].map((_, index) => (
+          <ArtistsCardSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
+
+
+  if(!data) {
+    return <div>No users available</div>
+  }
+
+  const discoverUsers = data
+  console.log(data)
 
   
 
 
   return (
-    <div className="space-y-5  shadow-sm">
+    <div className="w-full h-[80%] p-3 gap-x-3 flex overflow-x-scroll scroll-smooth snap-x snap-mandatory max-w-full scrollbar-hide ">
       {
       !discoverUsers.length ? <div>No users to follow</div> :
       
-      discoverUsers.map((user) => (
-        <div key={user.id} className="flex items-center justify-between gap-3 hover:bg-card  px-5 py-3 rounded-lg">
-          <UserTooltip user={user}>
-            <Link
-              href={`/users/${user.username}`}
-              className="flex items-center gap-3"
-            >
-              <UserAvatar avatarUrl={user.avatarUrl} className="flex-none" />
-              <div>
-                <p className="line-clamp-1 break-all font-semibold hover:underline">
-                  {user.displayName}
-                </p>
-                <p className="line-clamp-1 break-all text-muted-foreground">
-                  @{user.username}
-                </p>
-              </div>
-            </Link>
-          </UserTooltip>
-          
-        </div>
+      discoverUsers.map(({user}) => (
+        <ArtistCard artist={user} />
       ))}
     </div>
   )

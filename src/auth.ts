@@ -28,16 +28,11 @@ export const lucia = new Lucia(adapter, {
   },
 });
 
-
-
 export const google = new Google(
   process.env.GOOGLE_CLIENT_ID as string,
   process.env.GOOGLE_CLIENT_SECRET as string,
- `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/google`,
+  `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/google`,
 );
-
-
-
 
 declare module "lucia" {
   interface Register {
@@ -94,8 +89,10 @@ export const validateRequest = cache(
 
 export const validateRequestForPages = async (
   req: NextApiRequest,
-  res: NextApiResponse
-): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
+  res: NextApiResponse,
+): Promise<
+  { user: User; session: Session } | { user: null; session: null }
+> => {
   const sessionId = req.cookies[lucia.sessionCookieName] ?? null;
 
   if (!sessionId) {
@@ -112,18 +109,22 @@ export const validateRequestForPages = async (
       const sessionCookie = lucia.createSessionCookie(result.session.id);
       res.setHeader(
         "Set-Cookie",
-        `${sessionCookie.name}=${sessionCookie.value}; ${Object.entries(sessionCookie.attributes)
+        `${sessionCookie.name}=${sessionCookie.value}; ${Object.entries(
+          sessionCookie.attributes,
+        )
           .map(([key, value]) => `${key}=${value}`)
-          .join("; ")}`
+          .join("; ")}`,
       );
     }
     if (!result.session) {
       const sessionCookie = lucia.createBlankSessionCookie();
       res.setHeader(
         "Set-Cookie",
-        `${sessionCookie.name}=${sessionCookie.value}; ${Object.entries(sessionCookie.attributes)
+        `${sessionCookie.name}=${sessionCookie.value}; ${Object.entries(
+          sessionCookie.attributes,
+        )
           .map(([key, value]) => `${key}=${value}`)
-          .join("; ")}`
+          .join("; ")}`,
       );
     }
   } catch {}

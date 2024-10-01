@@ -1,3 +1,25 @@
 {
-  "extends": ["next/core-web-vitals", "prettier"]
+  "extends": ["next/core-web-vitals", "prettier"],
+  "plugins": ["@ts-safeql/eslint-plugin"],
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
+  "rules": {
+    "@ts-safeql/check-sql": [
+      "error",
+      {
+        "connections": [
+          {
+            // "migrationsDir": "./prisma/migrations",
+            "targets": [
+              {
+                "tag": "prisma.+($queryRaw|$executeRaw)",
+                "transform": "{type}[]"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

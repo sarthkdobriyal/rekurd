@@ -1,86 +1,98 @@
-import { useState, useEffect, useMemo } from "react";
-import { Howl } from "howler";
+import { useState, useEffect, useMemo, useRef } from "react";
 
-const useAudio = (url: string, onEnd?: () => void,  onPause?: () => void) => {
-
+const useAudio = (url: string, onEnd?: () => void, onPause?: () => void) => {
   const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  useEffect(() => {
+    if (!audioRef.current) {
+      const audioElement = new Audio(url);
+      console.log("newAudioEllement")
+      audioElement.loop = false;
+      audioElement.preload = "auto";
+      audioRef.current = audioElement;
 
+      const handleEnded = () => {
+        setIsPlaying(false);
+        if (onEnd) onEnd();
+      };
 
-  const audio = useMemo(() => new Howl({
-    src: [url],
-    loop: false,
-    preload: true,
-    onend: onEnd,
-    onpause: onPause
+      audioElement.addEventListener("ended", handleEnded);
 
-  }), [url, onEnd, onPause]);
+      return () => {
+        audioElement.removeEventListener("ended", handleEnded);
+      };
+    }
+  }, [url, onEnd]);
 
-
-  const isPlaying = () => audio.playing();
- 
   const playFrom = (time: number) => {
     if (audio) {
-      audio.seek(time);
+      audio.currentTime = time;
       audio.play();
+      setIsPlaying(true);
     }
   };
 
-
-   const playPauseSong = () => {
-    if (audio.playing()) {
-      audio.fade(1, 0, 1000);
-      setTimeout(() => {
-
-        audio.pause(); // Stop the audio to reset it to the beginning
-      }, 1000);
-    } else {
-      audio.play();
+  const playPauseSong = (pausedAt: number) => {
+    if (audio) {
+      console.log(isPlaying ,"isPlaying")
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      } else {
+        audio.currentTime = pausedAt;
+        audio.play();
+        setIsPlaying(true);
+      }
     }
   };
-   const playStopSong = () => {
-    if (audio.playing()) {
-      audio.fade(1, 0, 1000);
-      setTimeout(() => {
-        audio.stop(); // Stop the audio to reset it to the beginning
 
-      }, 1000);
-    } else {
-      audio.play();
+  const playStopSong = () => {
+    if (audio) {
+      console.log(isPlaying, "isPlaying")
+      if (isPlaying) {
+        audio.pause();
+        audio.currentTime = 0;
+        setIsPlaying(false);
+      } else {
+        audio.play();
+        setIsPlaying(true);
+      }
     }
   };
 
   const play = () => {
-    audio.play();
-
+    if (audio) {
+      audio.play();
+      setIsPlaying(true);
+    }
   };
 
   const pause = () => {
+    if (audio) {
       audio.pause();
+      setIsPlaying(false);
+    }
   };
 
   const seek = () => {
-    const pauseAt = audio.seek();
-    return pauseAt;
-  }
-
-
-  const stop = () => {
-    audio.fade(1, 0, 1000);
-    setTimeout(() => {
-      audio.stop();
-    }, 1000);
+    return audio ? audio.currentTime : 0;
   };
 
-
+  const stop = () => {
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+      setIsPlaying(false);
+    }
+  };
 
   const muteUnmute = () => {
-    if (isMuted) {
-      audio.mute(false);
-      setIsMuted(false);
-    } else {
-      audio.mute(true);
-      setIsMuted(true);
+    if (audio) {
+      audio.muted = !isMuted;
+      setIsMuted(!isMuted);
     }
   };
 
@@ -92,12 +104,12 @@ const useAudio = (url: string, onEnd?: () => void,  onPause?: () => void) => {
     playPauseSong,
     playStopSong,
     playFrom,
-    duration: audio.duration(),
+    duration: audio ? audio.duration : 0,
     muteUnmute,
     currentTime,
     isMuted,
     seek,
-    setCurrentTime
+    setCurrentTime,
   };
 };
 

@@ -36,6 +36,7 @@
     "@tiptap/react": "^2.4.0",
     "@tiptap/starter-kit": "^2.4.0",
     "@uploadthing/react": "^6.7.2",
+    "@vercel/functions": "^1.4.1",
     "antd": "^5.20.3",
     "arctic": "^1.9.1",
     "axios": "^1.7.7",
@@ -72,10 +73,12 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@ts-safeql/eslint-plugin": "^3.4.7",
     "@types/howler": "^2.2.11",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "dotenv": "^16.4.5",
     "eslint": "^8",
     "eslint-config-next": "15.0.0-rc.0",
     "eslint-config-prettier": "^9.1.0",

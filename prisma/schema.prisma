@@ -1,18 +1,13 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch","postgresqlExtensions"]
+  previewFeatures = ["fullTextSearch", "postgresqlExtensions"]
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  extensions = [postgis(version: "3.3.2"), uuid_ossp(map: "uuid-ossp", schema: "extensions")]
 }
 
 model User {
@@ -26,36 +21,41 @@ model User {
   bio                   String?
   createdAt             DateTime           @default(now())
   updatedAt             DateTime           @updatedAt
-  posts                 Post[]
-  sessions              Session[]
+  Message               Message[]
+  bookmarks             Bookmark[]
+  comments              Comment[]
+  receivedConnections   Connection[]       @relation("ReceivedConnections")
+  sentConnections       Connection[]       @relation("SentConnections")
   followers             Follow[]           @relation("Followers")
   following             Follow[]           @relation("Following")
   likes                 Like[]
-  comments              Comment[]
-  bookmarks             Bookmark[]
-  receivedNotifications Notification[]     @relation("Recipient")
-  issuedNotifications   Notification[]     @relation("Issuer")
   musicalInfo           MusicalInfo?
-  UserContact           UserContact?
-  sentConnections       Connection[]       @relation("SentConnections")
-  receivedConnections   Connection[]       @relation("ReceivedConnections")
-  conversations         Conversation[]     @relation("UsersInConversation")
-  Message               Message[]
+  issuedNotifications   Notification[]     @relation("Issuer")
+  receivedNotifications Notification[]     @relation("Recipient")
+  posts                 Post[]
   RadioChatMessage      RadioChatMessage[]
-  RadioSongRequest      RadioSongRequest[]
   RadioModerator        RadioModerator?
+  RadioSongRequest      RadioSongRequest[]
+  sessions              Session[]
+  UserContact           UserContact?
+  conversations         Conversation[]     @relation("UsersInConversation")
+  UserLocation          UserLocation?
 
   @@map("users")
 }
 
-// Radio 
+model UserLocation {
+  id     String                                @id
+  userId String                                @unique
+  user   User                                  @relation(fields: [userId], references: [id])
+  coords Unsupported("geometry(Point, 4326)")? @default(dbgenerated("null"))
+}
 
 model RadioModerator {
-  id     String @id @default(cuid())
-  userId String @unique // Ensure a user can only be a moderator once
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id        String   @id @default(cuid())
+  userId    String   @unique
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("radio_moderators")
 }
@@ -72,16 +72,16 @@ model RadioChatMessage {
 
 model RadioSongRequest {
   id                 String               @id @default(cuid())
-  title              String // Song title
-  fileUrl            String // URL of the mp3 file from Uploadthing
-  duration           Int? // Song duration in seconds
-  isReviewed         Boolean              @default(false) // If the song has been reviewed by a moderator
-  albumArtUrl        String? // Optional URL of the album art
-  userId             String // User who requested/uploaded the song
-  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title              String
+  fileUrl            String
+  duration           Int?
+  userId             String
   createdAt          DateTime             @default(now())
-  RadioQueue         RadioQueue[]
+  albumArtUrl        String?
+  isReviewed         Boolean              @default(false)
   RadioPlaybackState RadioPlaybackState[]
+  RadioQueue         RadioQueue?
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("radio_song_requests")
 }
@@ -89,19 +89,19 @@ model RadioSongRequest {
 model RadioQueue {
   id       String           @id @default(cuid())
   songId   String           @unique
+  position Float
   song     RadioSongRequest @relation(fields: [songId], references: [id], onDelete: Cascade)
-  position Float // Order in the queue
 
   @@map("radio_queue_entries")
 }
 
 model RadioPlaybackState {
   id        String           @id @default(cuid())
-  songId    String // Song currently playing
-  song      RadioSongRequest @relation(fields: [songId], references: [id], onDelete: Cascade)
-  startedAt DateTime // Time when the song started playing
-  paused    Boolean          @default(false) // If playback is paused
+  songId    String
+  startedAt DateTime
+  paused    Boolean          @default(false)
   pausedAt  Int?
+  song      RadioSongRequest @relation(fields: [songId], references: [id], onDelete: Cascade)
 
   @@map("radio_playback_state")
 }
@@ -110,8 +110,7 @@ model Session {
   id        String   @id
   userId    String
   expiresAt DateTime
-
-  user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
@@ -123,33 +122,21 @@ model Connection {
   status      ConnectionStatus @default(PENDING)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
-
-  requester User @relation("SentConnections", fields: [requesterId], references: [id])
-  recipient User @relation("ReceivedConnections", fields: [recipientId], references: [id])
+  recipient   User             @relation("ReceivedConnections", fields: [recipientId], references: [id])
+  requester   User             @relation("SentConnections", fields: [requesterId], references: [id])
 
   @@unique([requesterId, recipientId])
   @@map("connections")
 }
 
-enum ConnectionStatus {
-  PENDING
-  CONNECTED
-}
-
-enum SocialLinkPlatform {
-  INSTAGRAM
-  SPOTIFY
-  SOUNDCLOUD
-}
-
 model UserContact {
   id          String       @id @default(cuid())
   userId      String       @unique
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   phone       String?
   city        String?
   country     String?
   socialLinks SocialLink[]
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([phone, userId])
   @@map("user_contacts")
@@ -167,22 +154,20 @@ model SocialLink {
 
 model MusicalInfo {
   id                   String     @id @default(cuid())
-  userId               String
-  user                 User       @relation(fields: [userId], references: [id])
+  userId               String     @unique
   yearsOfExperience    String
   title                String
-  genres               String[]
-  instruments          String[]
   primaryInstrumentId  String
-  primaryInstrument    Instrument @relation(fields: [primaryInstrumentId], references: [id])
   bio                  String?
   interestedInTutoring Boolean?
   interestedInLearning Boolean?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  instruments          String[]
+  genres               String[]
+  primaryInstrument    Instrument @relation(fields: [primaryInstrumentId], references: [id])
+  user                 User       @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId])
   @@map("musical_info")
 }
 
@@ -191,8 +176,8 @@ model Conversation {
   title     String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  users     User[]    @relation("UsersInConversation")
   messages  Message[]
+  users     User[]    @relation("UsersInConversation")
 }
 
 model Message {
@@ -200,9 +185,9 @@ model Message {
   content        String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
   conversationId String
   senderId       String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
   sender         User         @relation(fields: [senderId], references: [id])
 }
 
@@ -210,10 +195,10 @@ model Follow {
   id          String   @id @default(cuid())
   followerId  String
   followingId String
-  follower    User     @relation("Followers", fields: [followerId], references: [id])
-  following   User     @relation("Following", fields: [followingId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  follower    User     @relation("Followers", fields: [followerId], references: [id])
+  following   User     @relation("Following", fields: [followingId], references: [id])
 
   @@unique([followerId, followingId])
   @@map("follow")
@@ -223,14 +208,14 @@ model Post {
   id                  String         @id @default(cuid())
   content             String
   userId              String
-  user                User           @relation(fields: [userId], references: [id])
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
-  attachments         Media[]
-  likes               Like[]
-  comments            Comment[]
   bookmarks           Bookmark[]
+  comments            Comment[]
+  likes               Like[]
+  attachments         Media[]
   linkedNotifications Notification[]
+  user                User           @relation(fields: [userId], references: [id])
 
   @@map("posts")
 }
@@ -238,54 +223,47 @@ model Post {
 model Media {
   id        String    @id @default(cuid())
   postId    String?
-  post      Post?     @relation(fields: [postId], references: [id], onDelete: SetNull)
   type      MediaType
   url       String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  post      Post?     @relation(fields: [postId], references: [id])
 
   @@map("media")
-}
-
-enum MediaType {
-  IMAGE
-  VIDEO
 }
 
 model Like {
   id        String   @id @default(cuid())
   userId    String
   postId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
   @@map("likes")
 }
 
 model Comment {
-  id      String @id @default(cuid())
-  content String
-  userId  String
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  postId  String
-  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  postId    String
   createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("comments")
 }
 
 model Bookmark {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  postId String
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
   createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
   @@map("bookmarks")
@@ -294,15 +272,14 @@ model Bookmark {
 model Notification {
   id          String           @id @default(cuid())
   recipientId String
-  recipient   User             @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
   issuerId    String
-  issuer      User             @relation("Issuer", fields: [issuerId], references: [id], onDelete: Cascade)
   postId      String?
-  post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
   type        NotificationType
   read        Boolean          @default(false)
-
-  createdAt DateTime @default(now())
+  createdAt   DateTime         @default(now())
+  issuer      User             @relation("Issuer", fields: [issuerId], references: [id], onDelete: Cascade)
+  post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  recipient   User             @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
 }
@@ -318,6 +295,22 @@ model Genre {
   id       String @id @default(cuid())
   genre    String
   subgenre String
+}
+
+enum ConnectionStatus {
+  PENDING
+  CONNECTED
+}
+
+enum SocialLinkPlatform {
+  INSTAGRAM
+  SPOTIFY
+  SOUNDCLOUD
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
 }
 
 enum NotificationType {

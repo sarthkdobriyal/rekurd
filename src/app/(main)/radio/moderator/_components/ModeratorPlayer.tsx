@@ -37,7 +37,7 @@ const ModeratorPlayer: FC<ModeratorPlayerProps> = ({}) => {
   const playSongMutation = useMutation({
     mutationFn: () => kyInstance.post("/api/web-socket/radio/play").json(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["radio-currently-playing"] });
+      // queryClient.invalidateQueries({ queryKey: ["radio-currently-playing"] });
     },
     onError: (error) => {
       toast({
@@ -50,7 +50,8 @@ const ModeratorPlayer: FC<ModeratorPlayerProps> = ({}) => {
     mutationFn: (seek: number) =>
       kyInstance.post("/api/web-socket/radio/pause", { json: { seek } }).json(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["radio-currently-playing"] });
+      // queryClient.invalidateQueries({ queryKey: ["radio-currently-playing"] });
+      // songAudio.stop()
     },
     onError: (error) => {
       toast({
@@ -63,8 +64,7 @@ const ModeratorPlayer: FC<ModeratorPlayerProps> = ({}) => {
   const playNextSongMutation = useMutation({
     mutationFn: () => kyInstance.post("/api/web-socket/radio/playNext").json(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["radio-currently-playing"] });
-      songAudio.stop();
+      // queryClient.invalidateQueries({ queryKey: ["radio-currently-playing"] });
     },
     onError: (error) => {
       toast({
@@ -77,23 +77,23 @@ const ModeratorPlayer: FC<ModeratorPlayerProps> = ({}) => {
   const songAudio = useAudio(
     data?.song.fileUrl || "",
     () => {
-      songAudio.stop();
-      playNextSongMutation.mutate();
+      // songAudio.stop();
+      // playNextSongMutation.mutate();
     },
     () => {},
   );
 
   // console.log(songAudio.duration, "duration")
-  useEffect(() => {
-    if (data) {
-      if (data.paused) {
-        songAudio.pause();
-      } else {
-        const pausedAt = Number(data.pausedAt) || 0;
-        songAudio.playFrom(pausedAt);
-      }
-    }
-  }, [data, songAudio]);
+  // useEffect(() => {
+  //   if (data && !songAudio.isPlaying()) {
+  //     if (data.paused) {
+  //       songAudio.pause()
+  //     } else {
+  //       const pausedAt = Number(data.pausedAt) || 0;
+  //       songAudio.playFrom(pausedAt);
+  //     }
+  //   }
+  // }, [data, songAudio]);
 
   if (!data) {
     return (
@@ -104,12 +104,7 @@ const ModeratorPlayer: FC<ModeratorPlayerProps> = ({}) => {
   }
 
   const handlePlayPauseClick = () => {
-    if (data.paused) {
-      playSongMutation.mutate();
-    } else {
-      const seek = songAudio.seek();
-      pauseSongMutation.mutate(seek);
-    }
+    songAudio.playPauseSong(data.paused ? Number(data.pausedAt) : 0);
   };
 
   return (
@@ -153,10 +148,10 @@ const ModeratorPlayer: FC<ModeratorPlayerProps> = ({}) => {
         >
           {playSongMutation.isPending || pauseSongMutation.isPending ? (
             <Loader2 className="animate-spin" />
-          ) : data.paused ? (
-            <Play />
+          ) : songAudio.isPlaying ? (
+            <Pause /> 
           ) : (
-            <Pause />
+            <Play />
           )}
         </Button>
         <Button

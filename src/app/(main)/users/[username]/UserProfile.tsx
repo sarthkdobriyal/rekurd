@@ -114,9 +114,6 @@ export default function UserProfile({
 
       {user.musicalInfo && (
         <section className="w-full">
-          {/* <h2 className="mb-4 text-2xl font-bold text-secondary-foreground">
-              Soundscape Story
-              </h2> */}
           <p className="mb-2 text-3xl font-bold italic tracking-widest">
             {user.musicalInfo.title}
           </p>
@@ -124,13 +121,7 @@ export default function UserProfile({
             {user.musicalInfo.yearsOfExperience} Years of{" "}
             {user.musicalInfo.primaryInstrument.name} Mastery
           </p>
-          {/* <p className="mb-2 text-lg italic">
-            🎷{" "}
-            <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
-              Primary Instrument:
-            </span>{" "}
-            {user.musicalInfo.primaryInstrument.name}
-          </p> */}
+         
           {user.musicalInfo.instruments && (
             <div className="mb-2 flex flex-col gap-1 text-lg italic">
               <span className="text-sm font-semibold tracking-tighter text-muted-foreground">

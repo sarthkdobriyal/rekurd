@@ -137,8 +137,13 @@ export interface MessagePage {
 export type PublicRadioData = {
   currentPlaybackState: RadioSongPlaybackState | null;
   lastQueueEntry: RadioSong | null;
-
 }
+
+export type DiscoverUsers = {
+  user: UserData
+  userId: string;
+  city: string | null;
+}[]
 
 export type RadioSongPlaybackState = {
   paused: boolean,
