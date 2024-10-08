@@ -1,3 +1,4 @@
+'use client'
 import { Flex, Typography } from "antd";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

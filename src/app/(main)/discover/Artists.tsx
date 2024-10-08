@@ -58,7 +58,7 @@ import ArtistsCardSkeleton from './_components/ArtistsCardSkeleton';
 
   if (isLoading) {
     return (
-      <div className="w-full h-[80%] p-3 gap-x-3 flex overflow-x-scroll scroll-smooth snap-x snap-mandatory max-w-full scrollbar-hide">
+      <div className="w-full h-[80%] p-3 gap-x-3 flex overflow-x-scroll scroll-smooth snap-x snap-mandatory max-w-full  scrollbar-hide">
         {[...Array(5)].map((_, index) => (
           <ArtistsCardSkeleton key={index} />
         ))}

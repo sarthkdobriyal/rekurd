@@ -1,5 +1,3 @@
-'use client'
-
 import { LandingContainer } from '@/components/landing/LandingContainer'
 import { LandingCTA } from '@/components/landing/LandingCTA'
 import { LandingHero } from '@/components/landing/LandingHero'
@@ -241,10 +239,8 @@ export default function LandingPage() {
 
   return (
     <LandingContainer navItems={navItems}>
-      <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+      <div
+
       >
         <LandingHero
           title="Unleash Your Musical Potential"
@@ -260,35 +256,26 @@ export default function LandingPage() {
             />
           }
         />
-      </motion.div>
-      {/* <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+      </div>
+      {/* <div
+        
       >
         <LandingSocialProof logos={logos} title="Featured on" />
-      </motion.div> */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-      >
+      </div> */}
+      <div
+        >      
         <LandingPainPoints
           title="The Challenges Musicians Face"
           painPoints={painPoints}
         />
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
+      </div>
+      <div
+        
       >
         <LandingHowItWorks title="How It Works" steps={steps} />
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.8 }}
+      </div>
+      <div
+        
       >
         <LandingFeatures
           id="features"
@@ -296,22 +283,17 @@ export default function LandingPage() {
           subtitle="Our Features Help You Shine"
           features={features}
         />
-      </motion.div>
-      {/* <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1 }}
-      >
+      </div>
+      {/* <div
+             >
         <LandingTestimonials
           title="Success Stories"
           subtitle="See How We've Helped Musicians Like You"
           testimonials={testimonials}
         />
-      </motion.div> */}
-      {/* <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.2 }}
+      </div> */}
+      {/* <div
+        
       >
         <LandingPricing
           id="pricing"
@@ -319,11 +301,9 @@ export default function LandingPage() {
           subtitle="Affordable Plans to Suit Your Needs"
           packages={packages}
         />
-      </motion.div> */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.4 }}
+      </div> */}
+      <div
+        
       >
         <LandingFAQ
           id="faq"
@@ -331,11 +311,9 @@ export default function LandingPage() {
           subtitle="Got Questions? We've Got Answers"
           questionAnswers={questionAnswers}
         />
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.6 }}
+      </div>
+      <div
+        
       >
         <LandingCTA
           title="Ready to Elevate Your Music Career?"
@@ -343,7 +321,7 @@ export default function LandingPage() {
           buttonText="Get Started"
           buttonLink="/signup"
         />
-      </motion.div>
+      </div>
     </LandingContainer>
   )
 }

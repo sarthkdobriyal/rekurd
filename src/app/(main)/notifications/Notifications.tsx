@@ -48,9 +48,9 @@ export default function Notifications() {
     },
   });
 
-  useEffect(() => {
-    mutate();
-  }, [mutate]);
+  // useEffect(() => {
+  //   mutate();
+  // }, [mutate]);
 
   const notifications = data?.pages.flatMap((page) => page.notifications) || [];
 
