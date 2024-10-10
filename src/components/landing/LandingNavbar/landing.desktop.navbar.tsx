@@ -23,7 +23,7 @@ export const LandingDesktopNavbar = ({ navItems }: Props) => {
   return (
     <div className="relative flex w-full justify-between rounded-full bg-transparent px-4 py-2 transition duration-200">
       <div className="flex flex-row items-center gap-2">
-        <Logo isLabel />
+        {/* <Logo isLabel /> */}
         <div className="flex items-center gap-1.5 pl-8">
           {navItems.map((item) => (
             <LandingNavBarItem

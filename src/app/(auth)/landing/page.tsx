@@ -240,7 +240,7 @@ export default function LandingPage() {
   return (
     <LandingContainer navItems={navItems}>
       <div
-
+        
       >
         <LandingHero
           title="Unleash Your Musical Potential"

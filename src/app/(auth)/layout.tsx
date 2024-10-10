@@ -10,5 +10,5 @@ export default async function Layout({
 
   if (user) redirect("/");
 
-  return <>{children}</>;
+  return <div className="scrollbar-hide">{children}</div>;
 }

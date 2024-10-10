@@ -18,8 +18,8 @@ export const LandingContainer: React.FC<Props> = ({
 }) => {
   return (
     <main {...props} className="dark">
-      <div className={'bg-white text-black dark:bg-background dark:text-slate-200 flex-col flex gap-y-5 lg:gap-y-20'}>
-        <LandingNavBar navItems={navItems} />
+      <div className={'bg-white scrollbar-hide text-black dark:bg-background dark:text-slate-200 flex-col flex gap-y-5 lg:gap-y-20 '}>
+        {/* <LandingNavBar navItems={navItems} /> */}
         {children}
         <LandingFooter />
       </div>

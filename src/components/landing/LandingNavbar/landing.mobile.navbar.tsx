@@ -19,7 +19,7 @@ export const LandingMobileNavbar = ({ navItems }: any) => {
 
   return (
     <div className="flex justify-between items-center w-full rounded-full px-2.5 py-1.5 transition duration-200">
-      <Logo isLabel height={40} />
+      {/* <Logo isLabel height={40} /> */}
       <MenuOutlined
         className="text-black dark:text-white h-6 w-6"
         onClick={() => setOpen(!open)}
