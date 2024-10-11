@@ -1,48 +1,63 @@
-import { cn } from '@/lib/utils'
-import { HTMLAttributes } from 'react'
+import React, { useRef } from "react";
+import { cn } from "@/lib/utils";
+import { howitworks } from "./floatingImages";
+import Image from "next/image";
+import { useScroll, useTransform, motion } from "framer-motion";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
+interface Props {}
 
-type StepType = {
-  heading: string
-  description: string | any
-}
+export const LandingHowItWorks: React.FC<Props> = () => {
+  const container = useRef<HTMLDivElement>(null);
 
-interface Props extends HTMLAttributes<HTMLElement> {
-  title: string
-  subtitle?: string
-  steps: StepType[]
-}
+  const { scrollYProgress } = useScroll({
+    target: container,
+    offset: ["start end", "end start"],
+  });
 
-export const LandingHowItWorks: React.FC<Props> = ({
-  title,
-  subtitle = '',
-  steps,
-  className,
-  ...props
-}) => {
+  const y = useTransform(scrollYProgress, [0, 1], ["-10vh", "10vh"]);
+
   return (
-    <section
-      className={cn('py-16 px-5', className)}
-      {...props}
+    <div
+      ref={container}
+      className="relative flex h-screen items-center justify-center overflow-hidden"
+      style={{ clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" }}
     >
-      <div className="max-w-7xl mx-auto text-center">
-        <h2 className="text-4xl lg:text-5xl font-bold lg:tracking-tight">
-          {title}
-        </h2>
-        <div className="max-w-xl space-y-8 mt-12 mx-auto">
-          {steps.map((item, idx) => (
-            <div key={idx} className="flex items-start">
-              <div className="flex-shrink-0 w-12 h-12 bg-gray-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-2xl font-bold ">
-                {idx + 1}
-              </div>
-              <div className="ml-4 text-left">
-                <h3 className="font-semibold text-lg ">{item.heading}</h3>
-                <p className="dark:text-slate-400">{item.description}</p>
-              </div>
-            </div>
-          ))}
+      <Text />
+
+      <div className="fixed left-0 top-[-10vh] h-[120vh] w-full">
+        <motion.div style={{ y }} className="relative h-full w-full">
+          <Image
+            src={howitworks}
+            fill
+            alt="How it works background"
+            style={{ objectFit: "cover" }}
+          />
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+const Text = () => {
+  return (
+    <div className="relative z-10 h-full w-full bg-transparent flex flex-col justify-between p-14 md:p-52">
+      <div className="flex justify-start">
+        <div className="font-serif text-4xl text-muted-foreground md:text-6xl">
+          <span className="block">DISCOVER</span>
+          <span className="block">CONNECT</span>
+          <span className="block">JAM</span>
+          <span className="block">TEACH</span>
+          <span className="block">LEARN</span>
         </div>
       </div>
-    </section>
-  )
-}
+
+      <div className="flex justify-end items-end mt-auto">
+        <div className="font-mono flex flex-col items-center gap-y-3 text-4xl text-muted-foreground md:text-7xl text-right">
+          <span className="block">HOW IT WORKS</span>
+         <Image src='/howitworks-downarrow.png' width={100} height={10} alt='scroll' className="object-contain"/>
+        </div>
+      </div>
+    </div>
+  );
+};

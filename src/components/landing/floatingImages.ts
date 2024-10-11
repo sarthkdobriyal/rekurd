@@ -14,6 +14,9 @@ import floating7 from '../../../public/floating_7.jpg';
 
 import floating8 from '../../../public/floating_8.jpg';
 
+import howitworks  from '../../../public/howitworks.jpg'
+
+
 
 
 export { 
@@ -32,6 +35,8 @@ export {
 
     floating7, 
 
-    floating8
+    floating8,
+
+    howitworks
 
 }
