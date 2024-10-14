@@ -67,7 +67,7 @@ const AllRequestedSongItem: FC<AllRequestedSongItemProps> = ({
           className="flex items-center"
           size="sm"
         >
-          {isPlaying() ? (
+          {isPlaying ? (
             <Pause className="mr-2 size-4" />
           ) : (
             <Play className="mr-2 size-4" />
