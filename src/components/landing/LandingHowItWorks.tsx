@@ -1,8 +1,8 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { howitworks } from "./floatingImages";
 import Image from "next/image";
-import { useScroll, useTransform, motion } from "framer-motion";
+import { useScroll, useTransform, motion, useInView, useAnimation, Variants, AnimationControls } from "framer-motion";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface Props {}
@@ -31,7 +31,7 @@ export const LandingHowItWorks: React.FC<Props> = () => {
             src={howitworks}
             fill
             alt="How it works background"
-            style={{ objectFit: "cover" }}
+            className="object-cover lg:object-contain"
           />
         </motion.div>
       </div>
@@ -40,24 +40,96 @@ export const LandingHowItWorks: React.FC<Props> = () => {
 };
 
 const Text = () => {
+
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, amount: 0.1 });
+
+  const topWords = ["DISCOVER", "CONNECT", "JAM", "TEACH", "LEARN"];
+  const bottomWords = ["HOW", "IT", "WORKS"];
+
+
   return (
-    <div className="relative z-10 h-full w-full bg-transparent flex flex-col justify-between p-14 md:p-52">
+    <div ref={containerRef} className="relative z-10 h-full w-full bg-transparent flex flex-col justify-between p-14 md:p-52">
       <div className="flex justify-start">
-        <div className="font-serif text-4xl text-muted-foreground md:text-6xl">
-          <span className="block">DISCOVER</span>
-          <span className="block">CONNECT</span>
-          <span className="block">JAM</span>
-          <span className="block">TEACH</span>
-          <span className="block">LEARN</span>
+        <div className="font-serif flex flex-col text-4xl text-muted-foreground md:text-6xl">
+          {topWords.map((word, index) => (
+            <AnimatedWord key={word} delay={index * 0.15}>
+              {word}
+            </AnimatedWord>
+          ))}
         </div>
       </div>
 
-      <div className="flex justify-end items-end mt-auto">
-        <div className="font-mono flex flex-col items-center gap-y-3 text-4xl text-muted-foreground md:text-7xl text-right">
-          <span className="block">HOW IT WORKS</span>
-         <Image src='/howitworks-downarrow.png' width={100} height={10} alt='scroll' className="object-contain"/>
-        </div>
+      <div className="flex  gap-y-2 justify-end items-end mt-auto">
+        <div className="flex  items-center gap-y-3 flex-col">
+       
+        <div className="font-serif flex gap-x-2  text-4xl text-muted-foreground md:text-7xl text-right">
+          {bottomWords.map((word, index) => (
+            <AnimatedWord key={word} delay={index * 0.15 + 0.5}>
+              {word}
+            </AnimatedWord>
+          ))}
+          </div>
+          <motion.div
+            initial={{ opacity: 0,  x:200 }}
+            animate={isInView ? { opacity: 1, y: 0, x:0 } : { }}
+            transition={{
+              type: "spring",
+              mass: 2,
+              damping: 30,
+              stiffness: 200,
+              delay: 1.2
+            }}
+            className=""
+          >
+             <Image src='/howitworks-downarrow.png' width={100} height={10} alt='scroll' className="object-contain lg:w-52"/>
+          </motion.div>
+          </div>
       </div>
     </div>
+  );
+};
+
+interface AnimatedWordProps {
+  children: string;
+  delay: number;
+}
+
+const AnimatedWord: React.FC<AnimatedWordProps> = ({ children, delay }) => {
+  const controls: AnimationControls = useAnimation();
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView: boolean = useInView(ref, { once: true, amount: 0.5 });
+
+  useEffect(() => {
+    if (isInView) {
+      controls.start("visible");
+    }
+  }, [isInView, controls]);
+
+  const variants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        mass: 2,
+        damping: 30,
+        stiffness: 200,
+        delay: delay,
+      }
+    }
+  };
+
+  return (
+    <motion.span
+      ref={ref}
+      initial="hidden"
+      animate={controls}
+      variants={variants}
+      className="inline-block"
+    >
+      {children}
+    </motion.span>
   );
 };

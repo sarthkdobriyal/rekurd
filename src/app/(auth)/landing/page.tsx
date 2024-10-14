@@ -27,41 +27,54 @@ import { FloatingNav } from "@/components/ui/floating-navbar";
 const features = [
   {
     heading: "Share Your Music",
-    description:
-      "Post images and videos to showcase your talent and connect with your audience.",
-    icon: <VideoCameraOutlined />,
+    description: "Showcase your talent with image and video posts. Let your music speak to a global audience.",
+    icon: "VideoCameraOutlined",
+    color: "black",
+    url: "/share",
+    src: "/recording-studio-night.jpg"
   },
   {
     heading: "Engage with Fans",
-    description:
-      "Receive comments and likes to interact with your fans and build a community.",
-    icon: <CommentOutlined />,
+    description: "Build your community through likes, comments, and direct interactions. Connect with your audience on a personal level.",
+    icon: "CommentOutlined",
+    color: "blue",
+    url: "/engage",
+    src: "/fans.jpeg"
   },
   {
     heading: "Connect with Musicians",
-    description:
-      "Find and connect with other artists to collaborate and grow together.",
-    icon: <UsergroupAddOutlined />,
+    description: "Find collaborators, join bands, or form musical partnerships. Grow together in the world of music.",
+    icon: "UsergroupAddOutlined",
+    color: "green",
+    url: "/connect",
+    src: "/jam-night.jpg"
   },
   {
     heading: "Discover New Talent",
-    description:
-      "Use our discover page to find artists in your region and expand your network.",
-    icon: <EditOutlined />,
+    description: "Explore regional artists, expand your network, and find the next big thing in your local music scene.",
+    icon: "SearchOutlined",
+    color: "purple",
+    url: "/discover",
+    src: "/opn-mic.jpg"
   },
   {
     heading: "AI Music Generator",
-    description:
-      "Overcome creative blocks with our AI-powered music generator.",
-    icon: <EditOutlined />,
+    description: "Break through creative blocks with our AI-powered tools. Generate melodies, chord progressions, and more.",
+    icon: "BulbOutlined",
+    color: "orange",
+    url: "/ai-generator",
+    src: "/ai-music.jpg"
   },
   {
     heading: "Promote on Instagram",
-    description:
-      "Integrate with Instagram and run ads from Google Ads to reach a wider audience.",
-    icon: <InstagramOutlined />,
-  },
+    description: "Reach wider audiences through integrated marketing. Seamlessly share your content and run targeted ads.",
+    icon: "InstagramOutlined",
+    color: "pink",
+    url: "/promote",
+    src: "/share-music.jpg"
+  }
 ];
+
 
 const testimonials = [
   {
@@ -164,21 +177,52 @@ const questionAnswers = [
   {
     question: "How can I connect with other musicians?",
     answer:
-      "Use our discover page to find and connect with artists in your region based on genre and instruments.",
+      "Connecting with musicians is simple! Just hit the connect button on any user’s profile. Once they accept your request, you can start chatting with them.",
   },
   {
-    question: "What is the AI music generator?",
+    question: "What is the gig hunting feature, and how does it work?",
     answer:
-      "It’s a tool that helps you overcome creative blocks by generating music ideas for you.",
+      "Gig hunting allows anyone to post gigs like performances or services needed, such as a music producer or mixing/mastering artist. Musicians can apply for these gigs, and the poster chooses who to connect with. This feature is coming soon!",
   },
   {
-    question: "Can I promote my music on social media?",
+    question: "How do I submit my song to the radio?",
     answer:
-      "Yes, you can integrate with Instagram and run ads from Google Ads directly through the app.",
+      "On the radio page, you'll find a 'Submit Song' button. Just click it, and you're ready to share your music!",
   },
   {
-    question: "Is there a free trial available?",
-    answer: "Yes, we offer a 14-day free trial for all our plans.",
+    question: "Can non-musicians use this platform?",
+    answer:
+      "Absolutely! Non-musicians can discover new music, find local artists, attend events, or even search for music teachers to start their own musical journey.",
+  },
+  {
+    question: "How can I create my profile as a musician?",
+    answer:
+      "Once you sign up, you'll be guided through an easy onboarding process to set up your profile. Afterward, you can always edit it from your user profile page.",
+  },
+  {
+    question: "Can I filter musicians based on the genre or instruments they play?",
+    answer:
+      "Yes! Use the filters on the Discover tab or the search bar to find musicians by genre, instrument, and more.",
+  },
+  {
+    question: "How can I find music teachers or students?",
+    answer:
+      "Head over to the Discover tab, apply the filters to search for either music teachers or students, and you're good to go!",
+  },
+  {
+    question: "Can local businesses post gig opportunities?",
+    answer:
+      "Yes, businesses can post gigs for musicians! This feature is currently under development, so stay tuned.",
+  },
+  {
+    question: "How does the location-based search work?",
+    answer:
+      "When you visit the Discover tab, you’ll see musicians in your area. It’s all about connecting with local talent!",
+  },
+  {
+    question: "Is there a way to promote local talent through the radio?",
+    answer:
+      "Yes! You can submit your song to the radio, and once reviewed, it will be played. Listeners can support you by donating. This feature is coming soon!",
   },
 ];
 
@@ -189,41 +233,8 @@ const logos = [
   { url: "/company-logo/mJ1sZFv.png" },
 ];
 
-const steps = [
-  {
-    heading: "Sign Up",
-    description: "Create your account and set up your profile.",
-  },
-  {
-    heading: "Post Your Music",
-    description: "Share your images and videos to showcase your talent.",
-  },
-  {
-    heading: "Engage and Connect",
-    description:
-      "Receive feedback, connect with other artists, and grow your network.",
-  },
-  {
-    heading: "Promote and Grow",
-    description:
-      "Use our tools to promote your music and reach a wider audience.",
-  },
-];
 
-const painPoints = [
-  {
-    emoji: "😞",
-    title: "Struggling to Gain Exposure",
-  },
-  {
-    emoji: "🤝",
-    title: "Difficult to Connect with Other Artists",
-  },
-  {
-    emoji: "😩",
-    title: "Creative Blocks",
-  },
-];
+
 
 const avatarItems = [
   {
@@ -261,52 +272,30 @@ export default function LandingPage() {
   return (
     <LandingContainer >
       <FloatingNav navItems={navItems} />
-      <div className="">
+
         <LandingHero />
-      </div>
-      <div>
+
         <LandingHowItWorks />
-      </div>
-      <div>
+
         <LandingFeatures
-          id="features"
-          title="Achieve Your Musical Dreams"
-          subtitle="Our Features Help You Shine"
           features={features}
         />
-      </div>
-      {/* <div
-             >
-        <LandingTestimonials
-          title="Success Stories"
-          subtitle="See How We've Helped Musicians Like You"
-          testimonials={testimonials}
+      
+
+        <LandingCTA
+          title="Ready to Elevate Your Music Career?"
+          subtitle="Join Our Community of Talented Musicians"
+          buttonText="Get Started"
+          buttonLink="/signup"
         />
-      </div> */}
-      {/* <div
-        
-      >
-        <LandingPricing
-          id="pricing"
-          title="Choose Your Plan"
-          subtitle="Affordable Plans to Suit Your Needs"
-          packages={packages}
-        />
-      </div> */}
+
+
       <div>
         <LandingFAQ
           id="faq"
           title="Frequently Asked Questions"
           subtitle="Got Questions? We've Got Answers"
           questionAnswers={questionAnswers}
-        />
-      </div>
-      <div>
-        <LandingCTA
-          title="Ready to Elevate Your Music Career?"
-          subtitle="Join Our Community of Talented Musicians"
-          buttonText="Get Started"
-          buttonLink="/signup"
         />
       </div>
     </LandingContainer>

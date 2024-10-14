@@ -1,40 +1,67 @@
-import { HTMLAttributes } from 'react'
-import LandingButton from './LandingButton'
-import { cn } from '@/lib/utils'
+import React, { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+import { BackgroundGradientAnimation } from "../ui/background-gradient-animation";
+import Link from "next/link";
 
 interface Props extends HTMLAttributes<HTMLElement> {
-  title?: string
-  subtitle?: string
-  buttonText?: string
-  buttonLink?: string
+  title?: string;
+  subtitle?: string;
+  buttonText?: string;
+  buttonLink?: string;
 }
 
 export const LandingCTA: React.FC<Props> = ({
   title,
   subtitle,
-  buttonText,
-  buttonLink,
+  buttonText = "Get Started",
+  buttonLink = "#",
   className,
-  ...props
 }) => {
   return (
     <section
-      className={cn('py-16 px-5', className)}
-      {...props}
+      className={cn("relative h-screen w-full overflow-hidden ", className)}
     >
-      <div className="max-w-7xl mx-auto ">
-        <div className="bg-background p-8 md:px-20 md:py-20 mt-20 mx-auto max-w-5xl rounded-lg flex flex-col items-center text-center">
-          <h2 className="text-white text-4xl lg:text-5xl font-bold lg:tracking-tight">
-            {title}
-          </h2>
-          <p className="text-slate-400 mt-4 text-lg md:text-xl">{subtitle}</p>
-          <div className="flex mt-10">
-            <LandingButton href={buttonLink ?? '/signup'} size="lg">
+      <BackgroundGradientAnimation
+        gradientBackgroundStart="rgb(0, 0, 10)"
+        gradientBackgroundEnd="rgb(10, 10, 30)"
+        firstColor="0, 0, 60"
+        secondColor="60, 0, 60"
+        thirdColor="0, 30, 60"
+        fourthColor="30, 0, 60"
+        fifthColor="0, 60, 60"
+        pointerColor="180, 100, 255"
+        size="100%"
+        blendingValue="hard-light"
+      />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-full max-w-4xl rounded-xl  bg-black bg-opacity-30 px-6 py-12 shadow-2xl backdrop-blur-sm">
+          <div className="text-center">
+            <h2 className="mb-6 text-4xl font-extrabold leading-tight text-white md:text-5xl lg:text-6xl">
+              {title}
+            </h2>
+            <p className="mb-10 text-xl leading-relaxed text-gray-300 md:text-2xl">
+              {subtitle}
+            </p>
+            <Link
+              href={buttonLink}
+              className="inline-flex h-12 w-[60%] transform animate-shimmer items-center justify-center rounded-md border  bg-[linear-gradient(110deg,#5b21b6,45%,#7c3aed,55%,#5b21b6)]   bg-[length:200%_100%] px-8 py-4 text-2xl  font-semibold text-white t transition-colors duration-1000 ease-in-out hover:scale-101 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-50"
+            >
               {buttonText}
-            </LandingButton>
+              <svg
+                className="-mr-1 ml-2 h-5 w-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </Link>
           </div>
         </div>
       </div>
     </section>
-  )
-}
+  );
+};

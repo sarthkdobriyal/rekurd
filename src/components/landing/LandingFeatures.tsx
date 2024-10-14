@@ -1,54 +1,109 @@
-import { HTMLAttributes } from 'react'
-import { cn } from '@/lib/utils'
+import { HTMLAttributes, useRef } from "react";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { useScroll, useTransform, motion, MotionValue } from "framer-motion";
 
-type FeatureType = {
-  heading: string
-  description: string | any
-  icon: any
+interface FeatureType {
+  heading: string;
+  description: string;
+  icon: string;
+  color: string;
+  url: string;
+  src?: string;
 }
 
 interface Props extends HTMLAttributes<HTMLElement> {
-  title: string
-  subtitle: string
-  features: FeatureType[]
+  features: FeatureType[];
 }
 
-export const LandingFeatures: React.FC<Props> = ({
-  title,
-  subtitle,
-  features,
-  className,
-  ...props
-}) => {
-  return (
-    <section
-      className={cn('py-16 px-5', className)}
-      {...props}
-    >
-      <div className="max-w-7xl mx-auto ">
-        <h2 className="text-4xl lg:text-5xl font-bold lg:tracking-tight">
-          {title}
-        </h2>
-        <p className="text-lg mt-4 text-slate-600 dark:text-slate-400">
-          {subtitle}
-        </p>
+export const LandingFeatures: React.FC<Props> = ({ features }) => {
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 mt-16 gap-16">
-          {features.map((item, idx) => (
-            <div key={idx + 'feature'} className="flex gap-4 items-start">
-              <div className="mt-1 bg-background dark:bg-slate-800 rounded-full  p-2 pt-1 w-8 h-8 text-white">
-                {item.icon}
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">{item.heading}</h3>{' '}
-                <p className="text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
-                  {item.description}
-                </p>
-              </div>
-            </div>
-          ))}
+  const container = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+
+    target: container,
+
+    offset: ['start start', 'end end']
+
+  })
+  
+  
+  return (
+    <div id="features" ref={container} className={cn("h-fit w-full")}>
+      {features.map((project, i) => {
+        const targetScale = 1 - ( (features.length - i) * 0.01);
+        return <FeatureCard key={`p_${i}`} {...project} i={i} progress={scrollYProgress} range={[i * .25, 1]} targetScale={targetScale}/>;
+      })}
+    </div>
+  );
+};
+
+interface FeatureCardType {
+  heading: string;
+  description: string;
+  icon: string;
+  i: number;
+  color: string;
+  url: string;
+  src?: string;
+  progress: MotionValue<number>,
+  range:  number[];
+  targetScale: number
+}
+
+
+const FeatureCard: React.FC<FeatureCardType> = ({ heading, description, icon, i,  color, url, src,  progress, range, targetScale }) => {
+
+  const container = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+
+    target: container,
+
+    offset: ['start end', 'start start']
+
+  })
+
+  const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1])
+  const scale = useTransform(progress, range, [1, targetScale]);
+  
+  return (
+    <div ref={container} className="h-[90vh] w-full mx-auto lg:max-w-7xl flex items-center justify-center sticky top-0">
+    <motion.div 
+      className="relative h-full w-full rounded-xl  overflow-hidden"
+      style={{ scale, top: `calc( ${i * 25}px)` }}
+    >
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <motion.div 
+          style={{ scale: imageScale }} 
+          className="w-full h-full translate-y-[35%]"
+        >
+          <Image 
+            fill 
+            src={src!} 
+            alt="background" 
+            className="object-cover object-center"
+          />
+        </motion.div>
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-transparent opacity-50"></div>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 h-full p-12 flex flex-col justify-center">
+        <div className="w-full">
+          <h2 className="text-left text-4xl font-bold text-white mb-6 leading-tight">
+            {heading}
+          </h2>
+          <p className="text-left text-xl text-gray-200 mb-8 leading-relaxed">
+            {description}
+          </p>
+          
         </div>
       </div>
-    </section>
-  )
-}
+    </motion.div>
+  </div>
+  );
+};

@@ -1,21 +1,26 @@
-import { HTMLAttributes } from 'react'
-import { LandingNavBar } from './LandingNavbar/landing.navbar'
-import { LandingFooter } from './LandingFooter'
+import { HTMLAttributes } from "react";
+import { LandingNavBar } from "./LandingNavbar/landing.navbar";
+import { LandingFooter } from "./LandingFooter";
+import { cn } from "@/lib/utils";
 
 interface Props extends HTMLAttributes<HTMLElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
+  className?: string;
 }
 
-export const LandingContainer: React.FC<Props> = ({
-children
-}) => {
+export const LandingContainer: React.FC<Props> = ({ children, className }) => {
   return (
     <main className="dark">
-      <div className={'bg-white scrollbar-hide text-black dark:bg-background dark:text-slate-200 flex-col flex gap-y-5 lg:gap-y-20 '}>
+      <div
+        className={cn(
+          "scrollbar-hide relative flex flex-col gap-y-5 bg-white text-black dark:bg-background dark:text-slate-200 lg:gap-y-20",
+          className,
+        )}
+      >
         {/* <LandingNavBar navItems={navItems} /> */}
         {children}
         <LandingFooter />
       </div>
     </main>
-  )
-}
+  );
+};
