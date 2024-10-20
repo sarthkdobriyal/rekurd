@@ -55,8 +55,8 @@ export const LandingFooter: React.FC<Props> = ({ ...props }) => {
         </div>
 
         {/* Running Text Animation at the Top */}
-        <motion.div
-          className="absolute inset-x-0 top-0 scrollbar-hide w-full flex justify-center items-center py-3"
+        {/* <motion.div
+          className="absolute inset-x-0 top-0 scrollbar-hide w-full flex justify-center items-center py-3 overflow-x-hidden"
           animate={{ x: ['100%', '-100%'] }} // Infinite horizontal scrolling
           transition={{
             repeat: Infinity,
@@ -67,7 +67,7 @@ export const LandingFooter: React.FC<Props> = ({ ...props }) => {
           <div className="whitespace-nowrap  text-white font-extrabold w-full text-5xl tracking-widest">
             OUTSOUND MUSIC CO. 
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* Back to Top Button */}
         <motion.div
