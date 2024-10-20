@@ -49,11 +49,11 @@ const Text = () => {
 
 
   return (
-    <div ref={containerRef} className="relative z-10 h-full w-full bg-transparent flex flex-col justify-between p-14 md:p-52">
+    <div ref={containerRef} className="relative z-10 h-full w-full bg-transparent flex flex-col justify-between px-5 lg:max-w-7xl tracking-wider">
       <div className="flex justify-start">
-        <div className="font-serif flex flex-col text-4xl text-muted-foreground md:text-6xl">
+        <div className="font-helicopta flex flex-col text-3xl  md:text-6xl">
           {topWords.map((word, index) => (
-            <AnimatedWord key={word} delay={index * 0.15}>
+            <AnimatedWord key={word} delay={index * 0.25}>
               {word}
             </AnimatedWord>
           ))}
@@ -63,9 +63,9 @@ const Text = () => {
       <div className="flex  gap-y-2 justify-end items-end mt-auto">
         <div className="flex  items-center gap-y-3 flex-col">
        
-        <div className="font-serif flex gap-x-2  text-4xl text-muted-foreground md:text-7xl text-right">
+        <div className="font-superChargedLazer flex  text-4xl  md:text-7xl text-right">
           {bottomWords.map((word, index) => (
-            <AnimatedWord key={word} delay={index * 0.15 + 0.5}>
+            <AnimatedWord key={word} delay={index * 0.45}>
               {word}
             </AnimatedWord>
           ))}

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { League_Spartan } from "next/font/google";
+import { League_Spartan, Poppins } from "next/font/google";
 import "./globals.css";
 import ReactQueryProvider from "./providers/ReactQueryProvider";
 import { ThemeProvider } from "next-themes";
@@ -11,30 +11,36 @@ import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
 import { WebSocketProvider } from "./providers/web-socket";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
+const superchargedLazer = localFont({
+  src: "./fonts/SuperchargeLaser.woff2",
+  variable: "--font-supercharge-lazer",
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
+const helicopta = localFont({
+  src: "./fonts/Helicopta-YwXj.ttf",
+  variable: "--font-helicopta",
 });
 
 const leagueSpartan = League_Spartan({
   subsets: ["latin"],
   variable: "--font-league-spartan",
 });
+const poppins = Poppins({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-poppins",
+});
 
-const APP_NAME = "reKurd.";
-const APP_DEFAULT_TITLE = "reKurd.";
-const APP_TITLE_TEMPLATE = "%s | reKurd.";
+
+const APP_NAME = "outsound.";
+const APP_DEFAULT_TITLE = "outsound.";
+const APP_TITLE_TEMPLATE = "%s | outsound.";
 const APP_DESCRIPTION = "The social media app for musicians";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
   title: {
-    template: "%s | reKurd.",
-    default: "reKurd.",
+    template: "%s | outsound.",
+    default: "outsound.",
   },
   description: "The social media app for musicians",
   manifest: "/manifest.json",
@@ -67,7 +73,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FFFFFF",
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -77,7 +83,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${leagueSpartan.variable}`}>
+      <body className={` ${superchargedLazer.variable} ${helicopta.variable} ${poppins.variable}`}>
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <ReactQueryProvider>
           

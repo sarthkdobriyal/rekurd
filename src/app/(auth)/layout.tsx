@@ -10,5 +10,5 @@ export default async function Layout({
 
   if (user) redirect("/");
 
-  return <div className="scrollbar-hide">{children}</div>;
+  return <div className="scrollbar-hide font-poppins">{children}</div>;
 }

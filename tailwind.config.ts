@@ -25,9 +25,10 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "sans-serif"],
-        mono: ["var(--font-geist-mono)", "monospace"],
-        spartan: ["var(--font-league-spartan)", "sans-serif"], // Add League Spartan font
+        spartan: ["var(--font-league-spartan)", "sans-serif"], 
+        poppins: ["var(--font-poppins)", "sans-serif"], 
+        superChargedLazer: ["var(--font-supercharge-lazer)"],
+        helicopta: ["var(--font-helicopta)"],
       },
       colors: {
         border: "hsl(var(--border))",

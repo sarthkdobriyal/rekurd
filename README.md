@@ -15,7 +15,7 @@ Rekurd is a social media platform designed for musicians to connect with other m
 
 To get started with Rekurd, follow these steps:
 
-1. Sign up for an account on Rekurd.
+1. Sign up for an account on outsound.
 2. Complete your profile by providing information about your musical style, instruments, and preferences.
 3. Start searching for musicians in your current city or any other location.
 4. Connect with musicians through private messaging and discuss potential collaborations or gigs.

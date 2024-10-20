@@ -24,7 +24,7 @@ export const Logo: React.FC<Props> = ({
     <Flex align="center" gap={10}>
       {/* <Image
         src="/backg.jpg"
-        alt={"rekurd."}
+        alt={"outsound."}
         width={32}
         height={32}
         onClick={() => goTo("/home")}
