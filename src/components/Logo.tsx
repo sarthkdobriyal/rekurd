@@ -1,19 +1,9 @@
-'use client'
-import { Flex, Typography } from "antd";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { ImgHTMLAttributes } from "react";
 
-interface Props extends ImgHTMLAttributes<HTMLImageElement> {
-  isLabel?: boolean;
-}
+interface Props {}
 
-export const Logo: React.FC<Props> = ({
-  height = 50,
-  isLabel = false,
-  style,
-  ...props
-}) => {
+export const Logo: React.FC<Props> = ({}) => {
   const router = useRouter();
 
   const goTo = (url: string) => {
@@ -21,21 +11,8 @@ export const Logo: React.FC<Props> = ({
   };
 
   return (
-    <Flex align="center" gap={10}>
-      {/* <Image
-        src="/backg.jpg"
-        alt={"outsound."}
-        width={32}
-        height={32}
-        onClick={() => goTo("/home")}
-      /> */}
-      {isLabel && (
-        // <Typography.Title level={4} style={{ margin: '0px', color:"white" }}>
-        //   outsound.
-        // </Typography.Title>
-        <div className="font-spartan italic text-3xl font-bold tracking-tighter">
-          outsound.</div>
-      )}
-    </Flex>
+    <div className="font-superChargedLazer text-3xl font-bold italic tracking-tighter">
+      outsound.
+    </div>
   );
 };
