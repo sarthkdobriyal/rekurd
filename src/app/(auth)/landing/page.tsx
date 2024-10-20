@@ -290,14 +290,12 @@ export default function LandingPage() {
         />
 
 
-      <div>
         <LandingFAQ
           id="faq"
           title="Frequently Asked Questions"
           subtitle="Got Questions? We've Got Answers"
           questionAnswers={questionAnswers}
         />
-      </div>
     </LandingContainer>
   );
 }

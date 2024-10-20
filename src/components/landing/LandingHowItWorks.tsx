@@ -49,7 +49,7 @@ const Text = () => {
 
 
   return (
-    <div ref={containerRef} className="relative z-10 h-full w-full bg-transparent flex flex-col justify-between px-5 lg:max-w-7xl tracking-wider">
+    <div ref={containerRef} className="relative z-10 h-full w-full bg-transparent flex flex-col justify-between px-5 md:px-12 md:py-10 lg:max-w-7xl tracking-wider">
       <div className="flex justify-start">
         <div className="font-helicopta flex flex-col text-3xl  md:text-6xl">
           {topWords.map((word, index) => (

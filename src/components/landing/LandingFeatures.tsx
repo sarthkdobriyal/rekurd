@@ -92,12 +92,12 @@ const FeatureCard: React.FC<FeatureCardType> = ({ heading, description, icon, i,
       </div>
 
       {/* Content */}
-      <div className="relative z-10 h-full p-12 flex flex-col justify-center">
+      <div className="relative z-10 h-full px-4 md:px-8 lg:px-14 flex flex-col justify-center  md:max-w-[60%]">
         <div className="w-full">
-          <h2 className="text-left text-4xl font-bold text-white mb-6 leading-tight">
+          <h2 className="text-left text-3xl font-bold text-white mb-6 leading-tight">
             {heading}
           </h2>
-          <p className="text-left text-xl text-gray-200 mb-8 leading-relaxed">
+          <p className="text-left text-sm md:text-xl text-gray-200 mb-8 leading-relaxed">
             {description}
           </p>
           

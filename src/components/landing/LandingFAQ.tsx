@@ -29,7 +29,7 @@ export const LandingFAQ: React.FC<Props> = ({
             <h3 className="text-4xl lg:text-5xl lg:max-w-[80%] font-bold tracking-tight leading-tight text-slate-800 dark:text-white">
               {title}
             </h3>
-            <p className="text-lg lg:text-xl mt-6 text-slate-600 dark:text-slate-400">
+            <p className="text-sm md:text-lg lg:text-xl mt-6 text-slate-600 dark:text-slate-400">
               {subtitle}
             </p>
           </motion.div>
@@ -51,7 +51,7 @@ export const LandingFAQ: React.FC<Props> = ({
                   viewport={{ once: true }}
                 >
                   <details className="group">
-                    <summary className="flex justify-between text-xl items-center font-semibold cursor-pointer list-none">
+                    <summary className="flex justify-between text-base md:text-xl items-center font-semibold cursor-pointer list-none">
                       <span>{item.question}</span>
                       <motion.span
                         className="transition-transform group-open:rotate-180"
@@ -69,7 +69,7 @@ export const LandingFAQ: React.FC<Props> = ({
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.4, ease: 'easeInOut' }}
                     >
-                      <p className="text-slate-600 dark:text-slate-400 mt-3 text-base lg:text-lg">
+                      <p className="text-slate-600 font-poppins dark:text-slate-400 mt-3 text-sm lg:text-lg">
                         {item.answer}
                       </p>
                     </motion.div>

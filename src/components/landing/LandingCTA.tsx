@@ -19,7 +19,7 @@ export const LandingCTA: React.FC<Props> = ({
 }) => {
   return (
     <section
-      className={cn("relative h-screen w-full overflow-hidden ", className)}
+      className={cn("relative h-screen w-full  overflow-hidden ", className)}
     >
       <BackgroundGradientAnimation
         gradientBackgroundStart="rgb(0, 0, 10)"
@@ -33,18 +33,18 @@ export const LandingCTA: React.FC<Props> = ({
         size="100%"
         blendingValue="hard-light"
       />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-full max-w-4xl rounded-xl  bg-black bg-opacity-30 px-6 py-12 shadow-2xl backdrop-blur-sm">
-          <div className="text-center">
-            <h2 className="mb-6 text-4xl font-extrabold leading-tight text-white md:text-5xl lg:text-6xl">
+      <div className="absolute font-poppins inset-0 flex items-center justify-center">
+        <div className="w-full  md:max-w-3xl lg:max-w-5xl rounded-xl   bg-black bg-opacity-30 px-6 py-12 shadow-2xl backdrop-blur-sm">
+          <div className="text-center ">
+            <h2 className="mb-5 text-2xl  font-extrabold leading-tight text-white md:text-4xl lg:text-5xl">
               {title}
             </h2>
-            <p className="mb-10 text-xl leading-relaxed text-gray-300 md:text-2xl">
+            <p className="mb-14 text-sm leading-relaxed text-gray-300 md:text-2xl">
               {subtitle}
             </p>
             <Link
               href={buttonLink}
-              className="inline-flex h-12 w-[60%] transform animate-shimmer items-center justify-center rounded-md border  bg-[linear-gradient(110deg,#5b21b6,45%,#7c3aed,55%,#5b21b6)]   bg-[length:200%_100%] px-8 py-4 text-2xl  font-semibold text-white t transition-colors duration-1000 ease-in-out hover:scale-101 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-50"
+              className="inline-flex  w-[60%] transform animate-shimmer items-center justify-center rounded-md border  bg-[linear-gradient(110deg,#5b21b6,45%,#7c3aed,55%,#5b21b6)]   bg-[length:200%_100%] px-8 py-3  md:text-2xl  font-semibold text-white t transition-colors duration-1000 ease-in-out hover:scale-101 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-50"
             >
               {buttonText}
               <svg
