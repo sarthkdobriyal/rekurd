@@ -18,8 +18,8 @@ export default function Page() {
           Music app for the future
         </p>
       </div> */}
-      <div className="flex w-full items-center justify-center lg:max-w-2xl">
-        <div className="flex h-[40rem] max-h-[30rem] md:max-h-[40rem] w-[90%] overflow-hidden rounded-2xl bg-card shadow-sm shadow-muted-foreground   xl:w-[70%] ">
+      <div className="flex w-full h-full items-center justify-center lg:max-w-2xl">
+        <div className="flex h-[40rem] max-h-[30rem] md:max-h-[40rem] w-[90%] overflow-hidden rounded-2xl bg-card shadow-sm shadow-muted-foreground  xl:w-[70%] ">
           <div className="w-full space-y-4 md:space-y-8 lg:space-y-10  px-5 md:px-10 py-10">
             <div className="space-y-1 text-center">
               <h1 className="text-base md:text-xl lg:text-2xl font-bold">Log in to

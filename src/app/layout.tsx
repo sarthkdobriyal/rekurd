@@ -19,6 +19,10 @@ const helicopta = localFont({
   src: "./fonts/Helicopta-YwXj.ttf",
   variable: "--font-helicopta",
 });
+const kochire = localFont({
+  src: "./fonts/KochireRegular-eZJwl.otf",
+  variable: "--font-kochire",
+});
 
 const leagueSpartan = League_Spartan({
   subsets: ["latin"],
@@ -83,7 +87,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={` ${superchargedLazer.variable} ${helicopta.variable} ${poppins.variable}`}>
+      <body className={` ${superchargedLazer.variable} ${kochire.variable} ${helicopta.variable} ${poppins.variable}`}>
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <ReactQueryProvider>
           

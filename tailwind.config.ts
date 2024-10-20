@@ -29,6 +29,7 @@ const config = {
         poppins: ["var(--font-poppins)", "sans-serif"], 
         superChargedLazer: ["var(--font-supercharge-lazer)"],
         helicopta: ["var(--font-helicopta)"],
+        kochire: ["var(--font-kochire)"],
       },
       colors: {
         border: "hsl(var(--border))",

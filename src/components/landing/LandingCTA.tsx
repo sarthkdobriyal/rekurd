@@ -44,7 +44,7 @@ export const LandingCTA: React.FC<Props> = ({
             </p>
             <Link
               href={buttonLink}
-              className="inline-flex  w-[60%] transform animate-shimmer items-center justify-center rounded-md border  bg-[linear-gradient(110deg,#5b21b6,45%,#7c3aed,55%,#5b21b6)]   bg-[length:200%_100%] px-8 py-3  md:text-2xl  font-semibold text-white t transition-colors duration-1000 ease-in-out hover:scale-101 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-50"
+              className="inline-flex font-poppins w-[60%] transform animate-shimmer items-center justify-center rounded-md border  bg-[linear-gradient(110deg,#5b21b6,45%,#7c3aed,55%,#5b21b6)]   bg-[length:200%_100%] px-8 py-3  md:text-2xl  font-semibold text-white t transition-colors duration-1000 ease-in-out hover:scale-101 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-50"
             >
               {buttonText}
               <svg
