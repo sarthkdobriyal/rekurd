@@ -34,7 +34,7 @@ export default function SignUpForm() {
 
       }
     return <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 text-xs md:text-xl">
         {error && <p className="text-center text-destructive">{error}</p>}
         <FormField
           control={form.control}
@@ -75,7 +75,7 @@ export default function SignUpForm() {
             </FormItem>
           )}
         />
-        <LoadingButton loading={isPending} type="submit" className="w-full mt-4">
+        <LoadingButton loading={isPending} type="submit" className="w-full mt-4 ">
           Create account
         </LoadingButton>
 
