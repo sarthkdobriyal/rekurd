@@ -34,7 +34,7 @@ export const LandingMobileNavbar = ({ navItems }: any) => {
             className="fixed inset-0 bg-white dark:bg-background z-50 flex flex-col items-start justify-start space-y-10 pt-5 text-xl text-zinc-600 transition duration-200 hover:text-zinc-800"
           >
             <div className="flex items-center justify-between w-full px-5">
-              <Logo isLabel height={40} />
+              <Logo />
               <div className="flex items-center space-x-2">
                 <CloseOutlined
                   className="h-8 w-8 text-black dark:text-white"
