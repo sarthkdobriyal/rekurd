@@ -21,6 +21,7 @@ model User {
   bio                   String?
   createdAt             DateTime           @default(now())
   updatedAt             DateTime           @updatedAt
+  onboardingStep        Int                @default(1) 
   Message               Message[]
   bookmarks             Bookmark[]
   comments              Comment[]
@@ -40,6 +41,7 @@ model User {
   UserContact           UserContact?
   conversations         Conversation[]     @relation("UsersInConversation")
   UserLocation          UserLocation?
+  
 
   @@map("users")
 }

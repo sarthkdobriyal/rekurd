@@ -69,9 +69,18 @@ export const updateUserProfileSchema = z.object({
 });
 
 
+export const updateUserInfoSchema = z.object({
+  username: requiredString.regex(
+    /^[a-zA-Z0-9_-]+$/,
+    "Only letters, numbers, - and _ allowed",
+  ),
+  displayName: requiredString,
+})
+
 
 
 export type UpdateUserProfileValues = z.infer<typeof updateUserProfileSchema>;
+export type updateUserInfoValues = z.infer<typeof updateUserInfoSchema>;
 
 
 

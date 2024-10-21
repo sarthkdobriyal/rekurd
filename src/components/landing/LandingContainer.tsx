@@ -17,7 +17,6 @@ export const LandingContainer: React.FC<Props> = ({ children, className }) => {
           className,
         )}
       >
-        {/* <LandingNavBar navItems={navItems} /> */}
         {children}
         <LandingFooter />
       </div>
