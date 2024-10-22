@@ -19,7 +19,7 @@ import { updateUserAction } from '../actions'
 function StepOne({ handleNextStep }: { handleNextStep: (step: number) => void }) {
 
   const { user } = useSession()
-  const { startUpload  } = useUploadThing("avatar");
+  const { startUpload, isUploading  } = useUploadThing("avatar");
   const [croppedAvatar, setCroppedAvatar] = useState<Blob | null>(null);
   const [isPending, startTransition] = useTransition();
   const form = useForm<updateUserInfoValues>({
@@ -122,7 +122,7 @@ function StepOne({ handleNextStep }: { handleNextStep: (step: number) => void })
 
           <LoadingButton
             type="submit"
-            loading={isPending}
+            loading={isPending || isUploading}
             className="mx-auto w-[50%]"
           >
             Next

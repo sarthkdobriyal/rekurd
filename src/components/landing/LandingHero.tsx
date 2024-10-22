@@ -174,6 +174,7 @@ export const LandingHero: React.FC<Props> = () => {
             </motion.span>
           ))}
         </motion.span>
+          {/* <span className="text-sm tracking-widest text-right w-full pr-36 font-kochire">CONNECTING MUSICIANS , CREATING OPPORTUNITIES</span> */}
       </motion.div>
       <div className="absolute inset-0 w-full">
         <motion.div

@@ -12,6 +12,7 @@ import { FormStepWrapper } from "../_components/FormStepWrapper";
 export default function Onboarding({ user }: { user: UserData }) {
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
+  const [selection, setSelection] = useState<string| null>(null);
 
   const handleStepSubmit = (data: Partial<UpdateUserProfileValues>) => {};
 
@@ -26,9 +27,12 @@ export default function Onboarding({ user }: { user: UserData }) {
       <StepOne  handleNextStep={handleNextStep}/>
     </FormStepWrapper>,
     <FormStepWrapper direction={direction}>
-      <StepTwo />
+      <StepTwo selection={selection} setSelection={setSelection} />
     </FormStepWrapper>,
   ];
+
+
+  console.log(selection)
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center overflow-hidden border text-xs">
