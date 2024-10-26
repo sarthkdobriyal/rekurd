@@ -178,6 +178,8 @@ export type RadioSong = ({
   position: number;
 })
 
+export type SelectionTypes = "musician" | "beginner" | "fan" ;
+
 
 export type RadioMessage = {
   user: {

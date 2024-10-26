@@ -9,9 +9,9 @@ interface ArtistCardProps {
 }
 
 const ArtistCard: FC<ArtistCardProps> = ({ artist }) => {
-  console.log("runnign her", artist);
+  console.log("running here", artist);
   return (
-    <div className="flex-col flex min-h-[60%] w-full min-w-[97%] snap-y snap-center  overflow-auto scrollbar-hide rounded-lg  text-white shadow-sm shadow-muted">
+    <div className="flex-col flex min-h-[60%] w-full min-w-[97%] snap-y snap-center overflow-auto scrollbar-hide rounded-lg text-white shadow-sm shadow-muted">
       <Link href={`/users/${artist.username}`}>
         <div className="relative h-64 w-full">
           <Image
@@ -27,30 +27,27 @@ const ArtistCard: FC<ArtistCardProps> = ({ artist }) => {
         </div>
 
         <div className="space-y-4 p-4">
-
-        { artist.musicalInfo &&  artist.musicalInfo.yearsOfExperience && 
-        
-        Number(artist.musicalInfo.yearsOfExperience) === 0 ?
-        
-        <p className="mb-2 text-lg">
-
-            <span className="italic mx-2 font-bold">
-            {artist.musicalInfo?.primaryInstrument.name}
-            </span>
-             Enthusiast
-        
-        </p> :
-        
-        <p className="mb-2 text-lg">
-          <span className="font-sans mx-2">
-            {artist.musicalInfo?.yearsOfExperience} 
-            </span>
-            {Number(artist.musicalInfo?.yearsOfExperience) > 1 ?  "Years" : "Year"} of{" "}
-            <span className="italic mx-2">
-            {artist.musicalInfo?.primaryInstrument.name}
-            </span>
-             Mastery
-          </p>}
+          {artist.musicalInfo && artist.musicalInfo.yearsOfExperience && (
+            Number(artist.musicalInfo.yearsOfExperience) === 0 ? (
+              <p className="mb-2 text-lg">
+                <span className="italic mx-2 font-bold">
+                  {artist.musicalInfo?.primaryInstrument?.name || "Instrument"}
+                </span>
+                Enthusiast
+              </p>
+            ) : (
+              <p className="mb-2 text-lg">
+                <span className="font-sans mx-2">
+                  {artist.musicalInfo?.yearsOfExperience}
+                </span>
+                {Number(artist.musicalInfo?.yearsOfExperience) > 1 ? "Years" : "Year"} of{" "}
+                <span className="italic mx-2">
+                  {artist.musicalInfo?.primaryInstrument?.name || "Instrument"}
+                </span>
+                Mastery
+              </p>
+            )
+          )}
 
           <div>
             <div className="flex flex-wrap gap-2">
@@ -72,7 +69,7 @@ const ArtistCard: FC<ArtistCardProps> = ({ artist }) => {
             </p>
           </div>
 
-          {artist.musicalInfo &&  artist.musicalInfo.bio && (
+          {artist.musicalInfo && artist.musicalInfo.bio && (
             <div className="mb-4 flex flex-col gap-1 text-sm font-extralight font-sans">
               <Linkify>
                 <p className="flex flex-wrap overflow-hidden whitespace-pre-line break-words ">
@@ -81,15 +78,10 @@ const ArtistCard: FC<ArtistCardProps> = ({ artist }) => {
               </Linkify>
             </div>
           )}
-
-
         </div>
-
       </Link>
     </div>
   );
 };
 
 export default ArtistCard;
-
-

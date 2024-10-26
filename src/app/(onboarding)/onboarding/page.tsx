@@ -1,8 +1,6 @@
 "use client";
-import { useUpdateProfileMutation } from "@/app/(main)/users/[username]/mutations";
 import { Button } from "@/components/ui/button";
-import { UserData } from "@/lib/types";
-import { UpdateUserProfileValues } from "@/lib/validation";
+import { SelectionTypes, UserData } from "@/lib/types";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import StepOne from "../_components/StepOne";
@@ -17,14 +15,16 @@ import { redirect } from "next/navigation";
 
 
 
-export type SelectionTypes = "musician" | "beginner" | "fan" ;
 
-export default function Onboarding({ user }: { user: UserData }) {
+
+export default function Onboarding() {
+  
+
+
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
   const [selection, setSelection] = useState<SelectionTypes| null>(null);
 
-  const handleStepSubmit = (data: Partial<UpdateUserProfileValues>) => {};
 
   const handleNextStep = (nextStep: number) => {
     if(nextStep === -1) {
@@ -69,7 +69,6 @@ export default function Onboarding({ user }: { user: UserData }) {
   ];
 
 
-  console.log(selection)
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden  text-xs">

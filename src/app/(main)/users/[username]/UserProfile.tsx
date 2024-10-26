@@ -119,7 +119,7 @@ export default function UserProfile({
           </p>
           <p className="mb-2 text-lg italic">
             {user.musicalInfo.yearsOfExperience} Years of{" "}
-            {user.musicalInfo.primaryInstrument.name} Mastery
+            {user.musicalInfo.primaryInstrument?.name} Mastery
           </p>
          
           {user.musicalInfo.instruments && (
