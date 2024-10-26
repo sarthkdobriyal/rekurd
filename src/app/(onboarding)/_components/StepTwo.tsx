@@ -1,10 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { FormStepWrapper } from "./FormStepWrapper";
-import { Guitar, HandMetal, Music } from "lucide-react";
+import { Check, ChevronsUpDown, Guitar, HandMetal, Loader2, Music } from "lucide-react";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import LoadingButton from "@/components/LoadingButton";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { unstable_cache } from "next/cache";
+import { useSession } from "@/app/(main)/SessionProvider";
+import { musicalInfoSchema, MusicalInfoValues } from "@/lib/validation";
+import { updateUserMusicalInfoAction } from "../actions";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import kyInstance from "@/lib/ky";
+import { useQuery } from "@tanstack/react-query";
+import { Instrument } from "@prisma/client";
+import { MultiSelector, MultiSelectorContent, MultiSelectorInput, MultiSelectorItem, MultiSelectorList, MultiSelectorTrigger } from "@/components/ui/MultiSelector";
 
 const buttonData = [
   {
-    label: "No.1 Fan",
+    label: "Fan",
     icon: HandMetal,
     selection: "fan",
   },
@@ -20,24 +44,31 @@ const buttonData = [
   },
 ];
 
-function StepTwo({ selection, setSelection }: { selection: string | null; setSelection: (selection: string) => void }) {
-
+function StepTwo({
+  selection,
+  setSelection,
+  handleNextStep,
+}: {
+  selection: string | null;
+  setSelection: (selection: string) => void;
+  handleNextStep: (step: number) => void;
+}) {
   return (
-    <div className="flex flex-col items-center justify-center space-y-4 w-full">
+    <div className="flex w-full my-auto  flex-col items-center justify-center space-y-4">
       {!selection && (
-        <div className="flex flex-col text-center text-5xl gap-y-2">
-          <div className="mb-10 flex-col flex gap-y-2">
-            <h1 className="text-center">Choose One</h1>
+        <div className="flex flex-col gap-y-2 text-center text-5xl">
+          <div className="mb-10 flex flex-col gap-y-2">
+            <h1 className="text-center">You are a</h1>
             <p className="text-sm">What describes you best?</p>
           </div>
-          <div className="flex gap-x-5 text-base  w-full">
+          <div className="flex w-full gap-x-5 text-base md:text-xl">
             {buttonData.map((button) => (
               <button
                 key={button.selection}
-                className="bg-muted rounded-xl aspect-square p-3 md:p-8 flex-1 text-white hover:bg-purple-700 flex justify-center items-center flex-col gap-y-3"
+                className="flex aspect-square border w-24 h-24  md:w-52 md:h-52    p-5 md:p-8 flex-1 flex-col items-center justify-center gap-y-3 rounded-xl bg-muted  text-white hover:bg-purple-700 "
                 onClick={() => setSelection(button.selection)}
               >
-                <button.icon className="text-muted-foreground w-6 h-6" />
+                <button.icon className="h-10 w-10 text-muted-foreground" />
                 {button.label}
               </button>
             ))}
@@ -45,16 +76,14 @@ function StepTwo({ selection, setSelection }: { selection: string | null; setSel
         </div>
       )}
 
-      {selection === "fan" && (
-        <FanForm />
-      )}
+      {selection === "fan" && <FanForm />}
 
       {selection === "beginner" && (
-       <MusicianForm />
+        <BeginnerForm handleNextStep={handleNextStep} />
       )}
 
       {selection === "musician" && (
-        <MusicianForm />
+        <MusicianForm handleNextStep={handleNextStep} />
       )}
     </div>
   );
@@ -62,16 +91,260 @@ function StepTwo({ selection, setSelection }: { selection: string | null; setSel
 
 export default StepTwo;
 
-
-
-
-function FanForm () {
-  return <div>
-    fan
-  </div>
+function FanForm() {
+  return <div>fan</div>;
 }
-function MusicianForm() {
-  return <div>
-    Musican 
-  </div>
+
+function MusicianForm({
+  handleNextStep,
+}: {
+  handleNextStep: (step: number) => void;
+}) {
+  const { user } = useSession();
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<MusicalInfoValues>({
+    resolver: zodResolver(musicalInfoSchema),
+    defaultValues: {
+      instruments: [],
+    }
+  });
+
+  const {data, isLoading: isLoadingInstruments, isError} = useQuery({
+    queryKey: ["instruments"],
+    queryFn: () =>
+      kyInstance.get(`/api/instruments`).json<{
+        instruments: Instrument[];
+        count: number;
+      }>(),
+    staleTime: Infinity,
+  });
+
+
+
+  const instruments = data?.instruments
+
+
+
+  async function onSubmit(values: MusicalInfoValues) {
+    startTransition(async () => {
+      await updateUserMusicalInfoAction(
+        {
+          ...values,
+        },
+        user.id,
+      );
+      handleNextStep(3);
+    });
+  }
+
+  return (
+    <div className="">
+      <div className="flex flex-col w-[70%] md:w-full items-start md:items-center mb-7">
+      <Music className="text-muted w-16 h-16  md:w-24 md:h-24 my-5" style={{ transform: 'rotate(20deg)' }} />
+
+      <h1 className="text-3xl md:text-5xl font-bold  md:my-16">What's your experience</h1>
+      </div>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col space-y-5 text-xs md:text-xl"
+        >
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem className="flex items-center w-full">
+                <FormLabel className="w-full">
+                  Your Stage Name
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="yearsOfExperience"
+            render={({ field }) => (
+              <FormItem className="flex items-center text-xs">
+                <FormLabel className="leading-4  w-full">
+                  Years of experience
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder=""
+                    {...field}
+                  />
+                  {
+                    
+                  }
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+         <FormField
+            control={form.control}
+            name="instruments"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>
+                    What instruments do you play?
+                  </FormLabel>
+                  <FormControl>
+                    <MultiSelector
+                      onValuesChange={field.onChange}
+                      values={field.value?.map((instrument) => instrument)!}
+                    >
+                      <MultiSelectorTrigger>
+                        <MultiSelectorInput placeholder={`${isLoadingInstruments ? "" : "Search instruments"}`} />
+                        {isLoadingInstruments && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                      </MultiSelectorTrigger>
+                      <MultiSelectorContent>
+                        <MultiSelectorList>
+                          {instruments?.map((option) => (
+                            <MultiSelectorItem
+                              key={option.id}
+                              value={option.name}
+                            >
+                              {option.name}
+                            </MultiSelectorItem>
+                          ))}
+                        </MultiSelectorList>
+                      </MultiSelectorContent>
+                    </MultiSelector>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+
+          <LoadingButton
+            type="submit"
+            loading={isPending}
+            className="mx-auto w-[50%]"
+          >
+            Next
+          </LoadingButton>
+        </form>
+      </Form>
+    </div>
+  );
+}
+
+
+
+function BeginnerForm({
+  handleNextStep,
+}: {
+  handleNextStep: (step: number) => void;
+}) {
+  const { user } = useSession();
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<MusicalInfoValues>({
+    resolver: zodResolver(musicalInfoSchema),
+    defaultValues: {
+      instruments: [],
+    }
+  });
+
+  const {data, isLoading: isLoadingInstruments, isError} = useQuery({
+    queryKey: ["instruments"],
+    queryFn: () =>
+      kyInstance.get(`/api/instruments`).json<{
+        instruments: Instrument[];
+        count: number;
+      }>(),
+    staleTime: Infinity,
+  });
+
+
+
+  const instruments = data?.instruments
+
+
+
+  async function onSubmit(values: MusicalInfoValues) {
+    startTransition(async () => {
+      await updateUserMusicalInfoAction(
+        {
+          ...values,
+        },
+        user.id,
+      );
+      handleNextStep(3);
+    });
+  }
+
+  return (
+    <div className=" md:max-w-[60%] md:w-[60%] lg:w-[20%]">
+      <div className="flex flex-col w-[70%] md:w-full items-start">
+      <Music className="text-muted w-16 h-16  md:w-24 md:h-24" style={{ transform: 'rotate(20deg)' }} />
+
+      <h1 className="text-3xl md:text-5xl font-bold  my-5">Instruments  you play or like</h1>
+      </div>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col space-y-5 text-xs md:text-xl"
+        >
+          
+          
+         <FormField
+            control={form.control}
+            name="instruments"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                
+                  <FormControl>
+                    <MultiSelector
+                      onValuesChange={field.onChange}
+                      values={field.value?.map((instrument) => instrument)!}
+                    >
+                      <MultiSelectorTrigger>
+                        <MultiSelectorInput placeholder={`${isLoadingInstruments ? "" : "Search instruments"}`} />
+                        {isLoadingInstruments && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                      </MultiSelectorTrigger>
+                      <MultiSelectorContent>
+                        <MultiSelectorList>
+                          {instruments?.map((option) => (
+                            <MultiSelectorItem
+                              key={option.id}
+                              value={option.name}
+                            >
+                              {option.name}
+                            </MultiSelectorItem>
+                          ))}
+                        </MultiSelectorList>
+                      </MultiSelectorContent>
+                    </MultiSelector>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+
+          <LoadingButton
+            type="submit"
+            loading={isPending}
+            className="mx-auto w-[50%]"
+          >
+            Next
+          </LoadingButton>
+        </form>
+      </Form>
+    </div>
+  );
 }

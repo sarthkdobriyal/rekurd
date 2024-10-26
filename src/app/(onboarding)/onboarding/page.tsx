@@ -8,9 +8,10 @@ import { useState } from "react";
 import StepOne from "../_components/StepOne";
 import StepTwo from "../_components/StepTwo";
 import { FormStepWrapper } from "../_components/FormStepWrapper";
+import StepThree from "../_components/StepThree";
 
 export default function Onboarding({ user }: { user: UserData }) {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(3);
   const [direction, setDirection] = useState(1);
   const [selection, setSelection] = useState<string| null>(null);
 
@@ -27,7 +28,12 @@ export default function Onboarding({ user }: { user: UserData }) {
       <StepOne  handleNextStep={handleNextStep}/>
     </FormStepWrapper>,
     <FormStepWrapper direction={direction}>
-      <StepTwo selection={selection} setSelection={setSelection} />
+      <StepTwo selection={selection} setSelection={setSelection} handleNextStep={handleNextStep}/>
+    </FormStepWrapper>,
+    <FormStepWrapper direction={direction}>
+      <StepThree 
+       handleNextStep={handleNextStep}
+      />
     </FormStepWrapper>,
   ];
 
@@ -35,12 +41,12 @@ export default function Onboarding({ user }: { user: UserData }) {
   console.log(selection)
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center overflow-hidden border text-xs">
+    <div className="flex h-full w-full flex-col overflow-hidden  text-xs">
       <AnimatePresence mode="wait" key={"step-" + step}>
         {steps[step - 1]}
       </AnimatePresence>
 
-      <div className="flex w-full justify-center gap-2  p-4">
+      <div className="flex w-full  justify-center gap-2  p-4">
         {steps.map((_, i) => (
           <Button
             key={i}

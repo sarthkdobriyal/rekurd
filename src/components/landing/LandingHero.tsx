@@ -233,6 +233,7 @@ export const LandingHero: React.FC<Props> = () => {
               alt="Floating Image 3"
               className="w-36 sm:w-42 md:left-[35%] md:top-0 md:w-max"
               width={225}
+              priority
             />
           </motion.div>
         </motion.div>
@@ -346,7 +347,7 @@ export const LandingHero: React.FC<Props> = () => {
               width={50}
               alt="scroll"
               height={50}
-              src="/down-arrow.png"
+              src="/down-chevron.png"
               className="animate-bounce opacity-25"
             />
           </div>

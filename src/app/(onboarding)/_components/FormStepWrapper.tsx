@@ -12,7 +12,7 @@ export const FormStepWrapper = ({ children, direction = 1 }: FormStepWrapperProp
     animate={{ x: 0, opacity: 1 }}
     exit={{ x: -100 * direction, opacity: 0 }}
     transition={{ duration: 0.2, ease: "easeInOut" }}
-    className="flex  w-full flex-col items-center justify-center px-4 "
+    className="flex  w-full flex-col h-full  px-4 "
   >
     {children}
   </motion.div>
