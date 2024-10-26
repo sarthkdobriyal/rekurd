@@ -18,8 +18,8 @@ function StepFive({
 }) {
   const { user } = useSession();
   const [isPending, startTransition] = useTransition();
-  const [tutoring, setTutoring] = useState<boolean>(false);
-  const [learning, setLearning] = useState<boolean>(false);
+  const [tutoring, setTutoring] = useState<boolean>(true);
+  const [learning, setLearning] = useState<boolean>(true);
 
   const form = useForm<MusicalInfoValues>({
     resolver: zodResolver(musicalInfoSchema),
@@ -37,7 +37,8 @@ function StepFive({
           interestedInTutoring: tutoring ?? false,
           interestedInLearning: learning ?? false,
         },
-        user.id
+        user.id,
+        6
       );
       handleNextStep(6);
     });

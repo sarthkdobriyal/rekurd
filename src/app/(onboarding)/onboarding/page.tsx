@@ -11,18 +11,26 @@ import { FormStepWrapper } from "../_components/FormStepWrapper";
 import StepThree from "../_components/StepThree";
 import StepFour from "../_components/StepFour";
 import StepFive from "../_components/StepFive";
+import StepSix from "../_components/StepSix";
+import { updateUserOnboarding } from "../actions";
+import { redirect } from "next/navigation";
+
 
 
 export type SelectionTypes = "musician" | "beginner" | "fan" ;
 
 export default function Onboarding({ user }: { user: UserData }) {
-  const [step, setStep] = useState(6);
+  const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
   const [selection, setSelection] = useState<SelectionTypes| null>(null);
 
   const handleStepSubmit = (data: Partial<UpdateUserProfileValues>) => {};
 
   const handleNextStep = (nextStep: number) => {
+    if(nextStep === -1) {
+      updateUserOnboarding(-1)
+      redirect("/")
+    }
     setDirection(nextStep > step ? 1 : -1);
     setStep(nextStep);
   };
@@ -48,6 +56,12 @@ export default function Onboarding({ user }: { user: UserData }) {
     </FormStepWrapper>,
     <FormStepWrapper direction={direction}>
       <StepFive
+      selection={selection}
+       handleNextStep={handleNextStep}
+      />
+    </FormStepWrapper>,
+    <FormStepWrapper direction={direction}>
+      <StepSix
       selection={selection}
        handleNextStep={handleNextStep}
       />

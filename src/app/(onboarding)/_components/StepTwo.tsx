@@ -26,6 +26,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Instrument } from "@prisma/client";
 import { MultiSelector, MultiSelectorContent, MultiSelectorInput, MultiSelectorItem, MultiSelectorList, MultiSelectorTrigger } from "@/components/ui/MultiSelector";
 import { SelectionTypes } from "../onboarding/page";
+import { on } from "events";
 
 const buttonData = [
   {
@@ -142,6 +143,7 @@ function MusicianForm({
           ...values,
         },
         user.id,
+        3
       );
       handleNextStep(3);
     });
@@ -288,6 +290,7 @@ function BeginnerForm({
           ...values,
         },
         user.id,
+        3
       );
       handleNextStep(3);
     });

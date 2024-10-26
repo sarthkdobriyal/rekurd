@@ -64,6 +64,7 @@ function StepThree({
           ...values,
         },
         user.id,
+        4
       );
       handleNextStep(4);
     });

@@ -51,7 +51,7 @@
     "ky": "^1.4.0",
     "lenis": "^1.1.14",
     "lucia": "^3.2.0",
-    "lucide-react": "^0.402.0",
+    "lucide-react": "^0.453.0",
     "mini-svg-data-uri": "^1.4.4",
     "next": "15.0.0-rc.0",
     "next-themes": "^0.3.0",

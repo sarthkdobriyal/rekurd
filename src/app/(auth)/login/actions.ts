@@ -7,6 +7,7 @@ import { verify } from "@node-rs/argon2";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { on } from 'events';
 
 export async function login(
   credentials: LoginValues,
@@ -50,15 +51,18 @@ export async function login(
       sessionCookie.attributes,
     );
 
-    const isProfileSetup = await prisma.musicalInfo.findFirst({
+    const isProfileSetup = await prisma.user.findUnique({
       where: {
-        userId: existingUser.id
+        id: existingUser.id
+      },
+      select: {
+        onboardingStep: true
       }
-    }) 
+    })
 
     
 
-    return isProfileSetup ? redirect("/") : redirect("/setup-profile");
+    return isProfileSetup?.onboardingStep === -1 ? redirect("/") : redirect("/onboarding");
   } catch (error) {
     if (isRedirectError(error)) throw error;
     console.error(error);

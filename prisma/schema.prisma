@@ -47,10 +47,10 @@ model User {
 }
 
 model UserLocation {
-  id     String                                @id
+  id     String                                @id @default(cuid())
   userId String                                @unique
-  user   User                                  @relation(fields: [userId], references: [id])
-  coords Unsupported("geometry(Point, 4326)")? @default(dbgenerated("null"))
+  user   User                                  @relation(fields: [userId], references: [id]) 
+  coords Unsupported("geography(Point, 4326)")? @default(dbgenerated("null"))
 }
 
 model RadioModerator {
@@ -157,9 +157,9 @@ model SocialLink {
 model MusicalInfo {
   id                   String     @id @default(cuid())
   userId               String     @unique
-  yearsOfExperience    String
-  title                String
-  primaryInstrumentId  String
+  yearsOfExperience    String?
+  title                String?
+  primaryInstrumentId  String?
   bio                  String?
   interestedInTutoring Boolean?
   interestedInLearning Boolean?
@@ -167,7 +167,7 @@ model MusicalInfo {
   updatedAt            DateTime   @updatedAt
   instruments          String[]
   genres               String[]
-  primaryInstrument    Instrument @relation(fields: [primaryInstrumentId], references: [id])
+  primaryInstrument    Instrument? @relation(fields: [primaryInstrumentId], references: [id])
   user                 User       @relation(fields: [userId], references: [id])
 
   @@map("musical_info")

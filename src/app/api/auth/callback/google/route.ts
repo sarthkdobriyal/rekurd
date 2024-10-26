@@ -54,17 +54,22 @@ export async function GET(req: NextRequest) {
         sessionCookie.attributes,
       );
 
-      const isProfileSetup = await prisma.musicalInfo.findFirst({
+      const isProfileSetup = await prisma.user.findUnique({
         where: {
-          userId: existingUser.id
+          id: existingUser.id
+        },
+        select: {
+          onboardingStep: true
         }
-      }) 
+      })
+  
+      
   
 
       return new Response(null, {
         status: 302,
         headers: {
-          Location: `${isProfileSetup ? "/" : "/setup-profile"}`,
+          Location: `${isProfileSetup?.onboardingStep === -1 ? "/" : "/onboarding"}`,
         },
       });
     }
@@ -92,16 +97,19 @@ export async function GET(req: NextRequest) {
       sessionCookie.attributes,
     );
 
-    const isProfileSetup = await prisma.musicalInfo.findFirst({
+    const isProfileSetup = await prisma.user.findUnique({
       where: {
-        userId: userId
+        id: user.id
+      },
+      select: {
+        onboardingStep: true
       }
-    }) 
+    })
 
     return new Response(null, {
       status: 302,
       headers: {
-        Location: `${isProfileSetup ? "/" : "/setup-profile"}`,
+        Location: `${isProfileSetup?.onboardingStep === -1 ? "/" : "/onboarding"}`,
       },
     });
   } catch (error) {

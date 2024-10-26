@@ -35,6 +35,7 @@ function StepFour({
           ...values,
         },
         user.id,
+        5
       );
       handleNextStep(5);
     });

@@ -4,6 +4,7 @@
   "parserOptions": {
     "ecmaVersion": "latest"
   },
+  
   "rules": {
     "@ts-safeql/check-sql": [
       "error",

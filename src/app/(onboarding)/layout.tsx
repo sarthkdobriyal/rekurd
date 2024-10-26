@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 import ChatBotAvatar from "@/components/ChatBotAvatar";
 import { WebSocketProvider } from "../providers/web-socket";
 import SessionProvider from "../(main)/SessionProvider";
+import Onboarding from './onboarding/page';
+import prisma from "@/lib/prisma";
 
 export default async function Layout({
   children,
@@ -21,6 +23,18 @@ export default async function Layout({
   const session = await validateRequest();
 
   if (!session.user) redirect("/landing");
+
+
+  const OnboardingStep = await prisma.user.findUnique({
+    where: {
+      id: session.user.id
+    },
+    select: {
+      onboardingStep: true
+    }
+  })
+
+  if(OnboardingStep?.onboardingStep === -1) redirect("/")
 
 
   return (
