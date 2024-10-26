@@ -9,11 +9,16 @@ import StepOne from "../_components/StepOne";
 import StepTwo from "../_components/StepTwo";
 import { FormStepWrapper } from "../_components/FormStepWrapper";
 import StepThree from "../_components/StepThree";
+import StepFour from "../_components/StepFour";
+import StepFive from "../_components/StepFive";
+
+
+export type SelectionTypes = "musician" | "beginner" | "fan" ;
 
 export default function Onboarding({ user }: { user: UserData }) {
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(6);
   const [direction, setDirection] = useState(1);
-  const [selection, setSelection] = useState<string| null>(null);
+  const [selection, setSelection] = useState<SelectionTypes| null>(null);
 
   const handleStepSubmit = (data: Partial<UpdateUserProfileValues>) => {};
 
@@ -32,6 +37,18 @@ export default function Onboarding({ user }: { user: UserData }) {
     </FormStepWrapper>,
     <FormStepWrapper direction={direction}>
       <StepThree 
+       handleNextStep={handleNextStep}
+      />
+    </FormStepWrapper>,
+    <FormStepWrapper direction={direction}>
+      <StepFour
+      selection={selection}
+       handleNextStep={handleNextStep}
+      />
+    </FormStepWrapper>,
+    <FormStepWrapper direction={direction}>
+      <StepFive
+      selection={selection}
        handleNextStep={handleNextStep}
       />
     </FormStepWrapper>,

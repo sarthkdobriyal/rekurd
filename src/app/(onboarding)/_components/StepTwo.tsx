@@ -25,6 +25,7 @@ import kyInstance from "@/lib/ky";
 import { useQuery } from "@tanstack/react-query";
 import { Instrument } from "@prisma/client";
 import { MultiSelector, MultiSelectorContent, MultiSelectorInput, MultiSelectorItem, MultiSelectorList, MultiSelectorTrigger } from "@/components/ui/MultiSelector";
+import { SelectionTypes } from "../onboarding/page";
 
 const buttonData = [
   {
@@ -50,7 +51,7 @@ function StepTwo({
   handleNextStep,
 }: {
   selection: string | null;
-  setSelection: (selection: string) => void;
+  setSelection: (selection: SelectionTypes) => void;
   handleNextStep: (step: number) => void;
 }) {
   return (
@@ -66,7 +67,15 @@ function StepTwo({
               <button
                 key={button.selection}
                 className="flex aspect-square border w-24 h-24  md:w-52 md:h-52    p-5 md:p-8 flex-1 flex-col items-center justify-center gap-y-3 rounded-xl bg-muted  text-white hover:bg-purple-700 "
-                onClick={() => setSelection(button.selection)}
+                onClick={() => {
+                  if(button.selection === "fan"){
+                    setSelection("fan")
+                    handleNextStep(3)
+                }else{
+                  setSelection(button.selection === "musician" ? "musician" : button.selection === "beginner" ? "beginner" : "fan");
+                }
+              }
+            }
               >
                 <button.icon className="h-10 w-10 text-muted-foreground" />
                 {button.label}

@@ -59,7 +59,7 @@ function StepOne({ handleNextStep }: { handleNextStep: (step: number) => void })
 
 
   return (
-   <div className="flex flex-col gap-4 py-3 my-auto  ">
+   <div className="flex flex-col gap-4 py-3 my-auto  mx-auto md:max-w-md">
     <h1 className="font-bold text-4xl mb-16 ">
       {
         user.username ? "Verify your details" : "Help us know you better"
