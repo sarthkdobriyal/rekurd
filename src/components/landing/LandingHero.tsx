@@ -183,7 +183,7 @@ export const LandingHero: React.FC<Props> = () => {
         </motion.span>
         <Link
           href={"/login"}
-          className="flex gap-x-3 rounded-sm border-2 border-white px-5 py-3 bg-muted animate-shimmer text-white hover:bg-gray-600 md:px-10  font-poppins  transform  items-center justify-center    bg-[length:200%_100%]  md:text-2xl    transition-colors duration-1000 ease-in-out hover:scale-101 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-50 font-normal"
+          className="flex gap-x-3 rounded-sm border-2 border-white px-5 py-3 backdrop-blur-xl backdrop:bg-muted animate-shimmer text-white hover:bg-gray-600/40  md:px-10  font-poppins  transform  items-center justify-center    bg-[length:200%_100%]  md:text-2xl    transition-colors duration-500 ease-in-out hover:scale-101 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-50 font-normal"
         >
           <span>Let's go in</span>
           <MoveRight />

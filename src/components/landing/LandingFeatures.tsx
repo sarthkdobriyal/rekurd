@@ -69,7 +69,10 @@ const FeatureCard: React.FC<FeatureCardType> = ({ heading, description, icon, i,
   const scale = useTransform(progress, range, [1, targetScale]);
   
   return (
-    <div ref={container} className="h-[90vh] w-full mx-auto lg:max-w-7xl flex items-center justify-center sticky top-0">
+    <div ref={container} className="h-[70vh] w-[80%] mx-auto lg:max-w-7xl flex items-center justify-center sticky top-20">
+   
+   
+   
     <motion.div 
       className="relative h-full w-full rounded-xl  overflow-hidden"
       style={{ scale, top: `calc( ${i * 25}px)` }}
@@ -94,7 +97,7 @@ const FeatureCard: React.FC<FeatureCardType> = ({ heading, description, icon, i,
       {/* Content */}
       <div className="relative z-10 h-full px-4 md:px-8 lg:px-14 flex flex-col justify-center  md:max-w-[60%]">
         <div className="w-full">
-          <h2 className="text-left font-poppins text-4xl lg:text-5xl  text-white mb-3">
+          <h2 className="text-left tracking-tighter font-extrabold  text-4xl lg:text-5xl  text-white mb-3">
             {heading}
           </h2>
           <p className="text-left text-sm md:text-xl text-gray-200 mb-8 leading-relaxed">
