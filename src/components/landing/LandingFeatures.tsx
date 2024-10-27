@@ -94,7 +94,7 @@ const FeatureCard: React.FC<FeatureCardType> = ({ heading, description, icon, i,
       {/* Content */}
       <div className="relative z-10 h-full px-4 md:px-8 lg:px-14 flex flex-col justify-center  md:max-w-[60%]">
         <div className="w-full">
-          <h2 className="text-left font-kochire text-4xl lg:text-5xl  text-white mb-3">
+          <h2 className="text-left font-poppins text-4xl lg:text-5xl  text-white mb-3">
             {heading}
           </h2>
           <p className="text-left text-sm md:text-xl text-gray-200 mb-8 leading-relaxed">

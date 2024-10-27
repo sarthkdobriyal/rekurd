@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import { howitworks } from "./floatingImages";
 import Image from "next/image";
 import { useScroll, useTransform, motion, useInView, useAnimation, Variants, AnimationControls } from "framer-motion";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface Props {}
 

@@ -22,12 +22,13 @@ import {
   floating7,
   floating8,
 } from "./floatingImages";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MoveRight } from "lucide-react";
 import {
   TypewriterEffect,
   TypewriterEffectSmooth,
 } from "../ui/typewriter-effect";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import Link from "next/link";
 
 interface Props extends HTMLAttributes<HTMLElement> {}
 
@@ -105,8 +106,6 @@ const springTransition = {
   damping: 20,
 };
 
-
-
 const duration = 1.0;
 
 const typeWriterWords = [
@@ -160,10 +159,10 @@ export const LandingHero: React.FC<Props> = () => {
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
 
       <motion.div
-        className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 transform flex-col items-center overflow-hidden text-center"
+        className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 transform flex-col items-center gap-y-3 overflow-hidden text-center"
         variants={textVariants}
       >
-        <motion.span className="inline-block gap-y-2 whitespace-nowrap font-superChargedLazer text-5xl   md:text-7xl font-extrabold tracking-wide lg:text-9xl">
+        <motion.span className="inline-block gap-y-2 whitespace-nowrap font-superChargedLazer text-5xl font-extrabold tracking-wide md:text-7xl lg:text-9xl">
           {"OUTSOUND.".split("").map((char, index) => (
             <motion.span
               key={index}
@@ -174,7 +173,21 @@ export const LandingHero: React.FC<Props> = () => {
             </motion.span>
           ))}
         </motion.span>
-          {/* <span className="text-sm tracking-widest text-right w-full pr-36 font-kochire">CONNECTING MUSICIANS , CREATING OPPORTUNITIES</span> */}
+        <motion.span
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+          className="mx-auto mt-4 px-10 text-center font-semibold font-poppins text-sm tracking-widest md:mt-10 md:text-xl"
+        >
+          DISCOVER NEW ARTISTS, GIGS, OPPORTUNITIES AND MUSIC ALL AROUND YOU
+        </motion.span>
+        <Link
+          href={"/login"}
+          className="flex gap-x-3 rounded-sm border-2 border-white px-5 py-3 bg-muted animate-shimmer text-white hover:bg-gray-600 md:px-10  font-poppins  transform  items-center justify-center    bg-[length:200%_100%]  md:text-2xl    transition-colors duration-1000 ease-in-out hover:scale-101 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-50 font-normal"
+        >
+          <span>Let's go in</span>
+          <MoveRight />
+        </Link>
       </motion.div>
       <div className="absolute inset-0 w-full">
         <motion.div
@@ -195,7 +208,7 @@ export const LandingHero: React.FC<Props> = () => {
             <Image
               src={floating1}
               alt="Floating Image 1"
-              className="w-36 sm:w-42 md:left-[80%] md:w-60"
+              className="sm:w-42 w-36 md:left-[80%] md:w-60"
               width={300}
             />
           </motion.div>
@@ -213,7 +226,7 @@ export const LandingHero: React.FC<Props> = () => {
             <Image
               src={floating2}
               alt="Floating Image 2"
-              className="w-36 sm:w-42 md:left-[10%] md:top-[15%] md:w-64"
+              className="sm:w-42 w-36 md:left-[10%] md:top-[15%] md:w-64"
               width={300}
             />
           </motion.div>
@@ -231,7 +244,7 @@ export const LandingHero: React.FC<Props> = () => {
             <Image
               src={floating3}
               alt="Floating Image 3"
-              className="w-36 sm:w-42 md:left-[35%] md:top-0 md:w-max"
+              className="sm:w-42 w-36 md:left-[35%] md:top-0 md:w-max"
               width={225}
               priority
             />
@@ -255,7 +268,7 @@ export const LandingHero: React.FC<Props> = () => {
             <Image
               src={floating4}
               alt="Floating Image 4"
-              className="w-36 sm:w-42 md:left-[5%] md:top-[60%] md:w-96"
+              className="sm:w-42 w-36 md:left-[5%] md:top-[60%] md:w-96"
               width={250}
             />
           </motion.div>
@@ -273,7 +286,7 @@ export const LandingHero: React.FC<Props> = () => {
             <Image
               src={floating5}
               alt="Floating Image 5"
-              className="w-36 sm:w-42 md:left-[85%] md:top-[5%] md:w-80"
+              className="sm:w-42 w-36 md:left-[85%] md:top-[5%] md:w-80"
               width={200}
             />
           </motion.div>
@@ -291,7 +304,7 @@ export const LandingHero: React.FC<Props> = () => {
             <Image
               src={floating6}
               alt="Floating Image 6"
-              className="z-5 w-36 sm:w-42 md:left-[60%] md:top-[60%] md:w-max"
+              className="z-5 sm:w-42 w-36 md:left-[60%] md:top-[60%] md:w-max"
               width={225}
             />
           </motion.div>

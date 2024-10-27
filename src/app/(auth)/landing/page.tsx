@@ -26,8 +26,8 @@ import { FloatingNav } from "@/components/ui/floating-navbar";
 
 const features = [
   {
-    heading: "Share Your Music",
-    description: "Showcase your talent with image and video posts. Let your music speak to a global audience.",
+    heading: "Share Your Art and Vision",
+    description: "Showcase your talent with interactive features. Let your music speak to your local community and eventually a global one.",
     icon: "VideoCameraOutlined",
     color: "black",
     url: "/share",
@@ -35,7 +35,7 @@ const features = [
   },
   {
     heading: "Engage with Fans",
-    description: "Build your community through likes, comments, and direct interactions. Connect with your audience on a personal level.",
+    description: "Build your following through likes, comments, and direct interactions. Connect with your audience on a deeper level.",
     icon: "CommentOutlined",
     color: "blue",
     url: "/engage",
@@ -43,36 +43,37 @@ const features = [
   },
   {
     heading: "Connect with Musicians",
-    description: "Find collaborators, join bands, or form musical partnerships. Grow together in the world of music.",
+    description: "Find the perfect collaborators, teachers,  or bandmates. Grow together in the world of music.",
     icon: "UsergroupAddOutlined",
     color: "green",
     url: "/connect",
     src: "/jam-night.jpg"
   },
   {
-    heading: "Discover New Talent",
-    description: "Explore regional artists, expand your network, and find the next big thing in your local music scene.",
+    heading: "Discover Local Talent",
+    description: "Explore and directly support regional and local artists, expand your network, and find the next big thing in your local music scene.",
     icon: "SearchOutlined",
     color: "purple",
     url: "/discover",
     src: "/opn-mic.jpg"
   },
   {
-    heading: "AI Music Generator",
-    description: "Break through creative blocks with our AI-powered tools. Generate melodies, chord progressions, and more.",
-    icon: "BulbOutlined",
-    color: "orange",
-    url: "/ai-generator",
-    src: "/ai-music.jpg"
-  },
-  {
-    heading: "Promote on Instagram",
+    heading: "Promote on Social Media",
     description: "Reach wider audiences through integrated marketing. Seamlessly share your content and run targeted ads.",
     icon: "InstagramOutlined",
     color: "pink",
     url: "/promote",
     src: "/share-music.jpg"
-  }
+  },
+  {
+    heading: "AI Support",
+    description: "Break through creative blocks with our AI-powered tools. Generate melodies, chord progressions, and more with our AI powered tools",
+    icon: "BulbOutlined",
+    color: "orange",
+    url: "/ai-generator",
+    src: "/ai-music.jpg"
+  },
+  
 ];
 
 
