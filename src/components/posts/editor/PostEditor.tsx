@@ -29,7 +29,9 @@ export default function PostEditor() {
       Placeholder.configure({
         placeholder: "Write something amazing...",
       }),
+      
     ],
+    immediatelyRender: false,
   });
 
   const mutation = useSubmitPostMutation();

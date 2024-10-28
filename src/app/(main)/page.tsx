@@ -5,11 +5,13 @@ import TrendsSidebar from "../../components/TrendsSidebar";
 import ForYouFeed from "./ForYouFeed";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FollowingFeed from "./FollowingFeed";
+import Navbar from "./Navbar";
 
 export default function Home() {
   return (
     <main className="flex w-full gap-5">
       <div className="flex w-full flex-col gap-5  lg:w-2/3">
+        <Navbar />
         <PostEditor />
         <Tabs defaultValue="for-you">
           <TabsList>

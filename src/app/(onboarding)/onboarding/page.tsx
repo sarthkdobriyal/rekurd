@@ -37,30 +37,30 @@ export default function Onboarding() {
   
 
   const steps = [
-    <FormStepWrapper direction={direction}>
+    <FormStepWrapper key={1} direction={direction}>
       <StepOne  handleNextStep={handleNextStep}/>
     </FormStepWrapper>,
-    <FormStepWrapper direction={direction}>
+    <FormStepWrapper key={2} direction={direction}>
       <StepTwo selection={selection} setSelection={setSelection} handleNextStep={handleNextStep}/>
     </FormStepWrapper>,
-    <FormStepWrapper direction={direction}>
+    <FormStepWrapper key={3} direction={direction}>
       <StepThree 
        handleNextStep={handleNextStep}
       />
     </FormStepWrapper>,
-    <FormStepWrapper direction={direction}>
+    <FormStepWrapper key={4} direction={direction}>
       <StepFour
       selection={selection}
        handleNextStep={handleNextStep}
       />
     </FormStepWrapper>,
-    <FormStepWrapper direction={direction}>
+    <FormStepWrapper key={5} direction={direction}>
       <StepFive
       selection={selection}
        handleNextStep={handleNextStep}
       />
     </FormStepWrapper>,
-    <FormStepWrapper direction={direction}>
+    <FormStepWrapper key={6} direction={direction}>
       <StepSix
       selection={selection}
        handleNextStep={handleNextStep}

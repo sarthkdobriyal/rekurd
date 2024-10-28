@@ -18,7 +18,7 @@ import ArtistsCardSkeleton from './_components/ArtistsCardSkeleton';
 
     const { user: loggedInUser } = useSession()
 
-  if (!loggedInUser) return null;
+ 
 
   // const discoverUsers = await prisma.user.findMany({
   //   where: {
@@ -56,6 +56,8 @@ import ArtistsCardSkeleton from './_components/ArtistsCardSkeleton';
         .json<DiscoverUsers>(),
   });
 
+  if (!loggedInUser) return null;
+
   if (isLoading) {
     return (
       <div className="w-full h-[80%] p-3 gap-x-3 flex overflow-x-scroll scroll-smooth snap-x snap-mandatory max-w-full  scrollbar-hide">
@@ -83,7 +85,7 @@ import ArtistsCardSkeleton from './_components/ArtistsCardSkeleton';
       !discoverUsers.length ? <div>No users to follow</div> :
       
       discoverUsers.map(({user}) => (
-        <ArtistCard artist={user} />
+        <ArtistCard artist={user} key={user.id}/>
       ))}
     </div>
   )

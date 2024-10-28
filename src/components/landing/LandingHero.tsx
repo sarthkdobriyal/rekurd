@@ -22,12 +22,7 @@ import {
   floating7,
   floating8,
 } from "./floatingImages";
-import { ChevronDown, MoveRight } from "lucide-react";
-import {
-  TypewriterEffect,
-  TypewriterEffectSmooth,
-} from "../ui/typewriter-effect";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import {  MoveRight } from "lucide-react";
 import Link from "next/link";
 
 interface Props extends HTMLAttributes<HTMLElement> {}
@@ -185,7 +180,7 @@ export const LandingHero: React.FC<Props> = () => {
           href={"/login"}
           className="flex gap-x-3 rounded-sm border-2 border-white px-5 py-3 backdrop-blur-xl backdrop:bg-muted animate-shimmer text-white hover:bg-gray-600/40  md:px-10  font-poppins  transform  items-center justify-center    bg-[length:200%_100%]  md:text-2xl    transition-colors duration-500 ease-in-out hover:scale-101 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-50 font-normal"
         >
-          <span>Let's go in</span>
+          <span>Let&apos;s go in</span>
           <MoveRight />
         </Link>
       </motion.div>
