@@ -9,9 +9,7 @@
     }
   },
   "rules": {
-    
     "react/no-unknown-property": "error",
-
     "react/no-invalid-html-attribute": "error"
   },
   "settings": {
