@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -11,8 +12,15 @@ export const Logo: React.FC<Props> = ({}) => {
   };
 
   return (
-    <div className="font-superChargedLazer text-3xl font-bold italic tracking-tighter">
-      outsound.
+    <div className="font-superChargedLazer flex items-center">
+      <Image 
+      src={'/logo.ico'}
+      alt="outsound logo"
+      width={10}
+      height={10}
+      className="w-4 h-4 "
+      />
+      <span className="text-xl tracking-tight">outsound.</span>
     </div>
   );
 };

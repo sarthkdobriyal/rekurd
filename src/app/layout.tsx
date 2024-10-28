@@ -4,12 +4,11 @@ import { League_Spartan, Poppins } from "next/font/google";
 import "./globals.css";
 import ReactQueryProvider from "./providers/ReactQueryProvider";
 import { ThemeProvider } from "next-themes";
-import { Toast } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
-import { WebSocketProvider } from "./providers/web-socket";
+
 
 const superchargedLazer = localFont({
   src: "./fonts/SuperchargeLaser.woff2",

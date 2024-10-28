@@ -48,7 +48,7 @@ async function WhoToFollow() {
     
   
   return (
-    <div className="space-y-5 rounded-2xl bg-card p-5 shadow-sm">
+    <div className="space-y-5 rounded-2xl  p-5 shadow-sm">
       <div className="text-xl font-bold">Who to follow</div>
       {
       !usersToFollow.length ? <div>No users to follow</div> :

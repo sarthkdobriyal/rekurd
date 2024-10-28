@@ -19,20 +19,20 @@ export default function MessagesButton({ initialState }: MessagesButtonProps) {
   return (
     <Button
       variant="ghost"
-      className="flex items-center justify-start gap-3"
+      className="flex items-center justify-start gap-x-1"
       title="Messages"
       asChild
     >
       <Link href="/chats">
         <div className="relative">
-        <MessageCircle />
+        <MessageCircle className="w-5 h-5"/>
           {!!data.unreadCount && (
             <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 text-xs font-medium tabular-nums text-primary-foreground">
               {data.unreadCount}
             </span>
           )}
         </div>
-        <span className="hidden lg:inline">Messages</span>
+        <span className="hidden lg:inline">Chats</span>
       </Link>
     </Button>
   );

@@ -30,7 +30,7 @@ export default async function Layout({
       <div className="relative flex h-screen min-h-screen flex-col ">
         
         <div className="mx-auto flex h-full w-full max-w-7xl gap-5 max-h-[95%]">
-          <MenuBar className="sticky top-[5.25rem] hidden h-fit flex-none space-y-3 rounded-2xl bg-card px-3 py-5 shadow-sm sm:block lg:px-5 xl:w-80" />
+          <MenuBar className="sticky top-[5.25rem] hidden h-fit flex-none space-y-3  px-3 py-5 shadow-sm sm:block lg:px-5 xl:w-80" />
           {children}
         </div>
         <MenuBar className="fixed bottom-0 flex w-full justify-center gap-5 border-t bg-card p-3 sm:hidden" />

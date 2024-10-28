@@ -33,7 +33,7 @@ export default function NotificationsButton({
     >
       <Link href="/notifications">
         <div className="relative">
-          <Bell />
+          <Bell className="w-5 h-5 "/>
           {!!data.unreadCount && (
             <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 text-xs font-medium tabular-nums text-primary-foreground">
               {data.unreadCount}

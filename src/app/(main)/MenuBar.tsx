@@ -1,7 +1,7 @@
 import { validateRequest } from "@/auth";
 import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/UserAvatar";
-import { Bookmark, Home, UserRound, UserRoundSearch } from "lucide-react";
+import { Bookmark, BoomBox, Home, Plus, Radio, UserRound, UserRoundSearch } from "lucide-react";
 import Link from "next/link";
 
 
@@ -43,17 +43,33 @@ export default async function MenuBar({ className }: MenuBarProps) {
         </Link>
       </Button>
 
+      
       <Button
         variant="ghost"
         className="flex items-center justify-start gap-3"
-        title="Bookmarks"
+        title="Add"
         asChild
       >
-        <Link href="/bookmarks">
-          <Bookmark />
-          <span className="hidden lg:inline">Bookmarks</span>
+        <Link href="/post">
+          <Plus />
+          <span className="hidden lg:inline">Post</span>
         </Link>
       </Button>
+
+
+      <Button
+        variant="ghost"
+        className="flex items-center justify-start gap-3"
+        title="Radio"
+        asChild
+      >
+        <Link href="/radio">
+          <BoomBox />
+          <span className="hidden lg:inline">Radio</span>
+        </Link>
+      </Button>
+
+
       <Button
         variant="ghost"
         className="flex items-center justify-start gap-3"

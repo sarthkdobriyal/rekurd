@@ -25,12 +25,12 @@ export default function Post({ post }: PostProps) {
   const { user } = useSession();
   const [showComments, setShowComments] = useState(false);
   return (
-    <div className="group/post space-y-3 rounded-2xl bg-card p-5 shadow-sm">
-      <div className="flex justify-between">
-        <div className="flex flex-wrap gap-3">
+    <div className="group/post space-y-3 border-b  shadow-sm">
+      <div className="flex justify-between  px-1">
+        <div className="flex flex-wrap gap-3 ">
           <UserTooltip user={post.user}>
             <Link href={`/users/${post.user.username}`}>
-              <UserAvatar avatarUrl={post.user.avatarUrl} />
+              <UserAvatar avatarUrl={post.user.avatarUrl} size={36}/>
             </Link>
           </UserTooltip>
           <div>
@@ -59,14 +59,13 @@ export default function Post({ post }: PostProps) {
         )}
       </div>
       <Linkify>
-        <div className="whitespace-pre-line break-words">{post.content}</div>
+        <div className="whitespace-pre-line break-words px-3 py-2">{post.content}</div>
       </Linkify>
       {!!post.attachments.length && (
         <MediaPreviews attachments={post.attachments} />
       )}
-      <hr className="text-muted-foreground" />
-      <div className="flex justify-between gap-5">
-        <div className="flex items-center gap-5">
+      <div className="flex justify-between gap-5 p-4">
+        <div className="flex items-center gap-5 mt-2">
           <LikeButton
             postId={post.id}
             initialState={{
@@ -124,7 +123,7 @@ function MediaPreview({ media }: MediaPreviewProps) {
         alt="Attachment"
         width={500}
         height={500}
-        className="mx-auto size-fit max-h-[30rem] rounded-2xl"
+        className="mx-auto size-fit max-h-[30rem]"
       />
     );
   }

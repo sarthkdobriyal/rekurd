@@ -10,9 +10,9 @@ import Navbar from "./Navbar";
 export default function Home() {
   return (
     <main className="flex w-full gap-5">
-      <div className="flex w-full flex-col gap-5  lg:w-2/3">
+      <div className="flex w-full flex-col  lg:w-2/3">
         <Navbar />
-        <PostEditor />
+        {/* <PostEditor /> */}
         <Tabs defaultValue="for-you">
           <TabsList>
             <TabsTrigger value="for-you">For You</TabsTrigger>
