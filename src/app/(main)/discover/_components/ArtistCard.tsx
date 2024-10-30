@@ -9,9 +9,8 @@ interface ArtistCardProps {
 }
 
 const ArtistCard: FC<ArtistCardProps> = ({ artist }) => {
-  console.log("running here", artist);
   return (
-    <div className="flex-col flex min-h-[60%] w-full min-w-[97%] snap-y snap-center overflow-auto scrollbar-hide rounded-lg text-white shadow-sm shadow-muted">
+    <div className="flex-col flex min-h-[60%] w-full min-w-[97%] snap-y snap-center overflow-auto scrollbar-hide rounded-lg text-white shadow-sm shadow-muted h-full1">
       <Link href={`/users/${artist.username}`}>
         <div className="relative h-64 w-full">
           <Image

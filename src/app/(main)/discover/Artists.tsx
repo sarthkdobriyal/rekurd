@@ -74,13 +74,12 @@ import ArtistsCardSkeleton from './_components/ArtistsCardSkeleton';
   }
 
   const discoverUsers = data
-  console.log(data)
 
   
 
 
   return (
-    <div className="w-full h-[80%] p-3 gap-x-3 flex overflow-x-scroll scroll-smooth snap-x snap-mandatory max-w-full scrollbar-hide ">
+    <div className="w-full h-[90%] p-3 gap-x-3 flex overflow-x-scroll scroll-smooth snap-x snap-mandatory max-w-full scrollbar-hide ">
       {
       !discoverUsers.length ? <div>No users to follow</div> :
       

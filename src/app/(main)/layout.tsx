@@ -33,7 +33,7 @@ export default async function Layout({
           <MenuBar className="sticky top-[5.25rem] hidden h-fit flex-none space-y-3  px-3 py-5 shadow-sm sm:block lg:px-5 xl:w-80" />
           {children}
         </div>
-        <MenuBar className="fixed bottom-0 flex w-full justify-between gap-x-3 border-t bg-card p-3 sm:hidden" />
+        <MenuBar className="fixed bottom-0 flex w-full max-w-screen justify-around gap-x-3 border-t bg-card py-1 sm:hidden" />
         {/* <Link href='/ai-chatbot' >
           <ChatBotAvatar />
         </Link> */}
