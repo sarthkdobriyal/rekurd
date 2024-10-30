@@ -26,7 +26,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
         asChild
       >
         <Link href="/">
-          <Home />
+          <Home className=""/>
           <span className="hidden lg:inline">Home</span>
         </Link>
       </Button>
@@ -38,7 +38,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
         asChild
       >
         <Link href="/discover">
-          <UserRoundSearch />
+          <UserRoundSearch className=""/>
           <span className="hidden lg:inline">Discover</span>
         </Link>
       </Button>
@@ -51,7 +51,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
         asChild
       >
         <Link href="/post">
-          <Plus />
+          <Plus className="border border-white  rounded-md w-7 "/>
           <span className="hidden lg:inline">Post</span>
         </Link>
       </Button>
@@ -64,7 +64,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
         asChild
       >
         <Link href="/radio">
-          <BoomBox />
+          <BoomBox className=""/>
           <span className="hidden lg:inline">Radio</span>
         </Link>
       </Button>
@@ -77,7 +77,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
         asChild
       >
         <Link href={`/users/${user.username}`}>
-          <UserAvatar avatarUrl={user.avatarUrl} size={32} />
+          <UserAvatar avatarUrl={user.avatarUrl} className="" size={32} />
           <span className="hidden lg:inline">Profile</span>
         </Link>
       </Button>

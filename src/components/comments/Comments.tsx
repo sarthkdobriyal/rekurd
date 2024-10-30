@@ -32,7 +32,7 @@ export default function Comments({ post }: CommentsProps) {
   const comments = data?.pages.flatMap((page) => page.comments) || [];
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 px-4">
       <CommentInput post={post} />
       {hasNextPage && (
         <Button

@@ -22,7 +22,7 @@ export default async function Navbar() {
     },
   })
   return (
-    <header className="sticky top-0 z-10 bg-black shadow-sm shadow-muted">
+    <header className="sticky top-0 z-10 bg-black ">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 pl-5 py-2">
         <Logo />
         <div className="flex gap-2">
