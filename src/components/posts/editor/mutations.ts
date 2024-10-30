@@ -9,12 +9,16 @@ import { submitPost } from "./actions";
 import next from "next";
 import { useSession } from "@/app/(main)/SessionProvider";
 import { PostsPage } from "@/lib/types";
+import { useRouter } from "next/navigation";
+import { use } from "react";
 
 export function useSubmitPostMutation() {
   const { toast } = useToast();
 
   const {user} = useSession();
   const queryClient = useQueryClient();
+
+  const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: submitPost,
@@ -55,6 +59,8 @@ export function useSubmitPostMutation() {
           return queryFilter.predicate(query) && !query.state.data;
         },
       });
+
+      router.push('/')
 
       toast({
         description: "Post Created!",

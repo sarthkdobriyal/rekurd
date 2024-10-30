@@ -79,25 +79,25 @@ export default function PostEditor() {
   }
 
   return (
-    <div className="flex h-fit w-full flex-col gap-5 rounded-2xl bg-card p-5 shadow-sm">
+    <div className="flex h-full w-full flex-col gap-5 rounded-2xl  p-5 shadow-sm">
       <div {...rootProps} className="w-full">
         <div className="flex gap-5">
-          <div className="w-full">
+          <div className="w-full border rounded-xl">
             <EditorContent
               editor={editor}
               className={cn(
-                "max-h-[20rem] w-full overflow-y-auto rounded-2xl border-none bg-background px-5 py-3 outline-none",
+                "max-h-[20rem] w-full  overflow-y-auto rounded-2xl border-none bg-background px-5 py-3 outline-none",
                 isDragActive && "outline-dashed",
               )}
               onPaste={onPaste}
             />
           </div>
-          <Link href={`/users/${user.username}`}>
+          {/* <Link href={`/users/${user.username}`}>
             <UserAvatar
               avatarUrl={user.avatarUrl}
               className="inline"
             />
-          </Link>
+          </Link> */}
         </div>
 
         <input {...getInputProps()} />
@@ -108,7 +108,7 @@ export default function PostEditor() {
           removeAttachment={removeAttachment}
         />
       )}
-      <div className="flex items-center justify-end gap-3">
+      <div className="flex flex-col items-center justify-end gap-3">
         {isUploading && (
           <>
             <span className="text-sm">{uploadProgress ?? 0}%</span>
@@ -122,8 +122,8 @@ export default function PostEditor() {
         <LoadingButton
           onClick={onSubmit}
           loading={mutation.isPending}
-          // disabled={!input.trim() || isUploading}
-          className="min-w-20"
+          disabled={isUploading}
+          className="min-w-20 w-full"
         >
           Post
         </LoadingButton>
@@ -144,15 +144,16 @@ function AddAttachmentsButton({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <>
+    <div className="w-full">
       <Button
-        variant="ghost"
+        variant="outline"
         size="icon"
-        className="text-primary hover:text-primary"
+        className="text-primary hover:text-primary w-full"
         disabled={disabled}
         onClick={() => fileInputRef.current?.click()}
       >
         <ImageIcon size={20} />
+        <span className="mx-2 ">Add Image/Video</span>
       </Button>
       <input
         type="file"
@@ -168,7 +169,7 @@ function AddAttachmentsButton({
           }
         }}
       />
-    </>
+    </div>
   );
 }
 
