@@ -41,7 +41,7 @@ model User {
   UserContact           UserContact?
   conversations         Conversation[]     @relation("UsersInConversation")
   UserLocation          UserLocation?
-  
+  scans                 Scan[]
 
   @@map("users")
 }
@@ -284,6 +284,42 @@ model Notification {
   recipient   User             @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
+}
+
+model Track {
+  id             String   @id @default(cuid())
+  acrId          String?  @unique
+  isrc           String?  @unique
+  title          String
+  artist         String
+  albumArtUrl    String?
+  genre          String?
+  subgenre       String?
+  bpm            Float?
+  musicalKey     String?
+  artistBio      String?
+  relatedArtists Json?
+  discography    Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  scans          Scan[]
+
+  @@map("tracks")
+}
+
+model Scan {
+  id        String   @id @default(cuid())
+  userId    String?
+  guestId   String?
+  trackId   String?
+  matched   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track     Track?   @relation(fields: [trackId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([guestId, createdAt])
+  @@map("scans")
 }
 
 model Instrument {

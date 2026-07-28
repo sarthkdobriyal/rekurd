@@ -126,3 +126,25 @@ export const submitSongFormSchema = z.object({
 
 export type SubmitSongValues = z.infer<typeof submitSongSchema>;
 export type SubmitSongFormValues = z.infer<typeof submitSongFormSchema>;
+
+export const ALLOWED_SCAN_AUDIO_TYPES = [
+  "audio/webm",
+  "audio/mp4",
+  "audio/wav",
+  "audio/ogg",
+  "audio/mpeg",
+] as const;
+
+export const MAX_SCAN_AUDIO_BYTES = 2 * 1024 * 1024; // 2MB, generous for a ~5-10s clip
+
+export const scanAudioSchema = z.object({
+  type: z.enum(ALLOWED_SCAN_AUDIO_TYPES, {
+    errorMap: () => ({ message: "Unsupported audio format" }),
+  }),
+  size: z
+    .number()
+    .positive("Audio clip is empty")
+    .max(MAX_SCAN_AUDIO_BYTES, "Audio clip is too large"),
+});
+
+export type ScanAudioMeta = z.infer<typeof scanAudioSchema>;

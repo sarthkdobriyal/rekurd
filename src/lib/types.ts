@@ -271,3 +271,21 @@ export type SockerIoApiResponse = NextApiResponse & {
     };
   };
 };
+
+export interface ScannedTrack {
+  id: string;
+  title: string;
+  artist: string;
+  albumArtUrl: string | null;
+  genre: string | null;
+  subgenre: string | null;
+  bpm: number | null;
+  musicalKey: string | null;
+  artistBio: string | null;
+  relatedArtists: string[];
+  discography: { title: string; date: string | null }[];
+}
+
+export type ScanResponse =
+  | { matched: true; track: ScannedTrack }
+  | { matched: false; reason: "no_match" };

@@ -32,7 +32,7 @@ export default async function Navbar() {
             initialState={{ unreadCount: unreadNotificationsCount }}
           />
           <MessagesButton initialState={{ unreadCount: 0 }} />
-          
+          <UserButton />
         </div>
       </div>
     </header>
