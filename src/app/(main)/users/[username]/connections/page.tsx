@@ -11,7 +11,7 @@ import Connections from "./Connections";
 import { notFound } from "next/navigation";
 
 interface PageProps {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }
 
 const getUser = cache(async (username: string, loggedInUserId: string) => {
@@ -31,11 +31,18 @@ const getUser = cache(async (username: string, loggedInUserId: string) => {
 });
 
 export default async function FollowersPage({
-  params: { username },
+  params,
 }: PageProps) {
+  const { username } = await params;
   const { user: loggedInUser } = await validateRequest();
 
-  if (!loggedInUser) return {};
+  if (!loggedInUser) {
+    return (
+      <p className="text-destructive">
+        You&apos;re not authorized to view this page.
+      </p>
+    );
+  }
 
   const user = await getUser(username, loggedInUser.id);
   return (

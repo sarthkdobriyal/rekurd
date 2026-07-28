@@ -13,7 +13,7 @@ import { notFound } from 'next/navigation';
 import { cache, FC, Suspense } from 'react'
 
 interface PostDetailsPageProps {
-    params: { postId: string };
+    params: Promise<{ postId: string }>;
 }
 
 const getPost = cache(async (postId: string, loggedInUserId: string) => {
@@ -30,8 +30,9 @@ const getPost = cache(async (postId: string, loggedInUserId: string) => {
 });
 
 export async function generateMetadata({
-  params: { postId },
+  params,
 }: PostDetailsPageProps): Promise<Metadata> {
+  const { postId } = await params;
   const { user } = await validateRequest();
 
   if (!user) return {};
@@ -44,8 +45,9 @@ export async function generateMetadata({
 }
 
 
-const PostDetailsPage: FC<PostDetailsPageProps> = async ({params}) => {
+const PostDetailsPage: FC<PostDetailsPageProps> = async ({params: paramsPromise}) => {
 
+  const params = await paramsPromise;
   const { user } = await validateRequest();
 
   if (!user) {

@@ -16,12 +16,13 @@ import Link from "next/link";
 
 
 interface ChatPageProps {
-  params: {
+  params: Promise<{
     chatId: string;
-  };
+  }>;
 }
 
-const ChatPage: FC<ChatPageProps> = async ({ params }) => {
+const ChatPage: FC<ChatPageProps> = async ({ params: paramsPromise }) => {
+  const params = await paramsPromise;
   const { user: loggedInUser } = await validateRequest();
   if (!loggedInUser) return null;
 

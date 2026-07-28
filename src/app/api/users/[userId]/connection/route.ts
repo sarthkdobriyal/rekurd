@@ -5,7 +5,7 @@ import { ConnectionInfo } from "@/lib/types";
 
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
     const { user: loggedInUser } = await validateRequest();
@@ -13,7 +13,7 @@ export async function GET(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { userId } = params;
+    const { userId } = await params;
 
     const connection = await prisma.connection.findFirst({
       where: {
@@ -64,9 +64,10 @@ export async function GET(
 
 export async function POST(
   req: Request,
-  { params: { userId } }: { params: { userId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
+    const { userId } = await params;
     const { user: loggedInUser } = await validateRequest();
     if (!loggedInUser) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -122,7 +123,7 @@ export async function POST(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { followerId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
     const { user: loggedInUser } = await validateRequest();
@@ -130,7 +131,7 @@ export async function DELETE(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { followerId } = params;
+    const { userId: followerId } = await params;
 
     const connection = await prisma.connection.findFirst({
       where: {
@@ -211,7 +212,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { userId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
     const { user: loggedInUser } = await validateRequest();
@@ -219,7 +220,7 @@ export async function PATCH(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { userId } = params;
+    const { userId } = await params;
 
     const [updateResult, ...result] = await prisma.$transaction([
       prisma.connection.updateMany({

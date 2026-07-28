@@ -9,6 +9,7 @@ import { cache } from "react";
 import { validateRequest } from "@/auth";
 import { useSession } from "../SessionProvider";
 import prisma from "@/lib/prisma";
+import type { JSX } from "react";
 
 interface NotificationProps {
   notification: NotificationData;
