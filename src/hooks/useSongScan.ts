@@ -19,7 +19,8 @@ type ScanState =
   | "identifying"
   | "success"
   | "no-match"
-  | "error";
+  | "error"
+  | "login-required";
 
 function pickSupportedMimeType(): string | undefined {
   if (typeof MediaRecorder === "undefined") return undefined;
@@ -70,14 +71,21 @@ export default function useSongScan() {
         }
       } catch (error) {
         let message = "Something went wrong. Please try again.";
+        let loginRequired = false;
 
         if (error instanceof HTTPError) {
           try {
             const body = await error.response.json();
             if (body?.error) message = body.error;
+            if (body?.reason === "login_required") loginRequired = true;
           } catch {
             // response wasn't JSON — fall back to the generic message
           }
+        }
+
+        if (loginRequired) {
+          setState("login-required");
+          return;
         }
 
         setErrorMessage(message);

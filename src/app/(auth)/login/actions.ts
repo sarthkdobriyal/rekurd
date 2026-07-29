@@ -60,8 +60,6 @@ export async function login(
       }
     })
 
-    
-
     return isProfileSetup?.onboardingStep === -1 ? redirect("/") : redirect("/onboarding");
   } catch (error) {
     if (isRedirectError(error)) throw error;

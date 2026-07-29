@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto";
+import { cookies } from "next/headers";
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import { identifyTrack } from "@/lib/acrcloud";
@@ -7,12 +9,15 @@ import { scanAudioSchema } from "@/lib/validation";
 
 const SCAN_COOLDOWN_MS = 3_000;
 const DEFAULT_DAILY_LIMIT = 30;
+const GUEST_SCAN_LIMIT = 3;
+const GUEST_ID_COOKIE = "scan_guest_id";
 
-
-// Auth check (401 if not logged in)
-// Rate limit: 3s cooldown + daily cap (SCAN_DAILY_LIMIT env var, defaults to 30/day)
+// Auth check: logged-in users get a daily cap; anonymous visitors get a
+// lifetime cap of GUEST_SCAN_LIMIT tracked via a signed httpOnly cookie
+// (login_required once exhausted, never resets short of clearing cookies)
+// Rate limit: 3s cooldown + daily cap (SCAN_DAILY_LIMIT env var, defaults to 30/day) for logged-in users
 // Parses the audio blob from FormData, validates type/size via the new scanAudioSchema before touching any paid API
-// Calls ACRCloud; distinguishes a real "no match" (logged as a Scan, returned as a normal 200 response) from a service error (502, not counted against the user's scans)
+// Calls ACRCloud; both a real "no match" (200) and a service error (502) are logged as a Scan and count against the user's/guest's limit
 // On match: checks the Track cache by acrId/isrc first; only calls MusicBrainz + Last.fm in parallel on a genuine cache miss, using upsert to avoid a race if two people scan a brand-new song simultaneously
 // Logs a Scan row either way, returns the track JSON
 
@@ -26,35 +31,62 @@ function getDailyLimit() {
 export async function POST(req: Request) {
   try {
     const { user } = await validateRequest();
+    const cookieStore = await cookies();
+    let guestId: string | null = null;
 
-    if (!user) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (user) {
+      const cooldownCutoff = new Date(Date.now() - SCAN_COOLDOWN_MS);
+      const recentScan = await prisma.scan.findFirst({
+        where: { userId: user.id, createdAt: { gte: cooldownCutoff } },
+      });
 
-    const cooldownCutoff = new Date(Date.now() - SCAN_COOLDOWN_MS);
-    const recentScan = await prisma.scan.findFirst({
-      where: { userId: user.id, createdAt: { gte: cooldownCutoff } },
-    });
+      if (recentScan) {
+        return Response.json(
+          { error: "Please wait a moment before scanning again." },
+          { status: 429 },
+        );
+      }
 
-    if (recentScan) {
-      return Response.json(
-        { error: "Please wait a moment before scanning again." },
-        { status: 429 },
-      );
-    }
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
 
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+      const todayCount = await prisma.scan.count({
+        where: { userId: user.id, createdAt: { gte: startOfDay } },
+      });
 
-    const todayCount = await prisma.scan.count({
-      where: { userId: user.id, createdAt: { gte: startOfDay } },
-    });
+      if (todayCount >= getDailyLimit()) {
+        return Response.json(
+          { error: "Daily scan limit reached. Try again tomorrow." },
+          { status: 429 },
+        );
+      }
+    } else {
+      guestId = cookieStore.get(GUEST_ID_COOKIE)?.value ?? null;
 
-    if (todayCount >= getDailyLimit()) {
-      return Response.json(
-        { error: "Daily scan limit reached. Try again tomorrow." },
-        { status: 429 },
-      );
+      const guestScanCount = guestId
+        ? await prisma.scan.count({ where: { guestId } })
+        : 0;
+
+      if (guestScanCount >= GUEST_SCAN_LIMIT) {
+        return Response.json(
+          {
+            error: "Free scan limit reached. Log in to keep scanning.",
+            reason: "login_required",
+          },
+          { status: 403 },
+        );
+      }
+
+      if (!guestId) {
+        guestId = randomUUID();
+        cookieStore.set(GUEST_ID_COOKIE, guestId, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 365,
+        });
+      }
     }
 
     const form = await req.formData();
@@ -83,6 +115,10 @@ export async function POST(req: Request) {
     const acrResult = await identifyTrack(audio);
 
     if (!acrResult.matched) {
+      await prisma.scan.create({
+        data: { userId: user?.id ?? null, guestId, matched: false },
+      });
+
       if (acrResult.reason === "error") {
         return Response.json(
           {
@@ -93,10 +129,6 @@ export async function POST(req: Request) {
           { status: 502 },
         );
       }
-
-      await prisma.scan.create({
-        data: { userId: user.id, matched: false },
-      });
 
       return Response.json({ matched: false, reason: "no_match" });
     }
@@ -141,7 +173,7 @@ export async function POST(req: Request) {
     }
 
     await prisma.scan.create({
-      data: { userId: user.id, trackId: track.id, matched: true },
+      data: { userId: user?.id ?? null, guestId, trackId: track.id, matched: true },
     });
 
     return Response.json({ matched: true, track });
