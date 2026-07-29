@@ -49,21 +49,33 @@ function topTags(entity: any): string[] {
 }
 
 async function findRecording(isrc: string | null, title: string, artist: string) {
+  // 1. ISRC lookup — most precise; only use inc values the ISRC endpoint supports
   if (isrc) {
-    const data = await mbFetch(
-      `isrc/${encodeURIComponent(isrc)}?inc=tags+genres+artist-credits&fmt=json`,
-    );
-    if (data?.recordings?.length) {
-      return data.recordings[0];
+    try {
+      const data = await mbFetch(
+        `isrc/${encodeURIComponent(isrc)}?inc=artist-credits&fmt=json`,
+      );
+      const first = data?.recordings?.[0];
+      if (first) return first;
+    } catch {
+      // ISRC not in MusicBrainz or endpoint error — fall through to text search
     }
   }
 
-  const query = `recording:"${title}" AND artist:"${artist}"`;
-  const data = await mbFetch(
-    `recording/?query=${encodeURIComponent(query)}&inc=tags+genres+artist-credits&fmt=json&limit=1`,
-  );
+  // 2. Lucene text search fallback.
+  // Strip Lucene special characters from the query terms to avoid 400 errors.
+  const sanitize = (s: string) =>
+    s.replace(/[+\-!(){}[\]^"~*?:\\/]/g, " ").replace(/\s+/g, " ").trim();
 
-  return data?.recordings?.[0] ?? null;
+  try {
+    const q = `recording:"${sanitize(title)}" AND artist:"${sanitize(artist)}"`;
+    const data = await mbFetch(
+      `recording?query=${encodeURIComponent(q)}&inc=artist-credits&fmt=json&limit=1`,
+    );
+    return data?.recordings?.[0] ?? null;
+  } catch {
+    return null;
+  }
 }
 
 async function findDiscography(artistMbid: string) {
@@ -94,11 +106,19 @@ export async function enrichFromMusicBrainz(params: {
       return EMPTY_RESULT;
     }
 
-    const tags = topTags(recording);
     const artistMbid: string | null =
       recording["artist-credit"]?.[0]?.artist?.id ?? null;
 
-    const discography = artistMbid ? await findDiscography(artistMbid) : [];
+    // Fetch full recording details (tags + genres) and discography in parallel.
+    // The lookup endpoint — unlike search — supports tags+genres inc.
+    const [fullRecording, discography] = await Promise.all([
+      mbFetch(
+        `recording/${recording.id}?inc=tags+genres&fmt=json`,
+      ).catch(() => recording), // fall back to the basic recording on error
+      artistMbid ? findDiscography(artistMbid) : Promise.resolve([]),
+    ]);
+
+    const tags = topTags(fullRecording);
 
     return {
       genre: tags[0] ?? null,
