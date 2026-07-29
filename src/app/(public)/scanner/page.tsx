@@ -102,6 +102,7 @@ function ScannerCenter({
         exit={{ opacity: 0, y: -16 }}
         transition={{ duration: 0.35 }}
         className="w-full max-w-sm"
+        style={{ '--card': '240 8% 14%' } as React.CSSProperties}
       >
         <TrackResult track={track} onScanAnother={onReset} />
       </motion.div>
@@ -252,6 +253,12 @@ export default function ScannerPage() {
     state === "identifying" ||
     state === "requesting-permission";
 
+  const isResultState =
+    state === "success" ||
+    state === "error" ||
+    state === "no-match" ||
+    state === "login-required";
+
   return (
     <main className="dark relative flex h-screen w-screen flex-col overflow-hidden bg-[#0a0a0a]" data-theme="dark">
       {/* SVG noise texture overlay */}
@@ -308,7 +315,11 @@ export default function ScannerPage() {
       </header>
 
       {/* ─── Center ─────────────────────────────────────────── */}
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pb-40">
+      <div
+        className={`relative z-10 flex flex-1 flex-col items-center overflow-y-auto px-6 ${
+          isResultState ? "justify-start pb-10 pt-6" : "justify-center pb-40"
+        }`}
+      >
         <AnimatePresence mode="wait">
           <ScannerCenter
             state={state}

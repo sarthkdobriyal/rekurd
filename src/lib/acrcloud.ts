@@ -7,6 +7,12 @@ interface AcrCloudTrack {
   artist: string;
   album: string | null;
   genres: string[];
+  releaseDate: string | null;
+  label: string | null;
+  durationMs: number | null;
+  spotifyTrackId: string | null;
+  youtubeVideoId: string | null;
+  composers: string[];
 }
 
 type AcrCloudResult =
@@ -123,6 +129,13 @@ export async function identifyTrack(
       artist,
       album: music.album?.name ?? null,
       genres: music.genres?.map((g: { name: string }) => g.name) ?? [],
+      releaseDate: music.release_date || null,
+      label: music.label || null,
+      // duration_ms can be a number or a numeric string depending on the endpoint
+      durationMs: music.duration_ms != null ? Number(music.duration_ms) : null,
+      spotifyTrackId: music.external_metadata?.spotify?.track?.id ?? null,
+      youtubeVideoId: music.external_metadata?.youtube?.vid ?? null,
+      composers: (music.contributors?.composers as string[] | undefined) ?? [],
     };
 
     return { matched: true, track };

@@ -9,6 +9,10 @@ const withPWA = withPWAInit({
 
 
 const nextConfig = {
+  allowedDevOrigins: [
+    "*.ngrok-free.app",
+    "*.ngrok.io",
+  ],
   experimental: {
     staleTimes: {
       dynamic: 30,
@@ -17,6 +21,10 @@ const nextConfig = {
   serverExternalPackages: ["@node-rs/argon"],
   images: {
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.mzstatic.com",
+      },
       {
         protocol: "https",
         hostname: "utfs.io",

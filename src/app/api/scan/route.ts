@@ -7,10 +7,37 @@ import { enrichFromMusicBrainz } from "@/lib/musicbrainz";
 import { enrichFromLastFm } from "@/lib/lastfm";
 import { scanAudioSchema } from "@/lib/validation";
 
+/** Fetch album art from Apple's iTunes Search API (no key required). */
+async function fetchAlbumArtUrl(
+  artist: string,
+  title: string,
+): Promise<string | null> {
+  try {
+    const term = encodeURIComponent(`${artist} ${title}`);
+    const res = await fetch(
+      `https://itunes.apple.com/search?term=${term}&entity=song&limit=1`,
+      { signal: AbortSignal.timeout(5_000) },
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const raw: string | undefined = data?.results?.[0]?.artworkUrl100;
+    if (!raw) return null;
+    // Upgrade to 600 × 600 for reasonable quality
+    return raw.replace("100x100bb", "600x600bb");
+  } catch {
+    return null;
+  }
+}
+
 const SCAN_COOLDOWN_MS = 3_000;
 const DEFAULT_DAILY_LIMIT = 30;
-const GUEST_SCAN_LIMIT = 3;
+const DEFAULT_GUEST_SCAN_LIMIT = 3;
 const GUEST_ID_COOKIE = "scan_guest_id";
+
+function getGuestScanLimit() {
+  const parsed = Number(process.env.GUEST_SCAN_LIMIT);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : DEFAULT_GUEST_SCAN_LIMIT;
+}
 
 // Auth check: logged-in users get a daily cap; anonymous visitors get a
 // lifetime cap of GUEST_SCAN_LIMIT tracked via a signed httpOnly cookie
@@ -67,7 +94,7 @@ export async function POST(req: Request) {
         ? await prisma.scan.count({ where: { guestId } })
         : 0;
 
-      if (guestScanCount >= GUEST_SCAN_LIMIT) {
+      if (guestScanCount >= getGuestScanLimit()) {
         return Response.json(
           {
             error: "Free scan limit reached. Log in to keep scanning.",
@@ -146,13 +173,14 @@ export async function POST(req: Request) {
     }
 
     if (!track) {
-      const [mbEnrichment, lastFmEnrichment] = await Promise.all([
+      const [mbEnrichment, lastFmEnrichment, albumArtUrl] = await Promise.all([
         enrichFromMusicBrainz({
           isrc: acrTrack.isrc,
           title: acrTrack.title,
           artist: acrTrack.artist,
         }),
         enrichFromLastFm(acrTrack.artist),
+        fetchAlbumArtUrl(acrTrack.artist, acrTrack.title),
       ]);
 
       track = await prisma.track.upsert({
@@ -163,6 +191,7 @@ export async function POST(req: Request) {
           isrc: acrTrack.isrc,
           title: acrTrack.title,
           artist: acrTrack.artist,
+          albumArtUrl,
           genre: mbEnrichment.genre ?? acrTrack.genres[0] ?? null,
           subgenre: mbEnrichment.subgenre ?? acrTrack.genres[1] ?? null,
           artistBio: lastFmEnrichment.bio,
@@ -176,7 +205,26 @@ export async function POST(req: Request) {
       data: { userId: user?.id ?? null, guestId, trackId: track.id, matched: true },
     });
 
-    return Response.json({ matched: true, track });
+    return Response.json({
+      matched: true,
+      track: {
+        ...track,
+        relatedArtists: Array.isArray(track.relatedArtists)
+          ? track.relatedArtists
+          : [],
+        discography: Array.isArray(track.discography)
+          ? track.discography
+          : [],
+        // ACRCloud-sourced fields — always fresh from the current scan
+        album: acrTrack.album,
+        releaseDate: acrTrack.releaseDate,
+        label: acrTrack.label,
+        durationMs: acrTrack.durationMs,
+        spotifyTrackId: acrTrack.spotifyTrackId,
+        youtubeVideoId: acrTrack.youtubeVideoId,
+        composers: acrTrack.composers,
+      },
+    });
   } catch (error) {
     console.error(error);
     return Response.json({ error: "Internal server error" }, { status: 500 });

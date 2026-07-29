@@ -276,6 +276,7 @@ export interface ScannedTrack {
   id: string;
   title: string;
   artist: string;
+  album: string | null;
   albumArtUrl: string | null;
   genre: string | null;
   subgenre: string | null;
@@ -284,6 +285,13 @@ export interface ScannedTrack {
   artistBio: string | null;
   relatedArtists: string[];
   discography: { title: string; date: string | null }[];
+  // Direct from ACRCloud — may be absent on older cached tracks
+  releaseDate: string | null;
+  label: string | null;
+  durationMs: number | null;
+  spotifyTrackId: string | null;
+  youtubeVideoId: string | null;
+  composers: string[];
 }
 
 export type ScanResponse =
