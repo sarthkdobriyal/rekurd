@@ -7,11 +7,11 @@ import { hash } from "@node-rs/argon2";
 import { generateIdFromEntropySize } from "lucia";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { migrateGuestScans } from "@/lib/guest-scan";
 
 export async function signUp(
   credentials: SignUpValues,
-): Promise<{ error: string }> {
+): Promise<{ error?: string }> {
   try {
     const { username, email, password } = signUpSchema.parse(credentials);
 
@@ -92,7 +92,9 @@ export async function signUp(
       sessionCookie.attributes,
     );
 
-    return redirect("/onboarding");
+    await migrateGuestScans(userId);
+
+    return {};
   } catch (error) {
     if (isRedirectError(error)) throw error;
     console.error(error);

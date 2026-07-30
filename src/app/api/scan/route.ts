@@ -6,6 +6,7 @@ import { identifyTrack } from "@/lib/acrcloud";
 import { enrichFromMusicBrainz } from "@/lib/musicbrainz";
 import { enrichFromLastFm } from "@/lib/lastfm";
 import { scanAudioSchema } from "@/lib/validation";
+import { GUEST_ID_COOKIE } from "@/lib/guest-scan";
 
 /** Fetch album art from Apple's iTunes Search API (no key required). */
 async function fetchAlbumArtUrl(
@@ -32,7 +33,6 @@ async function fetchAlbumArtUrl(
 const SCAN_COOLDOWN_MS = 3_000;
 const DEFAULT_DAILY_LIMIT = 30;
 const DEFAULT_GUEST_SCAN_LIMIT = 3;
-const GUEST_ID_COOKIE = "scan_guest_id";
 
 function getGuestScanLimit() {
   const parsed = Number(process.env.GUEST_SCAN_LIMIT);

@@ -89,7 +89,7 @@ function ScanRings() {
   );
 }
 
-function AuthContent() {
+function AuthContent({ onAuthenticated }: Readonly<{ onAuthenticated: () => void }>) {
   return (
     <>
       <p className="mb-1 text-center font-superChargedLazer text-[22px] font-extralight italic tracking-widest text-white">
@@ -112,22 +112,22 @@ function AuthContent() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="login" className="space-y-3 pt-4">
-          <GoogleSignInButton />
+          <GoogleSignInButton next="/scanner" />
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-white/[0.08]" />
             <span className="text-xs text-white/30">OR</span>
             <div className="h-px flex-1 bg-white/[0.08]" />
           </div>
-          <LoginForm />
+          <LoginForm onAuthenticated={onAuthenticated} />
         </TabsContent>
         <TabsContent value="signup" className="space-y-3 pt-4">
-          <GoogleSignInButton />
+          <GoogleSignInButton next="/scanner" />
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-white/[0.08]" />
             <span className="text-xs text-white/30">OR</span>
             <div className="h-px flex-1 bg-white/[0.08]" />
           </div>
-          <SignUpForm />
+          <SignUpForm onAuthenticated={onAuthenticated} />
         </TabsContent>
       </Tabs>
     </>
@@ -189,6 +189,11 @@ export default function ScannerPage() {
   const handleLoginClose = (open: boolean) => {
     setLoginOpen(open);
     if (!open && state === "login-required") reset();
+  };
+
+  const handleAuthenticated = () => {
+    setLoginOpen(false);
+    reset();
   };
 
   // ── Shared background decorations ───────────────────────────────
@@ -448,7 +453,7 @@ export default function ScannerPage() {
         <Dialog open={loginOpen} onOpenChange={handleLoginClose}>
           <DialogContent className="dark border-white/[0.08] bg-[#101010] sm:max-w-[420px]">
             <DialogTitle className="sr-only">Sign in to outsound</DialogTitle>
-            <AuthContent />
+            <AuthContent onAuthenticated={handleAuthenticated} />
           </DialogContent>
         </Dialog>
       )}
@@ -466,7 +471,7 @@ export default function ScannerPage() {
               className="dark fixed bottom-0 left-0 right-0 z-[60] rounded-t-[24px] border-t border-white/[0.1] bg-[#0d0d0d] px-5 pb-10"
             >
               <div className="mx-auto mb-5 mt-3 h-1 w-8 rounded-full bg-white/[0.18]" />
-              <AuthContent />
+              <AuthContent onAuthenticated={handleAuthenticated} />
               <p className="mt-4 text-center text-[10.5px] text-white/28">
                 By continuing you agree to our{" "}
                 <a href="#" className="underline">Terms</a> &amp;{" "}

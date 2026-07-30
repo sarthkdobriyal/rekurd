@@ -13,12 +13,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { loginSchema, LoginValues } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { login } from "./actions";
 
-export default function LoginForm() {
+export default function LoginForm({
+  onAuthenticated,
+}: Readonly<{ onAuthenticated?: () => void }>) {
   const [error, setError] = useState<string>();
+  const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
 
@@ -34,7 +38,16 @@ export default function LoginForm() {
     setError(undefined);
     startTransition(async () => {
       const { error } = await login(values);
-      if (error) setError(error);
+      if (error) {
+        setError(error);
+        return;
+      }
+      if (onAuthenticated) {
+        onAuthenticated();
+      } else {
+        router.push("/");
+        router.refresh();
+      }
     });
 
   }

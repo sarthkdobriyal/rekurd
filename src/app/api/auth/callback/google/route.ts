@@ -6,6 +6,7 @@ import { OAuth2RequestError } from "arctic";
 import { generateIdFromEntropySize } from "lucia";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
+import { migrateGuestScans } from "@/lib/guest-scan";
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
@@ -14,6 +15,8 @@ export async function GET(req: NextRequest) {
   const cookieStore = await cookies();
   const storedState = cookieStore.get("state")?.value;
   const storedCodeVerifier = cookieStore.get("code_verifier")?.value;
+  const next = cookieStore.get("oauth_next")?.value || "/";
+  cookieStore.delete("oauth_next");
 
   if (
     !code ||
@@ -55,23 +58,11 @@ export async function GET(req: NextRequest) {
         sessionCookie.attributes,
       );
 
-      const isProfileSetup = await prisma.user.findUnique({
-        where: {
-          id: existingUser.id
-        },
-        select: {
-          onboardingStep: true
-        }
-      })
-  
-      
-  
+      await migrateGuestScans(existingUser.id);
 
       return new Response(null, {
         status: 302,
-        headers: {
-          Location: `${isProfileSetup?.onboardingStep === -1 ? "/" : "/onboarding"}`,
-        },
+        headers: { Location: next },
       });
     }
 
@@ -98,20 +89,11 @@ export async function GET(req: NextRequest) {
       sessionCookie.attributes,
     );
 
-    const isProfileSetup = await prisma.user.findUnique({
-      where: {
-        id: user.id
-      },
-      select: {
-        onboardingStep: true
-      }
-    })
+    await migrateGuestScans(user.id);
 
     return new Response(null, {
       status: 302,
-      headers: {
-        Location: `${isProfileSetup?.onboardingStep === -1 ? "/" : "/onboarding"}`,
-      },
+      headers: { Location: next },
     });
   } catch (error) {
     console.error(error);

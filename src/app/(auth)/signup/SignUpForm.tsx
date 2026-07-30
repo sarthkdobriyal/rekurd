@@ -5,14 +5,18 @@ import { signUpSchema, SignUpValues } from '../../../lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/PasswordInput";
 import LoadingButton from "@/components/LoadingButton";
 import { signUp } from "./actions";
 
-export default function SignUpForm() {
+export default function SignUpForm({
+    onAuthenticated,
+}: Readonly<{ onAuthenticated?: () => void }>) {
 
     const [error, setError] = useState<string>();
+    const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
 
@@ -29,7 +33,16 @@ export default function SignUpForm() {
         setError(undefined);
         startTransition(async () => {
           const { error } = await signUp(values);
-          if (error) setError(error);
+          if (error) {
+            setError(error);
+            return;
+          }
+          if (onAuthenticated) {
+            onAuthenticated();
+          } else {
+            router.push("/");
+            router.refresh();
+          }
         });
 
       }

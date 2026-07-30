@@ -1,13 +1,17 @@
 import { Button } from "@/components/ui/button";
 
-export default function GoogleSignInButton() {
+export default function GoogleSignInButton({
+  next,
+}: Readonly<{ next?: string }>) {
+  const href = next ? `/login/google?next=${encodeURIComponent(next)}` : "/login/google";
+
   return (
     <Button
       variant="outline"
       className="bg-white text-black hover:bg-gray-100 hover:text-black"
       asChild
     >
-      <a href="/login/google" className="flex w-full items-center gap-2">
+      <a href={href} className="flex w-full items-center gap-2">
         <GoogleIcon />
         Sign in with Google
       </a>

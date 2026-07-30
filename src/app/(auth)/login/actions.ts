@@ -6,12 +6,11 @@ import { loginSchema, LoginValues } from "@/lib/validation";
 import { verify } from "@node-rs/argon2";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { on } from 'events';
+import { migrateGuestScans } from "@/lib/guest-scan";
 
 export async function login(
   credentials: LoginValues,
-): Promise<{ error: string }> {
+): Promise<{ error?: string }> {
   try {
     const { username, password } = loginSchema.parse(credentials);
 
@@ -51,16 +50,9 @@ export async function login(
       sessionCookie.attributes,
     );
 
-    const isProfileSetup = await prisma.user.findUnique({
-      where: {
-        id: existingUser.id
-      },
-      select: {
-        onboardingStep: true
-      }
-    })
+    await migrateGuestScans(existingUser.id);
 
-    return isProfileSetup?.onboardingStep === -1 ? redirect("/") : redirect("/onboarding");
+    return {};
   } catch (error) {
     if (isRedirectError(error)) throw error;
     console.error(error);
