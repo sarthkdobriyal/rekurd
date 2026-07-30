@@ -4,6 +4,8 @@ A social network for musicians ("JAM" connections instead of "follow"): posts, l
 
 > Note: the repo's `README.md` is leftover React Native boilerplate from `@react-native-community/cli` and does not describe this project. Ignore it — this file is the source of truth. Consider deleting the README or replacing it.
 
+> **Related roadmap docs** (read before proposing product/growth/design work): `SEO-GROWTH-ROADMAP.md` (rebrand, guest access, SEO/growth) and `PRODUCT-ROADMAP.md` (progressive onboarding redesign, dashboard/feed structure, AI persona + music/career agent, monetization, OpenDesign prompts for post-login screens).
+
 ## Tech Stack
 
 - **Framework**: Next.js 15 (App Router), React 19, TypeScript

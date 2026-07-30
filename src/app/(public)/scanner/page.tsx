@@ -17,12 +17,18 @@ import type { ScannedTrack } from "@/lib/types";
 
 const CORAL = "oklch(62% 0.2 28)";
 
-const BARS = Array.from({ length: 62 }, (_, i) => ({
-  id: `wb-${i}`,
-  dur: (0.65 + ((i * 1.618) % 1.5)).toFixed(2),
-  delay: (-((i * 0.31) % 2.4)).toFixed(2),
-  maxH: 8 + ((i * 41 + 7) % 76),
-}));
+const BAR_COUNT = 194;
+const BARS = Array.from({ length: BAR_COUNT }, (_, i) => {
+  const center = (BAR_COUNT - 1) / 2;
+  const envelope = Math.pow(1 - Math.abs(i - center) / center, 1.5);
+  const jitter = 0.3 + (((i * 41 + 7) % 76) / 76) * 0.7;
+  return {
+    id: `wb-${i}`,
+    dur: (0.65 + ((i * 1.618) % 1.5)).toFixed(2),
+    delay: (-((i * 0.31) % 2.4)).toFixed(2),
+    maxH: 100 + envelope * jitter * 304,
+  };
+});
 
 // Placeholder community feed — wire to /api/scans/recent later
 const COMMUNITY = [
@@ -47,21 +53,22 @@ function WaveformBars({ active }: Readonly<{ active: boolean }>) {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute bottom-0 left-0 right-0 flex h-44 items-end justify-center gap-[2.5px] overflow-hidden px-2 pb-4"
+      className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
     >
-      {BARS.map(({ id, dur, delay, maxH }) => (
-        <div
-          key={id}
-          className="w-[2.5px] shrink-0 rounded-full"
-          style={{
-            height: `${maxH}px`,
-            transformOrigin: "bottom",
-            background: active ? `oklch(62% 0.2 28 / 0.55)` : `oklch(62% 0.2 28 / 0.18)`,
-            animation: `waveBar ${dur}s ${delay}s ease-in-out infinite`,
-            transition: "background 0.7s ease",
-          }}
-        />
-      ))}
+      <div className="flex -translate-y-6 items-center gap-[3px] md:-translate-y-4">
+        {BARS.map(({ id, dur, delay, maxH }) => (
+          <div
+            key={id}
+            className="w-[2.5px] shrink-0 rounded-full"
+            style={{
+              height: `${maxH}px`,
+              background: active ? `oklch(62% 0.2 28 / 0.55)` : `oklch(62% 0.2 28 / 0.18)`,
+              animation: `waveBar ${dur}s ${delay}s ease-in-out infinite`,
+              transition: "background 0.9s ease",
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -75,7 +82,7 @@ function ScanRings() {
           className="absolute rounded-full"
           style={{ border: "1.5px solid oklch(62% 0.2 28 / 0.7)" }}
           animate={{ width: ["188px", "400px"], height: ["188px", "400px"], opacity: [0.7, 0] }}
-          transition={{ duration: 2, delay: i * 0.65, repeat: Infinity, ease: "easeOut" }}
+          transition={{ duration: 0.7, delay: i * 0.65, repeat: Infinity, ease: "easeOut" }}
         />
       ))}
     </>
@@ -243,7 +250,7 @@ export default function ScannerPage() {
           {state === "identifying" ? (
             <Loader2 className="size-10 animate-spin md:size-12" style={{ color: CORAL }} />
           ) : (
-            <BoltIcon className="size-9 md:size-11" style={{ color: CORAL }} />
+            <BoltIcon className="size-11 md:size-11" style={{ color: "white" }} />
           )}
         </motion.button>
       </div>
@@ -270,7 +277,7 @@ export default function ScannerPage() {
   );
 
   return (
-    <main className="dark relative flex h-screen w-screen flex-col overflow-hidden bg-[#0a0a0a]">
+    <main className="dark relative flex h-dvh w-screen flex-col overflow-hidden bg-[#0a0a0a]">
 
       {/* ══ DESKTOP NAV ════════════════════════════════════════════ */}
       <nav
@@ -278,11 +285,11 @@ export default function ScannerPage() {
         style={{ height: 58 }}
       >
         <div className="flex items-center gap-2">
-          <BoltIcon className="size-3" style={{ color: CORAL }} />
+          <BoltIcon className="size-7" style={{ color: "white" }} />
           <span className="font-superChargedLazer text-[18px] font-extralight italic tracking-widest text-white">outsound.</span>
         </div>
         <div className="absolute left-1/2 flex -translate-x-1/2 items-center gap-1">
-          {(["Scan", "Feed", "Radio", "Discover"] as const).map((label) => (
+          {(["Scan", "Discover"] as const).map((label) => (
             <Link key={label} href={label === "Scan" ? "/scanner" : `/${label.toLowerCase()}`}
               className={`rounded-md px-4 py-2 text-[13px] font-medium transition-colors ${label === "Scan" ? "text-white" : "text-white/45 hover:text-white"}`}
             >{label}</Link>
@@ -304,7 +311,7 @@ export default function ScannerPage() {
       {/* ══ MOBILE HEADER ══════════════════════════════════════════ */}
       <header className="relative z-20 flex flex-shrink-0 items-center justify-between px-5 py-4 md:hidden">
         <div className="flex items-center gap-1.5">
-          <BoltIcon className="size-3" style={{ color: CORAL }} />
+          <BoltIcon className="size-4" style={{ color: "white" }} />
           <span className="font-superChargedLazer text-[18px] font-extralight italic tracking-widest text-white">outsound.</span>
         </div>
         <div className="flex items-center gap-2">
@@ -358,21 +365,6 @@ export default function ScannerPage() {
             </div>
           )}
 
-          {/* ── Mobile: bottom nav ────────────────────────────────── */}
-          <nav className="relative z-10 flex w-full flex-shrink-0 border-t border-white/[0.07] bg-[rgba(8,8,8,0.92)] backdrop-blur-md md:hidden">
-            {[
-              { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>, label: "Feed",    href: "/" },
-              { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>, label: "Discover", href: "/discover" },
-              { icon: <BoltIcon />,                                                                                                                                                                                     label: "Scan",     href: "/scanner", active: true },
-              { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>, label: "Radio", href: "/radio" },
-              { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, label: "Profile", href: "/users/me" },
-            ].map(({ icon, label, href, active }) => (
-              <Link key={label} href={href} className="flex flex-1 flex-col items-center gap-[3px] pb-5 pt-2">
-                <span className="flex size-[22px] items-center justify-center" style={{ color: active ? CORAL : "rgba(255,255,255,0.38)" }}>{icon}</span>
-                <span className="text-[10px] font-medium" style={{ color: active ? CORAL : "rgba(255,255,255,0.38)" }}>{label}</span>
-              </Link>
-            ))}
-          </nav>
         </div>
 
         {/* ── Desktop: community feed ────────────────────────────── */}
