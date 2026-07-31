@@ -30,6 +30,7 @@ const config = {
         superChargedLazer: ["var(--font-supercharge-lazer)"],
         helicopta: ["var(--font-helicopta)"],
         kochire: ["var(--font-kochire)"],
+        display: ["var(--font-cormorant)", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { League_Spartan, Poppins } from "next/font/google";
+import { League_Spartan, Poppins, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import ReactQueryProvider from "./providers/ReactQueryProvider";
 import { ThemeProvider } from "next-themes";
@@ -31,6 +31,12 @@ const poppins = Poppins({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-poppins",
+});
+const cormorantGaramond = Cormorant_Garamond({
+  weight: "300",
+  style: "italic",
+  subsets: ["latin"],
+  variable: "--font-cormorant",
 });
 
 
@@ -86,7 +92,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={` ${superchargedLazer.variable} ${kochire.variable} ${helicopta.variable} ${poppins.variable}`}>
+      <body className={` ${superchargedLazer.variable} ${kochire.variable} ${helicopta.variable} ${poppins.variable} ${cormorantGaramond.variable}`}>
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <ReactQueryProvider>
           

@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import kyInstance from "@/lib/ky";
 import { NotificationCountInfo } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
@@ -25,23 +24,17 @@ export default function NotificationsButton({
   });
 
   return (
-    <Button
-      variant="ghost"
-      className="flex items-center justify-start gap-3"
+    <Link
+      href="/notifications"
       title="Notifications"
-      asChild
+      className="relative flex h-[34px] w-[34px] flex-shrink-0 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.04] text-white/52 transition-colors hover:bg-white/[0.08] hover:text-white"
     >
-      <Link href="/notifications">
-        <div className="relative">
-          <Bell className="w-5 h-5 "/>
-          {!!data.unreadCount && (
-            <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 text-xs font-medium tabular-nums text-primary-foreground">
-              {data.unreadCount}
-            </span>
-          )}
-        </div>
-        <span className="hidden lg:inline">Notifications</span>
-      </Link>
-    </Button>
+      <Bell className="h-[15px] w-[15px]" />
+      {!!data.unreadCount && (
+        <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full border-[1.5px] border-black bg-[#e8623a] px-1 text-[9px] font-semibold tabular-nums text-white">
+          {data.unreadCount}
+        </span>
+      )}
+    </Link>
   );
 }

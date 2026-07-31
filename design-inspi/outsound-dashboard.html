@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head><script>(function(){
+  function makeStore(){
+    var data = {};
+    var api = {
+      getItem: function(k){ return Object.prototype.hasOwnProperty.call(data, k) ? data[k] : null; },
+      setItem: function(k, v){ data[k] = String(v); },
+      removeItem: function(k){ delete data[k]; },
+      clear: function(){ data = {}; },
+      key: function(i){ return Object.keys(data)[i] || null; }
+    };
+    Object.defineProperty(api, 'length', { get: function(){ return Object.keys(data).length; } });
+    return api;
+  }
+  function tryShim(name){
+    var works = false;
+    try { works = !!window[name] && typeof window[name].getItem === 'function'; void window[name].length; }
+    catch (_) { works = false; }
+    if (works) return;
+    try { Object.defineProperty(window, name, { configurable: true, value: makeStore() }); }
+    catch (_) { try { window[name] = makeStore(); } catch (__) {} }
+  }
+  tryShim('localStorage');
+  tryShim('sessionStorage');
+})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>outsound. â€” dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0a0a0a; --bg-2:#0f0f0f; --bg-3:#141414; --fg:#ffffff;
+  --fg-muted:rgba(255,255,255,0.52); --fg-subtle:rgba(255,255,255,0.26);
+  --border:rgba(255,255,255,0.07); --border-hi:rgba(255,255,255,0.14);
+  --surface:rgba(255,255,255,0.04); --surface-hi:rgba(255,255,255,0.08);
+  --accent:#e8623a;
+  --font-d:'Cormorant Garamond',Georgia,serif;
+  --font-b:'Inter',-apple-system,system-ui,sans-serif;
+}
+html,body{height:100%;background:#050505;font-family:var(--font-b);color:var(--fg);overflow:hidden;}
+
+.switcher{display:flex;align-items:center;gap:2px;padding:8px 16px;background:#0c0c0c;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
+.switcher::-webkit-scrollbar{display:none;}
+.sw-logo{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;letter-spacing:-0.02em;margin-right:14px;color:var(--fg);white-space:nowrap;}
+.switcher button{background:none;border:1px solid transparent;color:var(--fg-muted);font-family:var(--font-b);font-size:11.5px;font-weight:500;padding:5px 11px;border-radius:6px;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.switcher button:hover{color:var(--fg);background:var(--surface);}
+.switcher button.active{color:var(--fg);background:var(--surface);border-color:var(--border-hi);}
+.sw-tag{margin-left:auto;font-size:10.5px;color:var(--fg-subtle);font-family:ui-monospace,monospace;white-space:nowrap;padding-left:12px;}
+
+#app{display:flex;flex-direction:column;height:100vh;}
+.view-area{flex:1;overflow:hidden;position:relative;background:var(--bg);}
+.view{display:none;width:100%;height:100%;}
+.view.active{display:flex;}
+
+.d-nav{position:absolute;top:0;left:0;right:0;height:58px;display:flex;align-items:center;padding:0 28px;backdrop-filter:blur(12px);background:rgba(8,8,8,0.85);border-bottom:1px solid var(--border);z-index:20;}
+.d-nav-logo{display:flex;align-items:center;gap:8px;font-family:var(--font-d);font-style:italic;font-weight:300;font-size:22px;flex-shrink:0;}
+.d-nav-links{display:flex;position:absolute;left:50%;transform:translateX(-50%);}
+.d-nav-links a{color:var(--fg-muted);text-decoration:none;font-size:13px;font-weight:500;padding:8px 15px;border-radius:6px;transition:color 0.14s;}
+.d-nav-links a:hover,.d-nav-links a.active{color:var(--fg);}
+.d-nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;}
+.d-search{background:var(--surface);border:1px solid var(--border);color:var(--fg-muted);font-family:var(--font-b);font-size:12px;padding:7px 14px 7px 32px;border-radius:99px;outline:none;width:220px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center;}
+.d-search:focus{border-color:rgba(232,98,58,0.4);color:var(--fg);}
+.d-icon-btn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--fg-muted);cursor:pointer;position:relative;transition:all 0.14s;}
+.d-icon-btn:hover{color:var(--fg);background:var(--surface-hi);}
+.d-icon-btn .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;background:var(--accent);border-radius:50%;border:1.5px solid #0a0a0a;}
+.d-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#e8623a,#7a3520);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border-hi);}
+
+.d-body{display:flex;flex:1;margin-top:58px;height:calc(100% - 58px);justify-content:center;overflow-y:auto;}
+.d-body::-webkit-scrollbar{width:4px;}
+.d-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+.d-inner{display:flex;gap:28px;padding:28px 28px 60px;max-width:1080px;width:100%;}
+.d-feed-col{flex:1;max-width:640px;min-width:0;}
+.d-rail-col{flex:0 0 340px;position:sticky;top:28px;align-self:flex-start;max-height:calc(100vh - 116px);overflow-y:auto;}
+.d-rail-col::-webkit-scrollbar{width:3px;}
+.d-rail-col::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);}
+
+.quick-scan{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(232,98,58,0.08),rgba(232,98,58,0.02));border:1px solid rgba(232,98,58,0.22);border-radius:99px;padding:10px 18px 10px 12px;margin-bottom:20px;cursor:pointer;transition:all 0.18s;}
+.quick-scan:hover{border-color:rgba(232,98,58,0.45);background:linear-gradient(135deg,rgba(232,98,58,0.14),rgba(232,98,58,0.04));}
+.qs-bolt{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 40% 40%,rgba(232,98,58,0.28),rgba(232,98,58,0.06));border:1px solid rgba(232,98,58,0.6);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;box-shadow:0 0 20px rgba(232,98,58,0.25);}
+.qs-bolt::before,.qs-bolt::after{content:'';position:absolute;inset:0;border-radius:50%;border:1px solid rgba(232,98,58,0.4);animation:qs-pulse 2.4s ease-out infinite;}
+.qs-bolt::after{animation-delay:1.2s;}
+@keyframes qs-pulse{0%{transform:scale(1);opacity:0.7;}100%{transform:scale(1.9);opacity:0;}}
+.qs-bolt svg{position:relative;z-index:1;}
+.qs-text{flex:1;}
+.qs-title{font-size:13px;font-weight:600;color:var(--fg);letter-spacing:0.01em;}
+.qs-sub{font-size:11px;color:var(--fg-muted);margin-top:1px;}
+.qs-kbd{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--fg-subtle);border:1px solid var(--border);border-radius:5px;padding:2px 6px;background:rgba(255,255,255,0.03);}
+
+.filter-row{display:flex;gap:6px;margin-bottom:22px;overflow-x:auto;padding-bottom:2px;}
+.filter-row::-webkit-scrollbar{display:none;}
+.filter-pill{background:none;border:1px solid var(--border);color:var(--fg-muted);font-family:var(--font-b);font-size:12px;font-weight:500;padding:6px 14px;border-radius:99px;cursor:pointer;transition:all 0.14s;white-space:nowrap;flex-shrink:0;}
+.filter-pill:hover{color:var(--fg);border-color:var(--border-hi);}
+.filter-pill.active{background:var(--fg);color:#0a0a0a;border-color:var(--fg);}
+.filter-pill .count{font-size:10.5px;opacity:0.55;margin-left:5px;font-variant-numeric:tabular-nums;}
+
+.cluster-hdr{background:linear-gradient(135deg,rgba(232,98,58,0.08),rgba(232,98,58,0.02));border:1px solid rgba(232,98,58,0.2);border-radius:14px;padding:16px 18px;margin-bottom:20px;display:flex;align-items:center;gap:14px;}
+.cluster-icon{width:38px;height:38px;border-radius:50%;background:rgba(232,98,58,0.16);border:1px solid rgba(232,98,58,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent);}
+.cluster-text{flex:1;}
+.cluster-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:3px;}
+.cluster-title{font-size:14px;font-weight:600;color:var(--fg);line-height:1.35;}
+.cluster-title strong{color:var(--accent);font-weight:700;}
+.cluster-cta{font-size:11.5px;color:var(--fg-muted);border:1px solid var(--border-hi);border-radius:99px;padding:6px 14px;cursor:pointer;background:none;font-family:var(--font-b);font-weight:500;flex-shrink:0;}
+.cluster-cta:hover{color:var(--fg);border-color:rgba(255,255,255,0.28);}
+
+.scan-card{background:var(--bg-2);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;transition:border-color 0.14s;}
+.scan-card:hover{border-color:var(--border-hi);}
+.sc-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.sc-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;border:1px solid rgba(255,255,255,0.08);}
+.sc-user{flex:1;min-width:0;font-size:12.5px;color:var(--fg-muted);}
+.sc-user strong{color:var(--fg);font-weight:600;}
+.sc-user .sc-verb{color:var(--fg-subtle);margin:0 4px;}
+.sc-meta{font-size:11px;color:var(--fg-subtle);margin-top:2px;display:flex;align-items:center;gap:6px;}
+.sc-meta .dot{width:2px;height:2px;background:currentColor;border-radius:50%;}
+.sc-menu{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--fg-subtle);cursor:pointer;transition:all 0.14s;}
+.sc-menu:hover{color:var(--fg);background:var(--surface);}
+
+.sc-body{display:flex;gap:14px;margin-bottom:14px;}
+.sc-art{width:88px;height:88px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:34px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 6px 24px rgba(0,0,0,0.4);position:relative;overflow:hidden;}
+.sc-art .play-badge{position:absolute;bottom:6px;right:6px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;}
+.sc-info{flex:1;min-width:0;padding-top:4px;}
+.sc-title{font-family:var(--font-d);font-style:italic;font-weight:400;font-size:22px;line-height:1.15;color:var(--fg);margin-bottom:2px;}
+.sc-artist{font-size:13px;color:var(--fg-muted);font-weight:500;margin-bottom:8px;}
+.sc-chips{display:flex;gap:5px;flex-wrap:wrap;}
+.sc-chip{background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px 9px;font-size:10.5px;color:var(--fg-muted);font-weight:500;}
+
+.sc-links{display:flex;gap:8px;margin-bottom:12px;}
+.sc-link{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;border-radius:8px;font-family:var(--font-b);font-size:12px;font-weight:600;text-decoration:none;letter-spacing:0.01em;transition:filter 0.14s,transform 0.14s;cursor:pointer;border:none;}
+.sc-link:hover{filter:brightness(1.12);}
+.sc-link:active{transform:scale(0.98);}
+.sc-link.spotify{background:#1db954;color:#000;}
+.sc-link.youtube{background:rgba(255,255,255,0.06);color:var(--fg);border:1px solid var(--border);}
+.sc-link.youtube svg{color:#ff0033;}
+
+.sc-actions{display:flex;align-items:center;gap:6px;}
+.sc-act{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--fg-muted);cursor:pointer;transition:all 0.14s;flex-shrink:0;}
+.sc-act:hover{color:var(--fg);background:var(--surface-hi);border-color:var(--border-hi);}
+.sc-act.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.sc-act.primary:hover{filter:brightness(1.1);background:var(--accent);}
+.sc-act.spotify{background:rgba(30,215,96,0.1);border-color:rgba(30,215,96,0.25);color:#1ed760;}
+.sc-act.spotify:hover{background:rgba(30,215,96,0.16);}
+.sc-stats{margin-left:auto;display:flex;gap:14px;font-size:11.5px;color:var(--fg-subtle);}
+.sc-stat{display:flex;align-items:center;gap:4px;cursor:pointer;transition:color 0.14s;}
+.sc-stat:hover{color:var(--fg-muted);}
+.sc-stat.liked{color:var(--accent);}
+
+.rail-section{margin-bottom:22px;}
+.rail-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 2px;}
+.rail-title{font-size:10.5px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:var(--fg-subtle);}
+.rail-link{font-size:11px;color:var(--fg-muted);cursor:pointer;text-decoration:none;}
+.rail-link:hover{color:var(--fg);}
+.rail-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.rail-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.12s;}
+.rail-item:last-child{border-bottom:none;}
+.rail-item:hover{background:var(--surface);}
+.rail-art{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:1px solid rgba(255,255,255,0.06);}
+.rail-info{flex:1;min-width:0;}
+.rail-t{font-size:12px;font-weight:500;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rail-sub{font-size:10.5px;color:var(--fg-muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rail-trend{flex-shrink:0;display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--accent);font-variant-numeric:tabular-nums;font-weight:600;}
+.rail-rank{flex-shrink:0;font-family:ui-monospace,monospace;font-size:10.5px;color:var(--fg-subtle);width:16px;text-align:right;}
+
+#view-mobile-feed,#view-mobile-empty{background:#050505;align-items:center;justify-content:center;}
+.phone-stage{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+.phone-frame{width:390px;height:790px;background:#000;border-radius:50px;border:8px solid #1c1c1e;box-shadow:0 0 0 1px #2c2c2e,0 40px 100px rgba(0,0,0,0.85),inset 0 0 0 1px rgba(255,255,255,0.05);overflow:hidden;position:relative;flex-shrink:0;transform:scale(0.86);transform-origin:center;}
+.phone-screen{width:100%;height:100%;position:relative;overflow:hidden;background:var(--bg);display:flex;flex-direction:column;}
+.dyn-island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:31px;background:#000;border-radius:18px;z-index:50;}
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px 6px;font-size:12px;font-weight:600;color:var(--fg);position:relative;z-index:10;margin-top:36px;}
+.status-icons{display:flex;align-items:center;gap:5px;}
+
+.m-hdr{display:flex;align-items:center;padding:10px 18px 12px;gap:10px;flex-shrink:0;}
+.m-hdr-logo{font-family:var(--font-d);font-style:italic;font-weight:300;font-size:22px;letter-spacing:0.02em;flex:1;}
+.m-hdr-icon{width:30px;height:30px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--fg-muted);cursor:pointer;position:relative;flex-shrink:0;}
+.m-hdr-icon .dot{position:absolute;top:6px;right:7px;width:6px;height:6px;background:var(--accent);border-radius:50%;border:1.5px solid #0a0a0a;}
+.m-hdr-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#e8623a,#7a3520);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;flex-shrink:0;border:1.5px solid var(--border-hi);}
+
+.m-scroll{flex:1;overflow-y:auto;padding:0 16px 16px;}
+.m-scroll::-webkit-scrollbar{display:none;}
+
+.m-quick-scan{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(232,98,58,0.09),rgba(232,98,58,0.02));border:1px solid rgba(232,98,58,0.24);border-radius:99px;padding:8px 16px 8px 10px;margin-bottom:16px;cursor:pointer;}
+.m-qs-bolt{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 40% 40%,rgba(232,98,58,0.28),rgba(232,98,58,0.06));border:1px solid rgba(232,98,58,0.6);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;box-shadow:0 0 18px rgba(232,98,58,0.25);}
+.m-qs-bolt::before{content:'';position:absolute;inset:0;border-radius:50%;border:1px solid rgba(232,98,58,0.5);animation:qs-pulse 2.2s ease-out infinite;}
+.m-qs-bolt svg{position:relative;z-index:1;}
+.m-qs-title{font-size:12.5px;font-weight:600;color:var(--fg);}
+.m-qs-sub{font-size:10.5px;color:var(--fg-muted);margin-top:1px;}
+
+.m-bottom-nav{display:flex;padding:6px 0 22px;background:rgba(8,8,8,0.94);backdrop-filter:blur(14px);border-top:1px solid var(--border);position:relative;z-index:10;flex-shrink:0;}
+.m-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;}
+.m-nav-icon{width:22px;height:22px;color:var(--fg-subtle);display:flex;align-items:center;justify-content:center;}
+.m-nav-item.active .m-nav-icon{color:var(--fg);}
+.m-nav-item.scan .m-nav-icon{color:var(--accent);position:relative;}
+.m-nav-item.scan .m-nav-icon::after{content:'';position:absolute;inset:-6px;border-radius:50%;box-shadow:0 0 16px rgba(232,98,58,0.5);}
+.m-nav-label{font-size:9.5px;color:var(--fg-subtle);font-weight:500;}
+.m-nav-item.active .m-nav-label{color:var(--fg);}
+.m-nav-item.scan .m-nav-label{color:var(--accent);}
+
+.m-scroll .scan-card{padding:12px;margin-bottom:12px;border-radius:14px;}
+.m-scroll .sc-art{width:72px;height:72px;font-size:28px;border-radius:10px;}
+.m-scroll .sc-title{font-size:19px;}
+.m-scroll .sc-artist{font-size:12px;}
+.m-scroll .sc-chip{font-size:10px;padding:1px 8px;}
+.m-scroll .sc-link{font-size:11.5px;padding:8px 10px;}
+.m-scroll .sc-act{width:30px;height:30px;}
+.m-scroll .sc-stats{gap:10px;font-size:11px;}
+
+.m-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 30px;text-align:center;}
+.m-empty-orb{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 40% 40%,rgba(232,98,58,0.24),rgba(232,98,58,0.02));border:1.5px solid rgba(232,98,58,0.4);display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:28px;box-shadow:0 0 60px rgba(232,98,58,0.2);}
+.m-empty-orb::before,.m-empty-orb::after{content:'';position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(232,98,58,0.35);animation:qs-pulse 2.8s ease-out infinite;}
+.m-empty-orb::after{animation-delay:1.4s;}
+.m-empty-orb svg{position:relative;z-index:1;}
+.m-empty-eyebrow{font-size:10.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.m-empty-title{font-family:var(--font-d);font-style:italic;font-weight:400;font-size:30px;line-height:1.15;color:var(--fg);margin-bottom:12px;max-width:280px;}
+.m-empty-body{font-size:13px;color:var(--fg-muted);line-height:1.5;margin-bottom:28px;max-width:270px;}
+.m-empty-cta{width:100%;max-width:280px;background:var(--accent);color:#fff;border:none;font-family:var(--font-b);font-size:13.5px;font-weight:700;padding:13px;border-radius:99px;cursor:pointer;transition:filter 0.14s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;}
+.m-empty-cta:hover{filter:brightness(1.1);}
+.m-empty-secondary{width:100%;max-width:280px;background:none;border:1px solid var(--border-hi);color:var(--fg-muted);font-family:var(--font-b);font-size:13px;font-weight:500;padding:12px;border-radius:99px;cursor:pointer;transition:all 0.14s;}
+.m-empty-secondary:hover{color:var(--fg);border-color:rgba(255,255,255,0.28);}
+</style>
+</head>
+<body>
+<div id="app">
+<nav class="switcher">
+  <div class="sw-logo"><svg width="12" height="18" viewBox="0 0 12 18" fill="#e8623a"><path d="M7 0L0 10h5l-2 8 9-12H7z"/></svg>outsound.</div>
+  <button class="active" onclick="switchView('desktop-feed',this)">Desktop Â· Feed</button>
+  <button onclick="switchView('desktop-nearby',this)">Desktop Â· Nearby</button>
+  <button onclick="switchView('mobile-feed',this)">Mobile Â· Feed</button>
+  <button onclick="switchView('mobile-empty',this)">Mobile Â· Empty state</button>
+  <span class="sw-tag">post-login dashboard</span>
+</nav>
+<div class="view-area">
+
+<div class="view active" id="view-desktop-feed">
+  <nav class="d-nav">
+    <div class="d-nav-logo"><svg width="13" height="19" viewBox="0 0 12 18" fill="#e8623a"><path d="M7 0L0 10h5l-2 8 9-12H7z"/></svg>outsound.</div>
+    <div class="d-nav-links"><a href="#">Scan</a><a href="#" class="active">Feed</a><a href="#">Discover</a></div>
+    <div class="d-nav-right">
+      <input class="d-search" placeholder="Search tracks, artists, usersâ€¦">
+      <button class="d-icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></button>
+      <div class="d-avatar">SD</div>
+    </div>
+  </nav>
+  <div class="d-body">
+    <div class="d-inner">
+      <div class="d-feed-col">
+        <div class="quick-scan">
+          <div class="qs-bolt"><svg width="14" height="20" viewBox="0 0 24 36" fill="#e8623a"><path d="M14 0L1 20h9L7 36l17-24h-9z"/></svg></div>
+          <div class="qs-text"><div class="qs-title">Scan a song</div><div class="qs-sub">Tap to identify what's playing around you</div></div>
+          <span class="qs-kbd">S</span>
+        </div>
+        <div class="filter-row">
+          <button class="filter-pill active">Friends <span class="count">24</span></button>
+          <button class="filter-pill" onclick="switchView('desktop-nearby',document.querySelectorAll('.switcher button')[1])">Nearby <span class="count">12</span></button>
+          <button class="filter-pill">Discover</button>
+          <button class="filter-pill">Following</button>
+          <button class="filter-pill">Saved</button>
+        </div>
+
+        <div class="scan-card">
+          <div class="sc-header">
+            <div class="sc-av" style="background:linear-gradient(135deg,#3d180a,#1a0a08);color:#e8623a;">MK</div>
+            <div class="sc-user"><strong>Maya Kumar</strong><span class="sc-verb">scanned</span><div class="sc-meta"><span>Brooklyn</span><span class="dot"></span><span>2h ago</span></div></div>
+            <div class="sc-menu"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></div>
+          </div>
+          <div class="sc-body">
+            <div class="sc-art" style="background:linear-gradient(135deg,#1a0a08,#3d180a);">ðŸŽ¸<span class="play-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div>
+            <div class="sc-info">
+              <div class="sc-title">Something in the Way</div>
+              <div class="sc-artist">Nirvana Â· Nevermind</div>
+              <div class="sc-chips"><span class="sc-chip">Grunge</span><span class="sc-chip">1991</span><span class="sc-chip">3:52</span></div>
+            </div>
+          </div>
+          <div class="sc-links"><a class="sc-link spotify" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.5 17.3c-.2.4-.7.5-1 .3-2.7-1.7-6.2-2-10.3-1.1-.4.1-.8-.2-.9-.6-.1-.4.2-.8.6-.9 4.5-1 8.3-.6 11.3 1.2.4.3.5.7.3 1.1zm1.5-3.3c-.3.5-.9.6-1.3.3-3.1-1.9-7.8-2.5-11.4-1.4-.5.1-1-.2-1.2-.6-.1-.5.2-1 .7-1.2 4.2-1.3 9.4-.6 12.9 1.6.4.2.5.8.3 1.3zm.1-3.4C15.4 8.4 8.7 8.2 5.2 9.3c-.6.2-1.2-.2-1.4-.7-.2-.6.2-1.2.7-1.4 4.1-1.2 11.5-1 15.7 1.5.5.3.7 1 .4 1.5-.3.4-1 .6-1.5.3z"/></svg>Spotify</a><a class="sc-link youtube" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>YouTube</a></div>
+          <div class="sc-actions">
+            <button class="sc-act primary"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+            <button class="sc-act spotify"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.5 17.3c-.2.4-.7.5-1 .3-2.7-1.7-6.2-2-10.3-1.1-.4.1-.8-.2-.9-.6-.1-.4.2-.8.6-.9 4.5-1 8.3-.6 11.3 1.2.4.3.5.7.3 1.1z"/></svg></button>
+            <button class="sc-act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+            <button class="sc-act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51L8.59 10.49"/></svg></button>
+            <div class="sc-stats">
+              <span class="sc-stat liked"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 47</span>
+              <span class="sc-stat"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> 8</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scan-card">
+          <div class="sc-header">
+            <div class="sc-av" style="background:#08102a;color:#7c9ee8;">SR</div>
+            <div class="sc-user"><strong>Sam Rose</strong><span class="sc-verb">scanned</span><div class="sc-meta"><span>at Blue Note NYC</span><span class="dot"></span><span>5h ago</span></div></div>
+            <div class="sc-menu"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></div>
+          </div>
+          <div class="sc-body">
+            <div class="sc-art" style="background:linear-gradient(135deg,#080a1a,#0a183d);">ðŸŽ¹<span class="play-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div>
+            <div class="sc-info">
+              <div class="sc-title">Clair de Lune</div>
+              <div class="sc-artist">Claude Debussy Â· Suite bergamasque</div>
+              <div class="sc-chips"><span class="sc-chip">Classical</span><span class="sc-chip">Piano</span><span class="sc-chip">5:07</span></div>
+            </div>
+          </div>
+          <div class="sc-links"><a class="sc-link spotify" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.5 17.3c-.2.4-.7.5-1 .3-2.7-1.7-6.2-2-10.3-1.1-.4.1-.8-.2-.9-.6-.1-.4.2-.8.6-.9 4.5-1 8.3-.6 11.3 1.2.4.3.5.7.3 1.1zm1.5-3.3c-.3.5-.9.6-1.3.3-3.1-1.9-7.8-2.5-11.4-1.4-.5.1-1-.2-1.2-.6-.1-.5.2-1 .7-1.2 4.2-1.3 9.4-.6 12.9 1.6.4.2.5.8.3 1.3zm.1-3.4C15.4 8.4 8.7 8.2 5.2 9.3c-.6.2-1.2-.2-1.4-.7-.2-.6.2-1.2.7-1.4 4.1-1.2 11.5-1 15.7 1.5.5.3.7 1 .4 1.5-.3.4-1 .6-1.5.3z"/></svg>Spotify</a><a class="sc-link youtube" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>YouTube</a></div>
+          <div class="sc-actions">
+            <button class="sc-act primary"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+            <button class="sc-act spotify"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0z"/></svg></button>
+            <button class="sc-act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+            <button class="sc-act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51L8.59 10.49"/></svg></button>
+            <div class="sc-stats">
+              <span class="sc-stat"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> 122</span>
+              <span class="sc-stat"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> 19</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scan-card">
+          <div class="sc-header">
+            <div class="sc-av" style="background:#0a180a;color:#4ec26e;">JP</div>
+            <div class="sc-user"><strong>Jazz Pal</strong><span class="sc-verb">scanned</span><div class="sc-meta"><span>Village Vanguard</span><span class="dot"></span><span>11h ago</span></div></div>
+            <div class="sc-menu"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></div>
+          </div>
+          <div class="sc-body">
+            <div class="sc-art" style="background:linear-gradient(135deg,#0a180a,#183d0a);">ðŸ¥<span class="play-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div>
+            <div class="sc-info">
+              <div class="sc-title">Take Five</div>
+              <div class="sc-artist">Dave Brubeck Quartet Â· Time Out</div>
+              <div class="sc-chips"><span class="sc-chip">Jazz</span><span class="sc-chip">Cool Jazz</span><span class="sc-chip">5:24</span></div>
+            </div>
+          </div>
+          <div class="sc-links"><a class="sc-link spotify" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.5 17.3c-.2.4-.7.5-1 .3-2.7-1.7-6.2-2-10.3-1.1-.4.1-.8-.2-.9-.6-.1-.4.2-.8.6-.9 4.5-1 8.3-.6 11.3 1.2.4.3.5.7.3 1.1zm1.5-3.3c-.3.5-.9.6-1.3.3-3.1-1.9-7.8-2.5-11.4-1.4-.5.1-1-.2-1.2-.6-.1-.5.2-1 .7-1.2 4.2-1.3 9.4-.6 12.9 1.6.4.2.5.8.3 1.3zm.1-3.4C15.4 8.4 8.7 8.2 5.2 9.3c-.6.2-1.2-.2-1.4-.7-.2-.6.2-1.2.7-1.4 4.1-1.2 11.5-1 15.7 1.5.5.3.7 1 .4 1.5-.3.4-1 .6-1.5.3z"/></svg>Spotify</a><a class="sc-link youtube" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>YouTube</a></div>
+          <div class="sc-actions">
+            <button class="sc-act primary"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+            <button class="sc-act spotify"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0z"/></svg></button>
+            <button class="sc-act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+            <button class="sc-act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51L8.59 10.49"/></svg></button>
+            <div class="sc-stats">
+              <span class="sc-stat"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> 68</span>
+              <span class="sc-stat"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> 12</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-rail-col">
+        <div class="rail-section">
+          <div class="rail-hdr"><div class="rail-title">Recently scanned by you</div><a class="rail-link">View all</a></div>
+          <div class="rail-card">
+            <div class="rail-item"><div class="rail-art" style="background:linear-gradient(135deg,#180a18,#3d0a3d);">ðŸŽ§</div><div class="rail-info"><div class="rail-t">Ultralight Beam</div><div class="rail-sub">Kanye West Â· Yesterday</div></div></div>
+            <div class="rail-item"><div class="rail-art" style="background:linear-gradient(135deg,#0a1818,#0a3d3d);">ðŸŽº</div><div class="rail-info"><div class="rail-t">So What</div><div class="rail-sub">Miles Davis Â· 2 days ago</div></div></div>
+            <div class="rail-item"><div class="rail-art" style="background:linear-gradient(135deg,#1a1808,#3d3a0a);">ðŸŽ»</div><div class="rail-info"><div class="rail-t">Bohemian Rhapsody</div><div class="rail-sub">Queen Â· 3 days ago</div></div></div>
+            <div class="rail-item"><div class="rail-art" style="background:linear-gradient(135deg,#0a0a18,#0a0a3d);">ðŸª—</div><div class="rail-info"><div class="rail-t">Murder on the Dancefloor</div><div class="rail-sub">Sophie Ellis-Bextor Â· 4d</div></div></div>
+          </div>
+        </div>
+        <div class="rail-section">
+          <div class="rail-hdr"><div class="rail-title">Trending scans</div><a class="rail-link">More</a></div>
+          <div class="rail-card">
+            <div class="rail-item"><span class="rail-rank">01</span><div class="rail-art" style="background:linear-gradient(135deg,#180a0a,#3d0808);">ðŸŽµ</div><div class="rail-info"><div class="rail-t">Blinding Lights</div><div class="rail-sub">The Weeknd</div></div><span class="rail-trend">â–² 12k</span></div>
+            <div class="rail-item"><span class="rail-rank">02</span><div class="rail-art" style="background:linear-gradient(135deg,#1a0a08,#3d180a);">ðŸŽ¸</div><div class="rail-info"><div class="rail-t">Something in the Way</div><div class="rail-sub">Nirvana</div></div><span class="rail-trend">â–² 8.4k</span></div>
+            <div class="rail-item"><span class="rail-rank">03</span><div class="rail-art" style="background:linear-gradient(135deg,#080a1a,#0a183d);">ðŸŽ¹</div><div class="rail-info"><div class="rail-t">Clair de Lune</div><div class="rail-sub">Claude Debussy</div></div><span class="rail-trend">â–² 6.1k</span></div>
+            <div class="rail-item"><span class="rail-rank">04</span><div class="rail-art" style="background:linear-gradient(135deg,#0a180a,#183d0a);">ðŸ¥</div><div class="rail-info"><div class="rail-t">Take Five</div><div class="rail-sub">Dave Brubeck Quartet</div></div><span class="rail-trend">â–² 3.9k</span></div>
+            <div class="rail-item"><span class="rail-rank">05</span><div class="rail-art" style="background:linear-gradient(135deg,#180a18,#3d0a3d);">ðŸŽ§</div><div class="rail-info"><div class="rail-t">Ultralight Beam</div><div class="rail-sub">Kanye West</div></div><span class="rail-trend">â–² 2.7k</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-desktop-nearby">
+  <nav class="d-nav">
+    <div class="d-nav-logo"><svg width="13" height="19" viewBox="0 0 12 18" fill="#e8623a"><path d="M7 0L0 10h5l-2 8 9-12H7z"/></svg>outsound.</div>
+    <div class="d-nav-links"><a href="#">Scan</a><a href="#" class="active">Feed</a><a href="#">Discover</a></div>
+    <div class="d-nav-right">
+      <input class="d-search" placeholder="Search tracks, artists, usersâ€¦">
+      <button class="d-icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></button>
+      <div class="d-avatar">SD</div>
+    </div>
+  </nav>
+  <div class="d-body">
+    <div class="d-inner">
+      <div class="d-feed-col">
+        <div class="quick-scan">
+          <div class="qs-bolt"><svg width="14" height="20" viewBox="0 0 24 36" fill="#e8623a"><path d="M14 0L1 20h9L7 36l17-24h-9z"/></svg></div>
+          <div class="qs-text"><div class="qs-title">Scan a song</div><div class="qs-sub">Tap to identify what's playing around you</div></div>
+          <span class="qs-kbd">S</span>
+        </div>
+        <div class="filter-row">
+          <button class="filter-pill" onclick="switchView('desktop-feed',document.querySelectorAll('.switcher button')[0])">Friends <span class="count">24</span></button>
+          <button class="filter-pill active">Nearby <span class="count">12</span></button>
+          <button class="filter-pill">Discover</button>
+          <button class="filter-pill">Following</button>
+          <button class="filter-pill">Saved</button>
+        </div>
+
+        <div class="cluster-hdr">
+          <div class="cluster-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div class="cluster-text"><div class="cluster-label">Nearby Â· Williamsburg</div><div class="cluster-title"><strong>12 people</strong> scanned this within 1km tonight</div></div>
+          <button class="cluster-cta">Change area</button>
+        </div>
+
+        <div class="scan-card">
+          <div class="sc-header">
+            <div class="sc-av" style="background:#180a0a;color:#e84e4e;">FT</div>
+            <div class="sc-user"><strong>Felipe Torres</strong><span class="sc-verb">scanned</span><div class="sc-meta"><span>Union Pool Â· 0.2km</span><span class="dot"></span><span>18m ago</span></div></div>
+            <div class="sc-menu"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></div>
+          </div>
+          <div class="sc-body">
+            <div class="sc-art" style="background:linear-gradient(135deg,#180a0a,#3d0808);">ðŸŽµ<span class="play-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div>
+            <div class="sc-info">
+              <div class="sc-title">Blinding Lights</div>
+              <div class="sc-artist">The Weeknd Â· After Hours</div>
+              <div class="sc-chips"><span class="sc-chip">Synth-pop</span><span class="sc-chip">2019</span><span class="sc-chip">3:20</span></div>
+            </div>
+          </div>
+          <div class="sc-links"><a class="sc-link spotify" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.5 17.3c-.2.4-.7.5-1 .3-2.7-1.7-6.2-2-10.3-1.1-.4.1-.8-.2-.9-.6-.1-.4.2-.8.6-.9 4.5-1 8.3-.6 11.3 1.2.4.3.5.7.3 1.1zm1.5-3.3c-.3.5-.9.6-1.3.3-3.1-1.9-7.8-2.5-11.4-1.4-.5.1-1-.2-1.2-.6-.1-.5.2-1 .7-1.2 4.2-1.3 9.4-.6 12.9 1.6.4.2.5.8.3 1.3zm.1-3.4C15.4 8.4 8.7 8.2 5.2 9.3c-.6.2-1.2-.2-1.4-.7-.2-.6.2-1.2.7-1.4 4.1-1.2 11.5-1 15.7 1.5.5.3.7 1 .4 1.5-.3.4-1 .6-1.5.3z"/></svg>Spotify</a><a class="sc-link youtube" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>YouTube</a></div>
+          <div class="sc-actions">
+            <button class="sc-act primary"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+            <button class="sc-act spotify"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0z"/></svg></button>
+            <button class="sc-act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+            <button class="sc-act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51L8.59 10.49"/></svg></button>
+            <div class="sc-stats">
+              <span class="sc-stat liked"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 89</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scan-card">
+          <div class="sc-header">
+            <div class="sc-av" style="background:#0a0a18;color:#6e8ee8;">PR</div>
+            <div class="sc-user"><strong>Priya R.</strong><span class="sc-verb">scanned</span><div class="sc-meta"><span>Baby's All Right Â· 0.4km</span><span class="dot"></span><span>32m ago</span></div></div>
+            <div class="sc-menu"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></div>
+          </div>
+          <div class="sc-body">
+            <div class="sc-art" style="background:linear-gradient(135deg,#0a0a18,#0a0a3d);">ðŸª—<span class="play-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div>
+            <div class="sc-info">
+              <div class="sc-title">Murder on the Dancefloor</div>
+              <div class="sc-artist">Sophie Ellis-Bextor Â· Read My Lips</div>
+              <div class="sc-chips"><span class="sc-chip">Nu-disco</span><span class="sc-chip">Dance</span><span class="sc-chip">3:47</span></div>
+            </div>
+          </div>
+          <div class="sc-links"><a class="sc-link spotify" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.5 17.3c-.2.4-.7.5-1 .3-2.7-1.7-6.2-2-10.3-1.1-.4.1-.8-.2-.9-.6-.1-.4.2-.8.6-.9 4.5-1 8.3-.6 11.3 1.2.4.3.5.7.3 1.1zm1.5-3.3c-.3.5-.9.6-1.3.3-3.1-1.9-7.8-2.5-11.4-1.4-.5.1-1-.2-1.2-.6-.1-.5.2-1 .7-1.2 4.2-1.3 9.4-.6 12.9 1.6.4.2.5.8.3 1.3zm.1-3.4C15.4 8.4 8.7 8.2 5.2 9.3c-.6.2-1.2-.2-1.4-.7-.2-.6.2-1.2.7-1.4 4.1-1.2 11.5-1 15.7 1.5.5.3.7 1 .4 1.5-.3.4-1 .6-1.5.3z"/></svg>Spotify</a><a class="sc-link youtube" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>YouTube</a></div>
+          <div class="sc-actions">
+            <button class="sc-act primary"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+            <button class="sc-act spotify"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0z"/></svg></button>
+            <button class="sc-act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+            <button class="sc-act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51L8.59 10.49"/></svg></button>
+            <div class="sc-stats"><span class="sc-stat"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> 41</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-rail-col">
+        <div class="rail-section">
+          <div class="rail-hdr"><div class="rail-title">Tonight Â· nearby</div><a class="rail-link">Map view</a></div>
+          <div class="rail-card">
+            <div class="rail-item"><div class="rail-art" style="background:linear-gradient(135deg,#180a0a,#3d0808);">ðŸŽµ</div><div class="rail-info"><div class="rail-t">Union Pool</div><div class="rail-sub">6 scans Â· 0.2km</div></div></div>
+            <div class="rail-item"><div class="rail-art" style="background:linear-gradient(135deg,#0a0a18,#0a0a3d);">ðŸª—</div><div class="rail-info"><div class="rail-t">Baby's All Right</div><div class="rail-sub">4 scans Â· 0.4km</div></div></div>
+            <div class="rail-item"><div class="rail-art" style="background:linear-gradient(135deg,#0a180a,#183d0a);">ðŸ¥</div><div class="rail-info"><div class="rail-t">Elsewhere Rooftop</div><div class="rail-sub">2 scans Â· 0.9km</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-mobile-feed">
+  <div class="phone-stage">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="dyn-island"></div>
+        <div class="status-bar"><span style="font-variant-numeric:tabular-nums;">9:41</span>
+          <div class="status-icons">
+            <svg width="14" height="10" viewBox="0 0 15 11" fill="white" opacity="0.9"><rect x="0" y="7" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="7" rx="0.5"/><rect x="8" y="2" width="3" height="9" rx="0.5"/><rect x="12" y="0" width="3" height="11" rx="0.5"/></svg>
+            <svg width="22" height="11" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2" stroke="white" stroke-opacity="0.85" stroke-width="1"/><rect x="22" y="3.5" width="3" height="5" rx="1" fill="white" fill-opacity="0.45"/><rect x="1.5" y="2.5" width="16" height="7" rx="1" fill="white"/></svg>
+          </div>
+        </div>
+        <div class="m-hdr">
+          <span class="m-hdr-logo">outsound.</span>
+          <div class="m-hdr-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="dot"></span></div>
+          <div class="m-hdr-avatar">SD</div>
+        </div>
+        <div class="m-scroll">
+          <div class="m-quick-scan">
+            <div class="m-qs-bolt"><svg width="12" height="18" viewBox="0 0 24 36" fill="#e8623a"><path d="M14 0L1 20h9L7 36l17-24h-9z"/></svg></div>
+            <div><div class="m-qs-title">Scan a song</div><div class="m-qs-sub">Identify what's playing now</div></div>
+          </div>
+          <div class="filter-row">
+            <button class="filter-pill active">Friends</button>
+            <button class="filter-pill">Nearby</button>
+            <button class="filter-pill">Discover</button>
+            <button class="filter-pill">Saved</button>
+          </div>
+
+          <div class="scan-card">
+            <div class="sc-header">
+              <div class="sc-av" style="background:linear-gradient(135deg,#3d180a,#1a0a08);color:#e8623a;">MK</div>
+              <div class="sc-user"><strong>Maya K.</strong><span class="sc-verb">scanned</span><div class="sc-meta"><span>Brooklyn</span><span class="dot"></span><span>2h</span></div></div>
+              <div class="sc-menu"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></div>
+            </div>
+            <div class="sc-body">
+              <div class="sc-art" style="background:linear-gradient(135deg,#1a0a08,#3d180a);">ðŸŽ¸<span class="play-badge"><svg width="8" height="8" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div>
+              <div class="sc-info">
+                <div class="sc-title">Something in the Way</div>
+                <div class="sc-artist">Nirvana</div>
+                <div class="sc-chips"><span class="sc-chip">Grunge</span><span class="sc-chip">3:52</span></div>
+              </div>
+            </div>
+            <div class="sc-links"><a class="sc-link spotify" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.5 17.3c-.2.4-.7.5-1 .3-2.7-1.7-6.2-2-10.3-1.1-.4.1-.8-.2-.9-.6-.1-.4.2-.8.6-.9 4.5-1 8.3-.6 11.3 1.2.4.3.5.7.3 1.1zm1.5-3.3c-.3.5-.9.6-1.3.3-3.1-1.9-7.8-2.5-11.4-1.4-.5.1-1-.2-1.2-.6-.1-.5.2-1 .7-1.2 4.2-1.3 9.4-.6 12.9 1.6.4.2.5.8.3 1.3zm.1-3.4C15.4 8.4 8.7 8.2 5.2 9.3c-.6.2-1.2-.2-1.4-.7-.2-.6.2-1.2.7-1.4 4.1-1.2 11.5-1 15.7 1.5.5.3.7 1 .4 1.5-.3.4-1 .6-1.5.3z"/></svg>Spotify</a><a class="sc-link youtube" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>YouTube</a></div>
+            <div class="sc-actions">
+              <button class="sc-act primary"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+              <button class="sc-act spotify"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0z"/></svg></button>
+              <button class="sc-act"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+              <div class="sc-stats"><span class="sc-stat liked"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 47</span></div>
+            </div>
+          </div>
+
+          <div class="scan-card">
+            <div class="sc-header">
+              <div class="sc-av" style="background:#08102a;color:#7c9ee8;">SR</div>
+              <div class="sc-user"><strong>Sam Rose</strong><span class="sc-verb">scanned</span><div class="sc-meta"><span>Blue Note</span><span class="dot"></span><span>5h</span></div></div>
+              <div class="sc-menu"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></div>
+            </div>
+            <div class="sc-body">
+              <div class="sc-art" style="background:linear-gradient(135deg,#080a1a,#0a183d);">ðŸŽ¹<span class="play-badge"><svg width="8" height="8" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div>
+              <div class="sc-info">
+                <div class="sc-title">Clair de Lune</div>
+                <div class="sc-artist">Debussy</div>
+                <div class="sc-chips"><span class="sc-chip">Classical</span><span class="sc-chip">5:07</span></div>
+              </div>
+            </div>
+            <div class="sc-links"><a class="sc-link spotify" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.5 17.3c-.2.4-.7.5-1 .3-2.7-1.7-6.2-2-10.3-1.1-.4.1-.8-.2-.9-.6-.1-.4.2-.8.6-.9 4.5-1 8.3-.6 11.3 1.2.4.3.5.7.3 1.1zm1.5-3.3c-.3.5-.9.6-1.3.3-3.1-1.9-7.8-2.5-11.4-1.4-.5.1-1-.2-1.2-.6-.1-.5.2-1 .7-1.2 4.2-1.3 9.4-.6 12.9 1.6.4.2.5.8.3 1.3zm.1-3.4C15.4 8.4 8.7 8.2 5.2 9.3c-.6.2-1.2-.2-1.4-.7-.2-.6.2-1.2.7-1.4 4.1-1.2 11.5-1 15.7 1.5.5.3.7 1 .4 1.5-.3.4-1 .6-1.5.3z"/></svg>Spotify</a><a class="sc-link youtube" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>YouTube</a></div>
+            <div class="sc-actions">
+              <button class="sc-act primary"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+              <button class="sc-act spotify"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0z"/></svg></button>
+              <button class="sc-act"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+              <div class="sc-stats"><span class="sc-stat"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> 122</span></div>
+            </div>
+          </div>
+
+          <div class="scan-card">
+            <div class="sc-header">
+              <div class="sc-av" style="background:#0a180a;color:#4ec26e;">JP</div>
+              <div class="sc-user"><strong>Jazz Pal</strong><span class="sc-verb">scanned</span><div class="sc-meta"><span>Village Vanguard</span><span class="dot"></span><span>11h</span></div></div>
+              <div class="sc-menu"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></div>
+            </div>
+            <div class="sc-body">
+              <div class="sc-art" style="background:linear-gradient(135deg,#0a180a,#183d0a);">ðŸ¥<span class="play-badge"><svg width="8" height="8" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div>
+              <div class="sc-info">
+                <div class="sc-title">Take Five</div>
+                <div class="sc-artist">Dave Brubeck</div>
+                <div class="sc-chips"><span class="sc-chip">Jazz</span><span class="sc-chip">5:24</span></div>
+              </div>
+            </div>
+            <div class="sc-links"><a class="sc-link spotify" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.5 17.3c-.2.4-.7.5-1 .3-2.7-1.7-6.2-2-10.3-1.1-.4.1-.8-.2-.9-.6-.1-.4.2-.8.6-.9 4.5-1 8.3-.6 11.3 1.2.4.3.5.7.3 1.1zm1.5-3.3c-.3.5-.9.6-1.3.3-3.1-1.9-7.8-2.5-11.4-1.4-.5.1-1-.2-1.2-.6-.1-.5.2-1 .7-1.2 4.2-1.3 9.4-.6 12.9 1.6.4.2.5.8.3 1.3zm.1-3.4C15.4 8.4 8.7 8.2 5.2 9.3c-.6.2-1.2-.2-1.4-.7-.2-.6.2-1.2.7-1.4 4.1-1.2 11.5-1 15.7 1.5.5.3.7 1 .4 1.5-.3.4-1 .6-1.5.3z"/></svg>Spotify</a><a class="sc-link youtube" href="#" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>YouTube</a></div>
+            <div class="sc-actions">
+              <button class="sc-act primary"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+              <button class="sc-act spotify"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0z"/></svg></button>
+              <button class="sc-act"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+              <div class="sc-stats"><span class="sc-stat"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> 68</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="m-bottom-nav">
+          <div class="m-nav-item active"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div><span class="m-nav-label">Feed</span></div>
+          <div class="m-nav-item"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><span class="m-nav-label">Discover</span></div>
+          <div class="m-nav-item scan"><div class="m-nav-icon"><svg width="18" height="26" viewBox="0 0 24 36" fill="currentColor"><path d="M14 0L1 20h9L7 36l17-24h-9z"/></svg></div><span class="m-nav-label">Scan</span></div>
+          <div class="m-nav-item"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="m-nav-label">Profile</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-mobile-empty">
+  <div class="phone-stage">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="dyn-island"></div>
+        <div class="status-bar"><span style="font-variant-numeric:tabular-nums;">9:41</span>
+          <div class="status-icons">
+            <svg width="14" height="10" viewBox="0 0 15 11" fill="white" opacity="0.9"><rect x="0" y="7" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="7" rx="0.5"/><rect x="8" y="2" width="3" height="9" rx="0.5"/><rect x="12" y="0" width="3" height="11" rx="0.5"/></svg>
+            <svg width="22" height="11" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2" stroke="white" stroke-opacity="0.85" stroke-width="1"/><rect x="22" y="3.5" width="3" height="5" rx="1" fill="white" fill-opacity="0.45"/><rect x="1.5" y="2.5" width="16" height="7" rx="1" fill="white"/></svg>
+          </div>
+        </div>
+        <div class="m-hdr">
+          <span class="m-hdr-logo">outsound.</span>
+          <div class="m-hdr-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+          <div class="m-hdr-avatar">SD</div>
+        </div>
+        <div class="m-empty">
+          <div class="m-empty-orb"><svg width="30" height="42" viewBox="0 0 24 36" fill="#e8623a"><path d="M14 0L1 20h9L7 36l17-24h-9z"/></svg></div>
+          <div class="m-empty-eyebrow">Your feed is quiet</div>
+          <div class="m-empty-title">Scan a song to start your feed.</div>
+          <div class="m-empty-body">Every post here starts with a scan. Identify what's playing around you â€” or follow a few friends to see what they're catching.</div>
+          <button class="m-empty-cta"><svg width="12" height="16" viewBox="0 0 24 36" fill="#fff"><path d="M14 0L1 20h9L7 36l17-24h-9z"/></svg>Scan a song</button>
+          <button class="m-empty-secondary">Find friends to follow</button>
+        </div>
+        <div class="m-bottom-nav">
+          <div class="m-nav-item active"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div><span class="m-nav-label">Feed</span></div>
+          <div class="m-nav-item"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><span class="m-nav-label">Discover</span></div>
+          <div class="m-nav-item scan"><div class="m-nav-icon"><svg width="18" height="26" viewBox="0 0 24 36" fill="currentColor"><path d="M14 0L1 20h9L7 36l17-24h-9z"/></svg></div><span class="m-nav-label">Scan</span></div>
+          <div class="m-nav-item"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="m-nav-label">Profile</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div></div>
+
+<script>
+function switchView(id, btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.switcher button').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  
+}
+</script>
+</body>
+</html>

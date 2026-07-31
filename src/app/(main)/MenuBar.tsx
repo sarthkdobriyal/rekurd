@@ -1,10 +1,9 @@
 import { validateRequest } from "@/auth";
-import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/UserAvatar";
-import { Bookmark, BoomBox, Home, Plus, Radio, ScanLine, UserRound, UserRoundSearch } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Home, Search } from "lucide-react";
 import Link from "next/link";
-
-
+import { BoltIcon } from "./_components/dashboard/icons";
 
 interface MenuBarProps {
   className?: string;
@@ -15,84 +14,45 @@ export default async function MenuBar({ className }: MenuBarProps) {
 
   if (!user) return null;
 
-
+  const items = [
+    { href: "/", label: "Feed", icon: Home },
+    { href: "/discover", label: "Discover", icon: Search },
+    { href: "/scan", label: "Scan", icon: BoltIcon, accent: true },
+  ];
 
   return (
     <div className={className}>
-      <Button
-        variant="ghost"
-        className="flex items-center justify-start gap-3"
-        title="Home"
-        asChild
-      >
-        <Link href="/">
-          <Home className=""/>
-          <span className="hidden lg:inline">Home</span>
+      {items.map(({ href, label, icon: Icon, accent }) => (
+        <Link
+          key={href}
+          href={href}
+          className="flex flex-1 flex-col items-center gap-1 py-1"
+        >
+          <span
+            className={cn(
+              "flex h-5 w-5 items-center justify-center",
+              accent ? "text-[#e8623a]" : "text-white/26",
+            )}
+          >
+            <Icon className={accent ? "h-[18px] w-[13px]" : "h-5 w-5"} />
+          </span>
+          <span
+            className={cn(
+              "text-[9.5px] font-medium",
+              accent ? "text-[#e8623a]" : "text-white/26",
+            )}
+          >
+            {label}
+          </span>
         </Link>
-      </Button>
-
-      <Button
-        variant="ghost"
-        className="flex items-center justify-start gap-3"
-        title="Discover"
-        asChild
+      ))}
+      <Link
+        href={`/users/${user.username}`}
+        className="flex flex-1 flex-col items-center gap-1 py-1"
       >
-        <Link href="/discover">
-          <UserRoundSearch className=""/>
-          <span className="hidden lg:inline">Discover</span>
-        </Link>
-      </Button>
-
-      
-      <Button
-        variant="ghost"
-        className="flex items-center justify-start gap-3"
-        title="Add"
-        asChild
-      >
-        <Link href="/post">
-          <Plus className="border border-white  rounded-md w-7 "/>
-          <span className="hidden lg:inline">Post</span>
-        </Link>
-      </Button>
-
-
-      <Button
-        variant="ghost"
-        className="flex items-center justify-start gap-3"
-        title="Radio"
-        asChild
-      >
-        <Link href="/radio">
-          <BoomBox className=""/>
-          <span className="hidden lg:inline">Radio</span>
-        </Link>
-      </Button>
-
-      <Button
-        variant="ghost"
-        className="flex items-center justify-start gap-3"
-        title="Scan"
-        asChild
-      >
-        <Link href="/scan">
-          <ScanLine className=""/>
-          <span className="hidden lg:inline">Scan</span>
-        </Link>
-      </Button>
-
-
-      <Button
-        variant="ghost"
-        className="flex items-center justify-start gap-3"
-        title="profile"
-        asChild
-      >
-        <Link href={`/users/${user.username}`}>
-          <UserAvatar avatarUrl={user.avatarUrl} className="" size={32} />
-          <span className="hidden lg:inline">Profile</span>
-        </Link>
-      </Button>
+        <UserAvatar avatarUrl={user.avatarUrl} size={20} />
+        <span className="text-[9.5px] font-medium text-white/26">Profile</span>
+      </Link>
     </div>
   );
 }

@@ -64,6 +64,12 @@
   50%       { transform: scaleY(1);   }
 }
 
+/* ── Dashboard quick-scan pulse ring ──────────────────── */
+@keyframes qs-pulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none !important;
 }
