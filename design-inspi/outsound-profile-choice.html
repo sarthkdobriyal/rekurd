@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head><script>(function(){
+  function makeStore(){
+    var data = {};
+    var api = {
+      getItem: function(k){ return Object.prototype.hasOwnProperty.call(data, k) ? data[k] : null; },
+      setItem: function(k, v){ data[k] = String(v); },
+      removeItem: function(k){ delete data[k]; },
+      clear: function(){ data = {}; },
+      key: function(i){ return Object.keys(data)[i] || null; }
+    };
+    Object.defineProperty(api, 'length', { get: function(){ return Object.keys(data).length; } });
+    return api;
+  }
+  function tryShim(name){
+    var works = false;
+    try { works = !!window[name] && typeof window[name].getItem === 'function'; void window[name].length; }
+    catch (_) { works = false; }
+    if (works) return;
+    try { Object.defineProperty(window, name, { configurable: true, value: makeStore() }); }
+    catch (_) { try { window[name] = makeStore(); } catch (__) {} }
+  }
+  tryShim('localStorage');
+  tryShim('sessionStorage');
+})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>outsound. — profile choice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0a0a0a; --bg-2:#0f0f0f; --fg:#ffffff;
+  --fg-muted:rgba(255,255,255,0.52); --fg-subtle:rgba(255,255,255,0.28);
+  --border:rgba(255,255,255,0.08); --border-hi:rgba(255,255,255,0.16);
+  --surface:rgba(255,255,255,0.04); --surface-hi:rgba(255,255,255,0.08);
+  --accent:#e8623a; --accent-dim:rgba(232,98,58,0.14); --accent-glow:rgba(232,98,58,0.32);
+  --font-d:'Cormorant Garamond',Georgia,serif;
+  --font-b:'Inter',-apple-system,system-ui,sans-serif;
+}
+html,body{height:100%;background:#050505;font-family:var(--font-b);color:var(--fg);overflow:hidden;}
+.switcher{display:flex;align-items:center;gap:2px;padding:8px 16px;background:#0c0c0c;border-bottom:1px solid var(--border);flex-shrink:0;}
+.sw-logo{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;margin-right:14px;color:var(--fg);}
+.switcher button{background:none;border:1px solid transparent;color:var(--fg-muted);font-family:var(--font-b);font-size:11.5px;font-weight:500;padding:5px 11px;border-radius:6px;cursor:pointer;transition:all 0.15s;}
+.switcher button:hover{color:var(--fg);background:var(--surface);}
+.switcher button.active{color:var(--fg);background:var(--surface);border-color:var(--border-hi);}
+.sw-tag{margin-left:auto;font-size:10.5px;color:var(--fg-subtle);font-family:ui-monospace,monospace;}
+#app{display:flex;flex-direction:column;height:100vh;}
+.view-area{flex:1;overflow:hidden;position:relative;}
+.view{display:none;width:100%;height:100%;}
+.view.active{display:flex;}
+
+/* subtle radial glow bg shared */
+.glow-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.glow-bg::before{content:'';position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);width:640px;height:640px;border-radius:50%;background:radial-gradient(circle,rgba(232,98,58,0.14) 0%,rgba(232,98,58,0.04) 40%,transparent 70%);filter:blur(20px);}
+.noise{position:absolute;inset:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");}
+
+/* wordmark */
+.wordmark{font-family:var(--font-d);font-style:italic;font-weight:300;letter-spacing:0.03em;color:var(--fg);}
+
+/* ═══ DESKTOP ═══ */
+#view-desktop{background:var(--bg);flex-direction:column;position:relative;}
+.d-topbar{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 32px;}
+.d-topbar-logo{display:flex;align-items:center;gap:8px;}
+.d-topbar-logo .wordmark{font-size:22px;}
+.d-topbar-right{font-size:12px;color:var(--fg-subtle);letter-spacing:0.08em;text-transform:uppercase;font-weight:500;}
+
+.d-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 32px;position:relative;z-index:2;}
+.d-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;display:flex;align-items:center;gap:9px;}
+.d-eyebrow::before,.d-eyebrow::after{content:'';width:24px;height:1px;background:rgba(232,98,58,0.4);}
+.d-head{font-family:var(--font-d);font-style:italic;font-weight:400;font-size:52px;line-height:1.05;text-align:center;color:var(--fg);margin-bottom:12px;max-width:600px;}
+.d-sub{font-size:14.5px;color:var(--fg-muted);text-align:center;max-width:440px;line-height:1.55;margin-bottom:42px;}
+
+.d-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;max-width:760px;}
+
+.choice{
+  position:relative;background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:34px 28px 30px;cursor:pointer;
+  transition:transform 0.28s cubic-bezier(0.32,0,0.07,1),border-color 0.2s,background 0.2s,box-shadow 0.28s;
+  display:flex;flex-direction:column;gap:14px;min-height:280px;overflow:hidden;
+}
+.choice:hover{transform:translateY(-2px);border-color:var(--border-hi);background:var(--surface-hi);}
+.choice.musician{border-color:rgba(232,98,58,0.28);background:linear-gradient(180deg,rgba(232,98,58,0.06) 0%,rgba(232,98,58,0.02) 100%);}
+.choice.musician:hover{border-color:rgba(232,98,58,0.55);box-shadow:0 12px 48px rgba(232,98,58,0.14),inset 0 0 0 1px rgba(232,98,58,0.12);}
+
+.choice-badge{position:absolute;top:16px;right:16px;font-size:9.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);background:rgba(232,98,58,0.12);border:1px solid rgba(232,98,58,0.3);padding:4px 10px;border-radius:99px;}
+
+.choice-icon{
+  width:56px;height:56px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface-hi);border:1px solid var(--border);
+  color:var(--fg-muted);flex-shrink:0;
+}
+.choice.musician .choice-icon{background:rgba(232,98,58,0.12);border-color:rgba(232,98,58,0.32);color:var(--accent);}
+
+.choice-title{font-family:var(--font-d);font-style:italic;font-weight:400;font-size:30px;line-height:1.1;color:var(--fg);}
+.choice-desc{font-size:13.5px;color:var(--fg-muted);line-height:1.55;flex:1;}
+.choice-bullets{display:flex;flex-direction:column;gap:7px;padding-top:6px;}
+.choice-bullet{font-size:12px;color:var(--fg-subtle);display:flex;align-items:center;gap:8px;}
+.choice-bullet::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--fg-subtle);flex-shrink:0;}
+.choice.musician .choice-bullet::before{background:var(--accent);}
+.choice-cta{
+  margin-top:auto;padding-top:14px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:12.5px;font-weight:600;color:var(--fg);letter-spacing:0.02em;
+}
+.choice.musician .choice-cta{color:var(--accent);}
+.choice-arrow{transition:transform 0.2s;}
+.choice:hover .choice-arrow{transform:translateX(3px);}
+
+.d-skip{margin-top:34px;font-size:13px;color:var(--fg-muted);cursor:pointer;padding:8px 16px;border-radius:99px;transition:color 0.15s,background 0.15s;text-decoration:underline;text-decoration-color:rgba(255,255,255,0.2);text-underline-offset:3px;}
+.d-skip:hover{color:var(--fg);text-decoration-color:rgba(255,255,255,0.5);}
+.d-note{margin-top:14px;font-size:11.5px;color:var(--fg-subtle);text-align:center;max-width:380px;}
+
+/* ═══ MOBILE ═══ */
+#view-mobile{background:#050505;align-items:center;justify-content:center;}
+.phone-stage{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+.phone-frame{width:390px;height:760px;background:#000;border-radius:50px;border:8px solid #1c1c1e;box-shadow:0 0 0 1px #2c2c2e,0 40px 100px rgba(0,0,0,0.85);overflow:hidden;position:relative;transform:scale(0.88);transform-origin:center;}
+.phone-screen{width:100%;height:100%;position:relative;overflow:hidden;background:var(--bg);}
+.dyn-island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:31px;background:#000;border-radius:18px;z-index:50;}
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:50px 22px 0;font-size:12px;font-weight:600;color:var(--fg);position:relative;z-index:10;}
+.status-icons{display:flex;align-items:center;gap:5px;}
+
+.m-body{width:100%;height:100%;position:relative;overflow-y:auto;padding:14px 22px 32px;display:flex;flex-direction:column;z-index:5;}
+.m-body::-webkit-scrollbar{display:none;}
+
+.m-top{display:flex;align-items:center;justify-content:space-between;padding:6px 0 30px;position:relative;z-index:10;}
+.m-top .wordmark{font-size:18px;}
+.m-top-right{font-size:10px;color:var(--fg-subtle);letter-spacing:0.14em;text-transform:uppercase;font-weight:600;}
+
+.m-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;text-align:center;display:flex;align-items:center;justify-content:center;gap:7px;}
+.m-eyebrow::before,.m-eyebrow::after{content:'';width:18px;height:1px;background:rgba(232,98,58,0.4);}
+.m-head{font-family:var(--font-d);font-style:italic;font-weight:400;font-size:34px;line-height:1.08;text-align:center;color:var(--fg);margin-bottom:8px;}
+.m-sub{font-size:13px;color:var(--fg-muted);text-align:center;line-height:1.5;margin-bottom:26px;padding:0 8px;}
+
+.m-cards{display:flex;flex-direction:column;gap:12px;}
+.m-choice{
+  position:relative;background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:20px 18px;cursor:pointer;
+  display:flex;gap:14px;align-items:flex-start;transition:background 0.2s,border-color 0.2s;
+}
+.m-choice:active{background:var(--surface-hi);}
+.m-choice.musician{border-color:rgba(232,98,58,0.28);background:linear-gradient(180deg,rgba(232,98,58,0.06),rgba(232,98,58,0.02));}
+.m-choice.musician:active{border-color:rgba(232,98,58,0.5);}
+.m-choice-badge{position:absolute;top:12px;right:12px;font-size:8.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);background:rgba(232,98,58,0.12);border:1px solid rgba(232,98,58,0.3);padding:3px 8px;border-radius:99px;}
+.m-choice-icon{width:44px;height:44px;border-radius:12px;background:var(--surface-hi);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--fg-muted);flex-shrink:0;}
+.m-choice.musician .m-choice-icon{background:rgba(232,98,58,0.12);border-color:rgba(232,98,58,0.3);color:var(--accent);}
+.m-choice-body{flex:1;min-width:0;padding-top:2px;}
+.m-choice-title{font-family:var(--font-d);font-style:italic;font-weight:400;font-size:22px;line-height:1.1;color:var(--fg);margin-bottom:6px;}
+.m-choice-desc{font-size:12px;color:var(--fg-muted);line-height:1.5;margin-bottom:10px;}
+.m-choice-cta{font-size:11.5px;font-weight:600;color:var(--fg-muted);letter-spacing:0.02em;display:flex;align-items:center;gap:5px;}
+.m-choice.musician .m-choice-cta{color:var(--accent);}
+
+.m-skip{margin-top:22px;font-size:13px;color:var(--fg-muted);cursor:pointer;text-align:center;padding:10px;text-decoration:underline;text-decoration-color:rgba(255,255,255,0.2);text-underline-offset:3px;}
+.m-note{margin-top:8px;font-size:10.5px;color:var(--fg-subtle);text-align:center;line-height:1.5;padding:0 12px;}
+</style>
+</head>
+<body>
+<div id="app">
+<nav class="switcher">
+  <div class="sw-logo"><svg width="12" height="18" viewBox="0 0 12 18" fill="#e8623a"><path d="M7 0L0 10h5l-2 8 9-12H7z"/></svg>outsound.</div>
+  <button class="active" onclick="switchView('desktop',this)">Desktop · Profile choice</button>
+  <button onclick="switchView('mobile',this)">Mobile · Profile choice</button>
+  <span class="sw-tag">first-time profile · single step · reversible</span>
+</nav>
+
+<div class="view-area">
+
+<!-- DESKTOP -->
+<div class="view active" id="view-desktop">
+  <div class="glow-bg"></div>
+  <div class="noise"></div>
+
+  <div class="d-topbar">
+    <div class="d-topbar-logo">
+      <svg width="13" height="19" viewBox="0 0 12 18" fill="#e8623a"><path d="M7 0L0 10h5l-2 8 9-12H7z"/></svg>
+      <span class="wordmark">outsound.</span>
+    </div>
+    <div class="d-topbar-right">Set up profile</div>
+  </div>
+
+  <div class="d-stage">
+    <div class="d-eyebrow">One question</div>
+    <h1 class="d-head">Are you a musician?</h1>
+    <p class="d-sub">Pick the profile that fits you today. You can always change your mind later from settings.</p>
+
+    <div class="d-cards">
+      <div class="choice" onclick="void 0">
+        <div class="choice-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18V5l12-2v13"/>
+            <circle cx="6" cy="18" r="3"/>
+            <circle cx="18" cy="16" r="3"/>
+          </svg>
+        </div>
+        <div class="choice-title">Just here to listen</div>
+        <div class="choice-desc">Scan songs, follow friends, and build a library of finds. A quiet, personal profile.</div>
+        <div class="choice-bullets">
+          <div class="choice-bullet">Save and share your scans</div>
+          <div class="choice-bullet">Follow other listeners</div>
+          <div class="choice-bullet">Nothing to fill in but a username</div>
+        </div>
+        <div class="choice-cta">
+          <span>Continue as listener</span>
+          <svg class="choice-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <div class="choice musician" onclick="void 0">
+        <div class="choice-badge">Recommended for artists</div>
+        <div class="choice-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v10.5"/>
+            <circle cx="12" cy="17" r="4"/>
+            <path d="M12 2c2.5 2 4 4 4 6.5"/>
+          </svg>
+        </div>
+        <div class="choice-title">I'm a musician</div>
+        <div class="choice-desc">Get a musician profile — showcase releases, link streaming platforms, and let listeners follow your sound.</div>
+        <div class="choice-bullets">
+          <div class="choice-bullet">Artist name, genre, and links</div>
+          <div class="choice-bullet">Featured track pinned to profile</div>
+          <div class="choice-bullet">Show up in Discover for your city</div>
+        </div>
+        <div class="choice-cta">
+          <span>Set up musician profile</span>
+          <svg class="choice-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-skip" onclick="void 0">Skip for now</div>
+    <div class="d-note">If you skip, you'll get the listener profile — you can switch to musician anytime from Settings.</div>
+  </div>
+</div>
+
+<!-- MOBILE -->
+<div class="view" id="view-mobile">
+  <div class="phone-stage">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="dyn-island"></div>
+        <div class="glow-bg"></div>
+        <div class="noise"></div>
+        <div class="status-bar">
+          <span style="font-variant-numeric:tabular-nums;">9:41</span>
+          <div class="status-icons">
+            <svg width="14" height="10" viewBox="0 0 15 11" fill="white" opacity="0.9"><rect x="0" y="7" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="7" rx="0.5"/><rect x="8" y="2" width="3" height="9" rx="0.5"/><rect x="12" y="0" width="3" height="11" rx="0.5"/></svg>
+            <svg width="13" height="10" viewBox="0 0 15 11" fill="white" opacity="0.9"><path d="M7.5 3C9.5 3 11.3 3.8 12.6 5.1L14 3.6C12.3 1.9 10 1 7.5 1S2.7 1.9 1 3.6l1.4 1.5C3.7 3.8 5.5 3 7.5 3z"/><path d="M7.5 6c1.2 0 2.3.5 3.1 1.2L12 5.7C10.9 4.6 9.3 4 7.5 4S4.1 4.6 3 5.7l1.4 1.5C5.2 6.5 6.3 6 7.5 6z"/><circle cx="7.5" cy="9.5" r="1.5"/></svg>
+            <svg width="22" height="11" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2" stroke="white" stroke-opacity="0.85" stroke-width="1"/><rect x="22" y="3.5" width="3" height="5" rx="1" fill="white" fill-opacity="0.45"/><rect x="1.5" y="2.5" width="16" height="7" rx="1" fill="white"/></svg>
+          </div>
+        </div>
+
+        <div class="m-body">
+          <div class="m-top">
+            <span class="wordmark">outsound.</span>
+            <span class="m-top-right">Set up profile</span>
+          </div>
+
+          <div class="m-eyebrow">One question</div>
+          <h1 class="m-head">Are you a musician?</h1>
+          <p class="m-sub">Pick the profile that fits you today. You can change your mind later.</p>
+
+          <div class="m-cards">
+            <div class="m-choice">
+              <div class="m-choice-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 18V5l12-2v13"/>
+                  <circle cx="6" cy="18" r="3"/>
+                  <circle cx="18" cy="16" r="3"/>
+                </svg>
+              </div>
+              <div class="m-choice-body">
+                <div class="m-choice-title">Just here to listen</div>
+                <div class="m-choice-desc">Scan songs, follow friends, and build a library of finds.</div>
+                <div class="m-choice-cta">Continue as listener
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-choice musician">
+              <div class="m-choice-badge">For artists</div>
+              <div class="m-choice-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v10.5"/>
+                  <circle cx="12" cy="17" r="4"/>
+                  <path d="M12 2c2.5 2 4 4 4 6.5"/>
+                </svg>
+              </div>
+              <div class="m-choice-body">
+                <div class="m-choice-title">I'm a musician</div>
+                <div class="m-choice-desc">Showcase releases, link streaming, and let listeners follow your sound.</div>
+                <div class="m-choice-cta">Set up musician profile
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="m-skip">Skip for now</div>
+          <div class="m-note">If you skip, you'll get the listener profile — you can switch anytime from Settings.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div></div>
+<script>
+function switchView(id,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.switcher button').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+}
+</script>
+</body>
+</html>

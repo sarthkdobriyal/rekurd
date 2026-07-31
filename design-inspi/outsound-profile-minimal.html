@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head><script>(function(){
+  function makeStore(){
+    var data = {};
+    var api = {
+      getItem: function(k){ return Object.prototype.hasOwnProperty.call(data, k) ? data[k] : null; },
+      setItem: function(k, v){ data[k] = String(v); },
+      removeItem: function(k){ delete data[k]; },
+      clear: function(){ data = {}; },
+      key: function(i){ return Object.keys(data)[i] || null; }
+    };
+    Object.defineProperty(api, 'length', { get: function(){ return Object.keys(data).length; } });
+    return api;
+  }
+  function tryShim(name){
+    var works = false;
+    try { works = !!window[name] && typeof window[name].getItem === 'function'; void window[name].length; }
+    catch (_) { works = false; }
+    if (works) return;
+    try { Object.defineProperty(window, name, { configurable: true, value: makeStore() }); }
+    catch (_) { try { window[name] = makeStore(); } catch (__) {} }
+  }
+  tryShim('localStorage');
+  tryShim('sessionStorage');
+})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>outsound. — profile (minimal)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0a;--bg-2:#0f0f0f;--fg:#fff;--fg-muted:rgba(255,255,255,0.52);
+  --fg-subtle:rgba(255,255,255,0.26);--border:rgba(255,255,255,0.08);
+  --border-hi:rgba(255,255,255,0.16);--surface:rgba(255,255,255,0.05);
+  --surface-hi:rgba(255,255,255,0.09);--accent:#e8623a;
+  --font-d:'Cormorant Garamond',Georgia,serif;--font-b:'Inter',-apple-system,system-ui,sans-serif;
+}
+html,body{height:100%;background:#050505;font-family:var(--font-b);color:var(--fg);overflow:hidden;}
+
+.switcher{display:flex;align-items:center;gap:2px;padding:8px 16px;background:#0c0c0c;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
+.switcher::-webkit-scrollbar{display:none;}
+.sw-logo{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;margin-right:14px;color:var(--fg);white-space:nowrap;}
+.switcher button{background:none;border:1px solid transparent;color:var(--fg-muted);font-family:var(--font-b);font-size:11.5px;font-weight:500;padding:5px 11px;border-radius:6px;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.switcher button:hover{color:var(--fg);background:var(--surface);}
+.switcher button.active{color:var(--fg);background:var(--surface);border-color:var(--border-hi);}
+.sw-tag{margin-left:auto;font-size:10.5px;color:var(--fg-subtle);font-family:ui-monospace,monospace;white-space:nowrap;padding-left:12px;}
+
+#app{display:flex;flex-direction:column;height:100vh;}
+.view-area{flex:1;overflow:hidden;position:relative;}
+.view{display:none;width:100%;height:100%;}
+.view.active{display:flex;}
+
+/* Desktop nav */
+.d-nav{position:absolute;top:0;left:0;right:0;height:58px;display:flex;align-items:center;padding:0 28px;backdrop-filter:blur(12px);background:rgba(8,8,8,0.85);border-bottom:1px solid var(--border);z-index:20;}
+.d-nav-logo{display:flex;align-items:center;gap:8px;font-family:var(--font-d);font-style:italic;font-weight:300;font-size:22px;flex-shrink:0;}
+.d-nav-links{display:flex;position:absolute;left:50%;transform:translateX(-50%);}
+.d-nav-links a{color:var(--fg-muted);text-decoration:none;font-size:13px;font-weight:500;padding:8px 15px;border-radius:6px;transition:color 0.14s;}
+.d-nav-links a:hover,.d-nav-links a.active{color:var(--fg);}
+.d-nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.icon-btn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--fg-muted);cursor:pointer;transition:all 0.14s;}
+.icon-btn:hover{background:var(--surface-hi);color:var(--fg);}
+.nav-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#e8623a,#8a2818);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:#fff;border:1.5px solid var(--border-hi);cursor:pointer;}
+
+/* Desktop layout */
+.view-desktop{flex-direction:column;background:var(--bg);position:relative;overflow:hidden;}
+.d-scroll{margin-top:58px;height:calc(100% - 58px);overflow-y:auto;}
+.d-scroll::-webkit-scrollbar{width:3px;}
+.d-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+.d-inner{max-width:960px;margin:0 auto;padding:56px 40px 80px;}
+
+/* Profile header */
+.d-header{display:flex;align-items:center;gap:28px;padding-bottom:36px;border-bottom:1px solid var(--border);margin-bottom:32px;}
+.d-avatar{width:132px;height:132px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-style:italic;font-weight:400;font-size:52px;color:#fff;border:1.5px solid var(--border-hi);position:relative;}
+.d-avatar::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(232,98,58,0.18);pointer-events:none;}
+.d-header-info{flex:1;min-width:0;}
+.d-name{font-family:var(--font-d);font-style:italic;font-weight:400;font-size:44px;line-height:1;letter-spacing:0.01em;margin-bottom:6px;}
+.d-uname{font-size:14px;color:var(--fg-muted);font-weight:500;margin-bottom:22px;}
+.d-actions{display:flex;gap:10px;margin-bottom:22px;}
+.btn-edit{background:var(--surface);border:1px solid var(--border-hi);color:var(--fg);font-family:var(--font-b);font-size:13px;font-weight:600;padding:9px 22px;border-radius:99px;cursor:pointer;transition:all 0.14s;display:flex;align-items:center;gap:7px;}
+.btn-edit:hover{background:var(--surface-hi);border-color:rgba(255,255,255,0.28);}
+.btn-jam{background:var(--accent);border:none;color:#fff;font-family:var(--font-b);font-size:13px;font-weight:700;padding:9px 22px;border-radius:99px;cursor:pointer;transition:filter 0.14s;display:flex;align-items:center;gap:7px;letter-spacing:0.02em;}
+.btn-jam:hover{filter:brightness(1.1);}
+.btn-msg{background:var(--surface);border:1px solid var(--border-hi);color:var(--fg);font-family:var(--font-b);font-size:13px;font-weight:600;padding:9px 22px;border-radius:99px;cursor:pointer;transition:all 0.14s;display:flex;align-items:center;gap:7px;}
+.btn-msg:hover{background:var(--surface-hi);}
+.d-stats{display:flex;gap:36px;}
+.d-stat{display:flex;flex-direction:column;gap:2px;}
+.d-stat-n{font-size:20px;font-weight:600;color:var(--fg);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
+.d-stat-l{font-size:10.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);}
+
+/* Section label */
+.section-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;}
+.section-l{font-size:10.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);}
+.section-r{font-size:12px;color:var(--fg-muted);font-variant-numeric:tabular-nums;}
+
+/* Scan grid */
+.scan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.tile{cursor:pointer;transition:transform 0.18s;}
+.tile:hover{transform:translateY(-2px);}
+.tile-art{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:44px;border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden;margin-bottom:9px;}
+.tile-art::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 60%,rgba(0,0,0,0.4));pointer-events:none;}
+.tile-title{font-size:13px;font-weight:500;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-0.005em;}
+.tile-artist{font-size:11.5px;color:var(--fg-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+.tile-time{font-size:10px;color:var(--fg-subtle);font-variant-numeric:tabular-nums;margin-top:3px;letter-spacing:0.02em;}
+
+/* Mobile */
+.view-mobile{background:#050505;align-items:center;justify-content:center;}
+.phone-stage{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+.phone-frame{width:390px;height:760px;background:#000;border-radius:50px;border:8px solid #1c1c1e;box-shadow:0 0 0 1px #2c2c2e,0 40px 100px rgba(0,0,0,0.85),inset 0 0 0 1px rgba(255,255,255,0.05);overflow:hidden;position:relative;flex-shrink:0;transform:scale(0.88);transform-origin:center;}
+.phone-screen{width:100%;height:100%;position:relative;overflow:hidden;background:var(--bg);display:flex;flex-direction:column;}
+.dyn-island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:31px;background:#000;border-radius:18px;z-index:50;}
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:50px 22px 0;font-size:12px;font-weight:600;color:var(--fg);position:relative;z-index:10;flex-shrink:0;}
+.status-icons{display:flex;align-items:center;gap:5px;}
+
+.m-top-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 6px;position:relative;z-index:10;flex-shrink:0;}
+.m-wm{font-family:var(--font-d);font-style:italic;font-weight:300;font-size:19px;letter-spacing:0.03em;}
+.m-nav-actions{display:flex;gap:8px;}
+.m-icon-btn{width:30px;height:30px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--fg-muted);cursor:pointer;font-size:12px;}
+
+.m-scroll{flex:1;overflow-y:auto;padding:6px 18px 12px;}
+.m-scroll::-webkit-scrollbar{display:none;}
+
+.m-hdr{display:flex;flex-direction:column;align-items:center;padding:14px 0 18px;border-bottom:1px solid var(--border);margin-bottom:18px;}
+.m-avatar{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-style:italic;font-weight:400;font-size:38px;color:#fff;border:1.5px solid var(--border-hi);margin-bottom:14px;position:relative;}
+.m-avatar::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(232,98,58,0.18);pointer-events:none;}
+.m-name{font-family:var(--font-d);font-style:italic;font-weight:400;font-size:28px;line-height:1.1;text-align:center;margin-bottom:3px;}
+.m-uname{font-size:12.5px;color:var(--fg-muted);font-weight:500;margin-bottom:14px;}
+.m-stats{display:flex;gap:34px;margin-bottom:16px;}
+.m-stat{display:flex;flex-direction:column;align-items:center;gap:1px;}
+.m-stat-n{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
+.m-stat-l{font-size:9.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);}
+.m-actions{display:flex;gap:8px;width:100%;padding:0 6px;}
+.m-actions .btn-edit,.m-actions .btn-jam,.m-actions .btn-msg{flex:1;justify-content:center;font-size:12.5px;padding:9px 14px;}
+
+.m-section-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;}
+
+.m-scan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.m-tile{cursor:pointer;}
+.m-tile-art{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:26px;border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden;margin-bottom:5px;}
+.m-tile-art::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 55%,rgba(0,0,0,0.5));pointer-events:none;}
+.m-tile-title{font-size:10.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.m-tile-artist{font-size:9.5px;color:var(--fg-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:0px;}
+
+.m-bottom-nav{display:flex;padding:8px 0 22px;background:rgba(8,8,8,0.92);backdrop-filter:blur(14px);border-top:1px solid var(--border);position:relative;z-index:10;flex-shrink:0;}
+.m-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:2px 0;}
+.m-nav-icon{width:22px;height:22px;color:var(--fg-subtle);display:flex;align-items:center;justify-content:center;}
+.m-nav-item.active .m-nav-icon,.m-nav-item.active .m-nav-label{color:var(--accent);}
+.m-nav-label{font-size:10px;color:var(--fg-subtle);font-weight:500;}
+</style>
+</head>
+<body>
+<div id="app">
+<nav class="switcher">
+  <div class="sw-logo"><svg width="12" height="18" viewBox="0 0 12 18" fill="#e8623a"><path d="M7 0L0 10h5l-2 8 9-12H7z"/></svg>outsound.</div>
+  <button class="active" onclick="show('d-own',this)">Desktop · Own profile</button>
+  <button onclick="show('d-other',this)">Desktop · Viewing someone</button>
+  <button onclick="show('m-own',this)">Mobile · Own profile</button>
+  <button onclick="show('m-other',this)">Mobile · Viewing someone</button>
+  <span class="sw-tag">tap tiles to open the scan detail (stub)</span>
+</nav>
+
+<div class="view-area">
+
+<!-- DESKTOP OWN -->
+<div class="view view-desktop active" id="view-d-own">
+  <nav class="d-nav">
+    <div class="d-nav-logo"><svg width="13" height="19" viewBox="0 0 12 18" fill="#e8623a"><path d="M7 0L0 10h5l-2 8 9-12H7z"/></svg>outsound.</div>
+    <div class="d-nav-links"><a href="#">Scan</a><a href="#">Feed</a><a href="#">Discover</a></div>
+    <div class="d-nav-right">
+      <button class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+      <div class="nav-av">SM</div>
+    </div>
+  </nav>
+  <div class="d-scroll">
+    <div class="d-inner">
+      <div class="d-header">
+        <div class="d-avatar" style="background:linear-gradient(135deg,#3a1a08,#e8623a);">S</div>
+        <div class="d-header-info">
+          <div class="d-name">Sarthak</div>
+          <div class="d-uname">@sarthak</div>
+          <div class="d-actions">
+            <button class="btn-edit">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit profile
+            </button>
+          </div>
+          <div class="d-stats">
+            <div class="d-stat"><span class="d-stat-n">147</span><span class="d-stat-l">Scans</span></div>
+            <div class="d-stat"><span class="d-stat-n">32</span><span class="d-stat-l">Connections</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-hdr">
+        <span class="section-l">Recent scans</span>
+        <span class="section-r">147 total · sorted newest first</span>
+      </div>
+      <div class="scan-grid" id="grid-d-own"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DESKTOP OTHER -->
+<div class="view view-desktop" id="view-d-other">
+  <nav class="d-nav">
+    <div class="d-nav-logo"><svg width="13" height="19" viewBox="0 0 12 18" fill="#e8623a"><path d="M7 0L0 10h5l-2 8 9-12H7z"/></svg>outsound.</div>
+    <div class="d-nav-links"><a href="#">Scan</a><a href="#">Feed</a><a href="#">Discover</a></div>
+    <div class="d-nav-right">
+      <button class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+      <div class="nav-av">SM</div>
+    </div>
+  </nav>
+  <div class="d-scroll">
+    <div class="d-inner">
+      <div class="d-header">
+        <div class="d-avatar" style="background:linear-gradient(135deg,#08183a,#7c9ee8);">R</div>
+        <div class="d-header-info">
+          <div class="d-name">Rae Torres</div>
+          <div class="d-uname">@rae · Brooklyn</div>
+          <div class="d-actions">
+            <button class="btn-jam">
+              <svg width="12" height="16" viewBox="0 0 24 36" fill="currentColor"><path d="M14 0L1 20h9L7 36l17-24h-9z"/></svg>
+              JAM
+            </button>
+            <button class="btn-msg">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              Message
+            </button>
+          </div>
+          <div class="d-stats">
+            <div class="d-stat"><span class="d-stat-n">412</span><span class="d-stat-l">Scans</span></div>
+            <div class="d-stat"><span class="d-stat-n">1.2k</span><span class="d-stat-l">Connections</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-hdr">
+        <span class="section-l">Rae's scans</span>
+        <span class="section-r">412 total · sorted newest first</span>
+      </div>
+      <div class="scan-grid" id="grid-d-other"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE OWN -->
+<div class="view view-mobile" id="view-m-own">
+  <div class="phone-stage"><div class="phone-frame"><div class="phone-screen">
+    <div class="dyn-island"></div>
+    <div class="status-bar">
+      <span style="font-variant-numeric:tabular-nums;">9:41</span>
+      <div class="status-icons">
+        <svg width="14" height="10" viewBox="0 0 15 11" fill="white" opacity="0.9"><rect x="0" y="7" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="7" rx="0.5"/><rect x="8" y="2" width="3" height="9" rx="0.5"/><rect x="12" y="0" width="3" height="11" rx="0.5"/></svg>
+        <svg width="13" height="10" viewBox="0 0 15 11" fill="white" opacity="0.9"><path d="M7.5 3C9.5 3 11.3 3.8 12.6 5.1L14 3.6C12.3 1.9 10 1 7.5 1S2.7 1.9 1 3.6l1.4 1.5C3.7 3.8 5.5 3 7.5 3z"/><path d="M7.5 6c1.2 0 2.3.5 3.1 1.2L12 5.7C10.9 4.6 9.3 4 7.5 4S4.1 4.6 3 5.7l1.4 1.5C5.2 6.5 6.3 6 7.5 6z"/><circle cx="7.5" cy="9.5" r="1.5"/></svg>
+        <svg width="22" height="11" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2" stroke="white" stroke-opacity="0.85" stroke-width="1"/><rect x="22" y="3.5" width="3" height="5" rx="1" fill="white" fill-opacity="0.45"/><rect x="1.5" y="2.5" width="16" height="7" rx="1" fill="white"/></svg>
+      </div>
+    </div>
+    <div class="m-top-nav">
+      <span class="m-wm">outsound.</span>
+      <div class="m-nav-actions">
+        <div class="m-icon-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
+      </div>
+    </div>
+    <div class="m-scroll">
+      <div class="m-hdr">
+        <div class="m-avatar" style="background:linear-gradient(135deg,#3a1a08,#e8623a);">S</div>
+        <div class="m-name">Sarthak</div>
+        <div class="m-uname">@sarthak</div>
+        <div class="m-stats">
+          <div class="m-stat"><span class="m-stat-n">147</span><span class="m-stat-l">Scans</span></div>
+          <div class="m-stat"><span class="m-stat-n">32</span><span class="m-stat-l">Connections</span></div>
+        </div>
+        <div class="m-actions">
+          <button class="btn-edit">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit profile
+          </button>
+        </div>
+      </div>
+      <div class="m-section-hdr">
+        <span class="section-l">Recent scans</span>
+        <span class="section-r">147 total</span>
+      </div>
+      <div class="m-scan-grid" id="grid-m-own"></div>
+      <div style="height:12px;"></div>
+    </div>
+    <div class="m-bottom-nav">
+      <div class="m-nav-item"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div><span class="m-nav-label">Feed</span></div>
+      <div class="m-nav-item"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><span class="m-nav-label">Discover</span></div>
+      <div class="m-nav-item"><div class="m-nav-icon"><svg width="18" height="26" viewBox="0 0 24 36" fill="currentColor"><path d="M14 0L1 20h9L7 36l17-24h-9z"/></svg></div><span class="m-nav-label">Scan</span></div>
+      <div class="m-nav-item active"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="m-nav-label">Profile</span></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- MOBILE OTHER -->
+<div class="view view-mobile" id="view-m-other">
+  <div class="phone-stage"><div class="phone-frame"><div class="phone-screen">
+    <div class="dyn-island"></div>
+    <div class="status-bar">
+      <span style="font-variant-numeric:tabular-nums;">9:41</span>
+      <div class="status-icons">
+        <svg width="14" height="10" viewBox="0 0 15 11" fill="white" opacity="0.9"><rect x="0" y="7" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="7" rx="0.5"/><rect x="8" y="2" width="3" height="9" rx="0.5"/><rect x="12" y="0" width="3" height="11" rx="0.5"/></svg>
+        <svg width="13" height="10" viewBox="0 0 15 11" fill="white" opacity="0.9"><path d="M7.5 3C9.5 3 11.3 3.8 12.6 5.1L14 3.6C12.3 1.9 10 1 7.5 1S2.7 1.9 1 3.6l1.4 1.5C3.7 3.8 5.5 3 7.5 3z"/><path d="M7.5 6c1.2 0 2.3.5 3.1 1.2L12 5.7C10.9 4.6 9.3 4 7.5 4S4.1 4.6 3 5.7l1.4 1.5C5.2 6.5 6.3 6 7.5 6z"/><circle cx="7.5" cy="9.5" r="1.5"/></svg>
+        <svg width="22" height="11" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2" stroke="white" stroke-opacity="0.85" stroke-width="1"/><rect x="22" y="3.5" width="3" height="5" rx="1" fill="white" fill-opacity="0.45"/><rect x="1.5" y="2.5" width="16" height="7" rx="1" fill="white"/></svg>
+      </div>
+    </div>
+    <div class="m-top-nav">
+      <span class="m-wm">outsound.</span>
+      <div class="m-nav-actions">
+        <div class="m-icon-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
+      </div>
+    </div>
+    <div class="m-scroll">
+      <div class="m-hdr">
+        <div class="m-avatar" style="background:linear-gradient(135deg,#08183a,#7c9ee8);">R</div>
+        <div class="m-name">Rae Torres</div>
+        <div class="m-uname">@rae · Brooklyn</div>
+        <div class="m-stats">
+          <div class="m-stat"><span class="m-stat-n">412</span><span class="m-stat-l">Scans</span></div>
+          <div class="m-stat"><span class="m-stat-n">1.2k</span><span class="m-stat-l">Connections</span></div>
+        </div>
+        <div class="m-actions">
+          <button class="btn-jam">
+            <svg width="11" height="14" viewBox="0 0 24 36" fill="currentColor"><path d="M14 0L1 20h9L7 36l17-24h-9z"/></svg>
+            JAM
+          </button>
+          <button class="btn-msg">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Message
+          </button>
+        </div>
+      </div>
+      <div class="m-section-hdr">
+        <span class="section-l">Rae's scans</span>
+        <span class="section-r">412 total</span>
+      </div>
+      <div class="m-scan-grid" id="grid-m-other"></div>
+      <div style="height:12px;"></div>
+    </div>
+    <div class="m-bottom-nav">
+      <div class="m-nav-item"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div><span class="m-nav-label">Feed</span></div>
+      <div class="m-nav-item"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><span class="m-nav-label">Discover</span></div>
+      <div class="m-nav-item"><div class="m-nav-icon"><svg width="18" height="26" viewBox="0 0 24 36" fill="currentColor"><path d="M14 0L1 20h9L7 36l17-24h-9z"/></svg></div><span class="m-nav-label">Scan</span></div>
+      <div class="m-nav-item"><div class="m-nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="m-nav-label">Profile</span></div>
+    </div>
+  </div></div></div>
+</div>
+
+</div></div>
+
+<script>
+const OWN_TRACKS=[
+  {e:'🎹',t:'Clair de Lune',a:'Debussy',g:'linear-gradient(135deg,#080a1a,#0a183d)',w:'2h'},
+  {e:'🎸',t:'Something in the Way',a:'Nirvana',g:'linear-gradient(135deg,#1a0a08,#3d180a)',w:'5h'},
+  {e:'🎺',t:'So What',a:'Miles Davis',g:'linear-gradient(135deg,#0a1818,#0a3d3d)',w:'yesterday'},
+  {e:'🎧',t:'Ultralight Beam',a:'Kanye West',g:'linear-gradient(135deg,#180a18,#3d0a3d)',w:'yesterday'},
+  {e:'🥁',t:'Take Five',a:'Dave Brubeck',g:'linear-gradient(135deg,#0a180a,#183d0a)',w:'2d'},
+  {e:'🎵',t:'Blinding Lights',a:'The Weeknd',g:'linear-gradient(135deg,#180a0a,#3d0808)',w:'3d'},
+  {e:'🎻',t:'Bohemian Rhapsody',a:'Queen',g:'linear-gradient(135deg,#1a1808,#3d3a0a)',w:'3d'},
+  {e:'🪗',t:'Murder on the Dancefloor',a:'Sophie Ellis-Bextor',g:'linear-gradient(135deg,#0a0a18,#0a0a3d)',w:'4d'},
+  {e:'🎼',t:'Rêverie',a:'Debussy',g:'linear-gradient(135deg,#180808,#3d1408)',w:'5d'},
+  {e:'🎷',t:'Nocturne in E♭',a:'Chopin',g:'linear-gradient(135deg,#0a0a18,#18083d)',w:'6d'},
+  {e:'🎶',t:'Gymnopédie No. 1',a:'Erik Satie',g:'linear-gradient(135deg,#0a1a18,#083d35)',w:'1w'},
+  {e:'🎤',t:'Arabesque No. 1',a:'Debussy',g:'linear-gradient(135deg,#0a1a0a,#083d1a)',w:'1w'},
+];
+const OTHER_TRACKS=[
+  {e:'🎸',t:'Fake Empire',a:'The National',g:'linear-gradient(135deg,#0a0a1a,#18184a)',w:'1h'},
+  {e:'🎹',t:'Runaway',a:'Kanye West',g:'linear-gradient(135deg,#180a18,#3d0a3d)',w:'4h'},
+  {e:'🎧',t:'Weird Fishes',a:'Radiohead',g:'linear-gradient(135deg,#0a180a,#183d0a)',w:'6h'},
+  {e:'🥁',t:'The Rip',a:'Portishead',g:'linear-gradient(135deg,#1a1808,#3d3a0a)',w:'yesterday'},
+  {e:'🎺',t:'Aeriuu',a:'Yves Tumor',g:'linear-gradient(135deg,#180818,#3d083d)',w:'2d'},
+  {e:'🎻',t:'Mykonos',a:'Fleet Foxes',g:'linear-gradient(135deg,#0a1818,#0a3d3d)',w:'2d'},
+  {e:'🎤',t:'Motion Picture Soundtrack',a:'Radiohead',g:'linear-gradient(135deg,#0a0a18,#0a0a3d)',w:'3d'},
+  {e:'🎶',t:'Time to Pretend',a:'MGMT',g:'linear-gradient(135deg,#180a0a,#3d0808)',w:'3d'},
+  {e:'🎵',t:'Bloom',a:'The Paper Kites',g:'linear-gradient(135deg,#0a1a0a,#083d1a)',w:'4d'},
+  {e:'🪗',t:'Yosemite',a:'Travis Scott',g:'linear-gradient(135deg,#180808,#3d1408)',w:'5d'},
+  {e:'🎷',t:'Alaska',a:'Maggie Rogers',g:'linear-gradient(135deg,#0a0a1a,#18184a)',w:'6d'},
+  {e:'🎼',t:'Chateau Lobby #4',a:'Father John Misty',g:'linear-gradient(135deg,#1a0a08,#3d180a)',w:'1w'},
+];
+function renderGrid(id,data,mobile){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=data.map(t=>{
+    if(mobile) return `<div class="m-tile"><div class="m-tile-art" style="background:${t.g};">${t.e}</div><div class="m-tile-title">${t.t}</div><div class="m-tile-artist">${t.a}</div></div>`;
+    return `<div class="tile"><div class="tile-art" style="background:${t.g};">${t.e}</div><div class="tile-title">${t.t}</div><div class="tile-artist">${t.a}</div><div class="tile-time">${t.w} ago</div></div>`;
+  }).join('');
+}
+function show(id,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.switcher button').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+}
+renderGrid('grid-d-own',OWN_TRACKS,false);
+renderGrid('grid-d-other',OTHER_TRACKS,false);
+renderGrid('grid-m-own',OWN_TRACKS,true);
+renderGrid('grid-m-other',OTHER_TRACKS,true);
+</script>
+</body>
+</html>

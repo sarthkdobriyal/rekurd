@@ -159,6 +159,19 @@ Use these as starting prompts in OpenDesign, one screen at a time. Each assumes 
 > - Keep the persistent mobile bottom tab bar (Feed/Discover/Scan/Profile) visible here, since authenticated navigation needs it — unlike the guest-facing scanner, which intentionally has none.
 > Deliver both mobile and desktop, matching the existing scanner screen's visual language exactly.
 
+### Prompt L — Discover (genre exploration map, everynoise.com-inspired)
+> Design a new "Discover" screen distinct from the Feed's Discover filter: a large explorable map of music genres/micro-genres, scatter-plotted and clustered (inspired by everynoise.com's genre map), rendered in the app's dark/coral theme rather than everynoise's flat white grid. Each genre is a small node whose size reflects **in-app scan activity for that genre** (not just global popularity) so the map reflects this community, not a generic dataset — subtle pulse/glow on nodes with recent activity, echoing the scanner's pulse motif. Interaction: pan/zoom the map, tap a node to open a bottom sheet (mobile) or side panel (desktop) showing top scanned tracks and users active in that genre, with a "Nearby" sub-filter reusing the existing nearby-cluster styling. Include a search bar above the map to jump directly to a genre by name.
+>
+> Mobile note: a full pan/zoom map is a poor fit for small screens — deliver mobile as a scrollable "genre cloud" (chip sizes mapped to activity, same data, simpler interaction) rather than forcing the literal map, and note this as a deliberate platform divergence.
+
+### Prompt M — Taste quiz / similar-artist finder (gnoosic-inspired)
+> Design a short, game-like flow (not a form): the user enters 2–3 artists they like (autocomplete input, one at a time, each confirmed before the next appears), then the screen reveals a ranked list of similar artists — card per artist, with a one-line "why similar" tag and quick actions (jump to that artist's genre on the Discover map, see if any nearby/JAM'd users scan them too). Keep the reveal animated/progressive rather than dumping all results at once, to preserve the "game" feel gnoosic has. This should be reachable both as a standalone entry point from the Discover screen and as a quick action inside the AI music chat (Prompt G) when a user asks for recommendations without much scan history yet — it's the cold-start fallback before persona data exists.
+
+### Prompt N — Profile listening-stats strip (volt.fm-inspired addendum to I2/I3)
+> Add a compact "listening stats" strip near the top of both the minimal (I2) and musician (I3) profile screens, above the scan grid: current scan streak ("7-day streak" with a small flame/pulse icon), total scans this week, and a top-genre badge. Style as small pill-shaped stat chips matching the existing filter-pill language — this is a personal recap moment, not an admin dashboard KPI row, so keep it celebratory/lightweight rather than data-dense. Only show streak/weekly-count chips that have a non-zero value; a brand-new user with one scan should see just the top-genre chip, not three empty-looking stats.
+
 ---
 
 **Status of this doc:** plan agreed; implementation not yet started. Update the Build Order checkboxes / add a "Progress" section here once coding begins, so this stays the live source of truth alongside `CLAUDE.md`.
+
+**2026-08-01 addendum:** Dashboard/Feed (Prompt D) has been implemented in code (`src/app/(main)/`) as this session's work — see `CLAUDE.md` history. Prompts L/M/N added after brainstorming everynoise.com (genre map → Discover), volt.fm (social listening stats → profile), and gnoosic (similar-artist quiz → cold-start recommendations); none of L/M/N are built yet.
