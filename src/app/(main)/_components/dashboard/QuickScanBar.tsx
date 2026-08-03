@@ -4,7 +4,7 @@ import { BoltIcon } from "./icons";
 export default function QuickScanBar() {
   return (
     <Link
-      href="/scan"
+      href="/scan?autostart=1"
       className="mb-5 flex items-center gap-3.5 rounded-full border border-[rgba(232,98,58,0.22)] bg-gradient-to-br from-[rgba(232,98,58,0.08)] to-[rgba(232,98,58,0.02)] py-2.5 pl-3 pr-[18px] transition-colors hover:border-[rgba(232,98,58,0.45)] hover:from-[rgba(232,98,58,0.14)] hover:to-[rgba(232,98,58,0.04)]"
     >
       <span className="relative flex h-[38px] w-[38px] flex-shrink-0 items-center justify-center rounded-full border border-[rgba(232,98,58,0.6)] bg-[radial-gradient(circle_at_40%_40%,rgba(232,98,58,0.28),rgba(232,98,58,0.06))] shadow-[0_0_20px_rgba(232,98,58,0.25)]">
