@@ -57,7 +57,7 @@ export async function GET() {
     });
     const trackById = new Map(tracks.map((t) => [t.id, t]));
 
-    const trending: RailItemData[] = grouped
+    const trending = grouped
       .map((g, i) => {
         const track = g.trackId ? trackById.get(g.trackId) : undefined;
         if (!track) return null;
@@ -72,7 +72,7 @@ export async function GET() {
           trend: String(g._count.trackId),
         } satisfies RailItemData;
       })
-      .filter((x): x is RailItemData => x !== null);
+      .filter((x): x is NonNullable<typeof x> => x !== null);
 
     return Response.json({ recent, trending } satisfies DashboardRailsResponse);
   } catch (error) {

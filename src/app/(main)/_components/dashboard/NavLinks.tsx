@@ -16,7 +16,7 @@ export default function NavLinks() {
   return (
     <div className="absolute left-1/2 hidden -translate-x-1/2 items-center md:flex">
       {LINKS.map(({ href, label }) => {
-        const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
+        const isActive = href === "/" ? pathname === "/" : !!pathname?.startsWith(href);
         return (
           <Link
             key={href}
