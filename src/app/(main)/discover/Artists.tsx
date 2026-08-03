@@ -1,93 +1,62 @@
-"use client"
+"use client";
 
+import kyInstance from "@/lib/ky";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "../SessionProvider";
+import type { DiscoverPage } from "@/app/api/discover/route";
+import ArtistCard from "./_components/ArtistCard";
+import ArtistsCardSkeleton from "./_components/ArtistsCardSkeleton";
+import EmptyDashboardState from "../_components/dashboard/EmptyDashboardState";
 
-import { validateRequest } from '@/auth';
-import UserAvatar from '@/components/UserAvatar';
-import UserTooltip from '@/components/UserTooltip';
-import prisma from '@/lib/prisma';
-import { DiscoverUsers, getUserDataSelect } from '@/lib/types';
-import Link from 'next/link';
-import React from 'react'
-import { useSession } from '../SessionProvider';
-import { useQuery } from '@tanstack/react-query';
-import kyInstance from '@/lib/ky';
-import ArtistCard from './_components/ArtistCard';
-import ArtistsCardSkeleton from './_components/ArtistsCardSkeleton';
+function Artists() {
+  const { user: loggedInUser } = useSession();
 
- function Artists() {
-
-    const { user: loggedInUser } = useSession()
-
- 
-
-  // const discoverUsers = await prisma.user.findMany({
-  //   where: {
-  //     id: {
-  //       not: loggedInUser.id,
-  //     },
-  //     AND: [
-  //       {
-  //         NOT: {
-  //           sentConnections: {
-  //             some: {
-  //               recipientId: loggedInUser.id,
-  //             },
-  //           },
-  //         },
-  //       },
-  //       {
-  //         NOT: {
-  //           receivedConnections: {
-  //             some: {
-  //               requesterId: loggedInUser.id,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     ],
-  //   },
-  //   select: getUserDataSelect(loggedInUser.id)
-  // });
-  const { data, isError, isLoading } = useQuery({
+  const { data, status } = useQuery({
     queryKey: ["discover-users"],
-    queryFn: () =>
-      kyInstance
-        .get("/api/find-nearby-users")
-        .json<DiscoverUsers>(),
+    queryFn: () => kyInstance.get("/api/discover").json<DiscoverPage>(),
   });
 
   if (!loggedInUser) return null;
 
-  if (isLoading) {
+  if (status === "pending") {
     return (
-      <div className="w-full h-[80%] p-3 gap-x-3 flex overflow-x-scroll scroll-smooth snap-x snap-mandatory max-w-full  scrollbar-hide">
-        {[...Array(5)].map((_, index) => (
-          <ArtistsCardSkeleton key={index} />
+      <div className="grid grid-cols-1 gap-3.5 px-4 pb-16 pt-4 sm:grid-cols-2 sm:px-7 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <ArtistsCardSkeleton key={i} />
         ))}
       </div>
     );
   }
 
-
-  if(!data) {
-    return <div>No users available</div>
+  if (status === "error") {
+    return (
+      <div className="mx-4 mt-4 rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-8 text-center text-[13px] text-white/52 sm:mx-7">
+        Couldn&apos;t load musicians. Try again in a moment.
+      </div>
+    );
   }
 
-  const discoverUsers = data
-
-  
-
+  if (!data.users.length) {
+    return (
+      <div className="px-4 pt-2 sm:px-7">
+        <EmptyDashboardState
+          eyebrow="All caught up"
+          title="No new musicians to discover."
+          body="You've already connected with everyone we can suggest right now. Check back soon — new artists join rekurd all the time."
+          secondaryLabel="Back to your feed"
+          secondaryHref="/"
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full h-[90%] p-3 gap-x-3 flex overflow-x-scroll scroll-smooth snap-x snap-mandatory max-w-full scrollbar-hide ">
-      {
-      !discoverUsers.length ? <div>No users to follow</div> :
-      
-      discoverUsers.map(({user}) => (
-        <ArtistCard artist={user} key={user.id}/>
+    <div className="grid grid-cols-1 gap-3.5 px-4 pb-16 pt-4 sm:grid-cols-2 sm:px-7 lg:grid-cols-3">
+      {data.users.map((user) => (
+        <ArtistCard key={user.id} artist={user} loggedInUserId={loggedInUser.id} />
       ))}
     </div>
-  )
+  );
 }
 
-export default Artists
+export default Artists;

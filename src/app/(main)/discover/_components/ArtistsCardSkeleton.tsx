@@ -1,28 +1,16 @@
-
 const ArtistsCardSkeleton: React.FC = () => {
   return (
-    <div className="flex-col flex min-h-[60%] w-full min-w-[97%] snap-y snap-center overflow-auto scrollbar-hide rounded-lg text-white shadow-lg">
-      <div className="relative h-64 w-full bg-muted animate-pulse" />
-      <div className="space-y-4 p-4">
-        <div className="h-4 bg-muted rounded animate-pulse w-1/2" />
-        <div className="flex flex-wrap gap-2 w-full">
-      {[...Array(3)].map((_, index) => (
-        <span
-          key={index}
-          className="rounded-full bg-muted px-8 py-2 font-sans text-sm animate-pulse"
-        >
-          &nbsp;
-        </span>
-      ))}
-    </div>
-    <div className="h-4 bg-muted rounded animate-pulse w-1/2" />
-    <div className="mb-4 flex flex-col gap-1 text-lg italic">
-      <div className="flex flex-wrap overflow-hidden whitespace-pre-line break-words">
-        <div className="h-4 bg-muted rounded animate-pulse w-full mb-2" />
-        <div className="h-4 bg-muted rounded animate-pulse w-3/4 mb-2" />
-        <div className="h-4 bg-muted rounded animate-pulse w-2/3 mb-2" />
-      </div>
-    </div>
+    <div className="flex animate-pulse flex-col overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0f0f0f]">
+      <div className="h-44 w-full bg-white/[0.06]" />
+      <div className="flex flex-col gap-3.5 p-4">
+        <div className="flex flex-wrap gap-1.5">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <span key={i} className="h-4 w-16 rounded-full bg-white/[0.06]" />
+          ))}
+        </div>
+        <div className="h-3 w-full rounded bg-white/[0.06]" />
+        <div className="h-3 w-2/3 rounded bg-white/[0.06]" />
+        <div className="mt-1 h-9 w-full rounded-md bg-white/[0.06]" />
       </div>
     </div>
   );
