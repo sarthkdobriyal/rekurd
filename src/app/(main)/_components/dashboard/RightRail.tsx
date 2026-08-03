@@ -9,12 +9,21 @@ function RailRow({ item }: { item: RailItemData }) {
           {String(item.rank).padStart(2, "0")}
         </span>
       )}
-      <div
-        className="flex h-[34px] w-[34px] flex-shrink-0 items-center justify-center rounded-[7px] border border-white/[0.06] text-sm"
-        style={{ background: item.artGradient }}
-      >
-        {item.emoji}
-      </div>
+      {item.artUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={item.artUrl}
+          alt=""
+          className="h-[34px] w-[34px] flex-shrink-0 rounded-[7px] border border-white/[0.06] object-cover"
+        />
+      ) : (
+        <div
+          className="flex h-[34px] w-[34px] flex-shrink-0 items-center justify-center rounded-[7px] border border-white/[0.06] text-sm"
+          style={{ background: item.artGradient }}
+        >
+          {item.emoji}
+        </div>
+      )}
       <div className="min-w-0 flex-1">
         <div className="truncate text-xs font-medium text-white">{item.title}</div>
         <div className="mt-px truncate text-[10.5px] text-white/52">{item.subtitle}</div>

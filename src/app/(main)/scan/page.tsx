@@ -23,17 +23,6 @@ const BARS = Array.from({ length: BAR_COUNT }, (_, i) => {
   };
 });
 
-// Placeholder community feed — wire to /api/scans/recent later
-const COMMUNITY = [
-  { id: "1", title: "Something in the Way",     artist: "Nirvana",              genre: "Grunge",       user: "mkumar",   time: "2m ago",  bg: "linear-gradient(135deg,#1a0a08,#3d180a)" },
-  { id: "2", title: "Blinding Lights",           artist: "The Weeknd",           genre: "Synth-pop",    user: "ftorres",  time: "8m ago",  bg: "linear-gradient(135deg,#180a0a,#3d0808)" },
-  { id: "3", title: "Take Five",                 artist: "Dave Brubeck Quartet", genre: "Jazz",         user: "jazz.pal", time: "14m ago", bg: "linear-gradient(135deg,#0a180a,#183d0a)" },
-  { id: "4", title: "Bohemian Rhapsody",         artist: "Queen",                genre: "Rock",         user: "atrev",    time: "31m ago", bg: "linear-gradient(135deg,#1a1808,#3d3a0a)" },
-  { id: "5", title: "Ultralight Beam",           artist: "Kanye West",           genre: "Gospel · Rap", user: "dnova",    time: "45m ago", bg: "linear-gradient(135deg,#180a18,#3d0a3d)" },
-  { id: "6", title: "So What",                   artist: "Miles Davis",          genre: "Jazz",         user: "rlopez",   time: "1h ago",  bg: "linear-gradient(135deg,#0a1818,#0a3d3d)" },
-  { id: "7", title: "Murder on the Dancefloor",  artist: "Sophie Ellis-Bextor",  genre: "Nu-disco",     user: "pria",     time: "1h ago",  bg: "linear-gradient(135deg,#0a0a18,#0a0a3d)" },
-];
-
 function BoltIcon({ className, style }: Readonly<{ className?: string; style?: React.CSSProperties }>) {
   return (
     <svg className={className} style={style} viewBox="0 0 24 36" fill="currentColor" aria-hidden>
@@ -229,7 +218,7 @@ export default function ScanPage() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* ── Scanner column ─────────────────────────────────────── */}
-        <div className="relative flex flex-1 flex-col overflow-hidden md:flex-none md:w-[45%] md:border-r md:border-white/[0.07]">
+        <div className="relative flex flex-1 flex-col overflow-hidden">
           {bgDecorations}
           <WaveformBars active={isActive} />
 
@@ -259,33 +248,6 @@ export default function ScanPage() {
             </div>
           )}
 
-        </div>
-
-        {/* ── Desktop: community feed ────────────────────────────── */}
-        <div className="hidden flex-1 flex-col overflow-y-auto bg-[#0f0f0f] [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-thumb]:bg-white/[0.1] md:flex">
-          <div className="flex flex-shrink-0 items-center justify-between border-b border-white/[0.07] px-6 py-5">
-            <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/28">Community scans</h2>
-            <span className="flex items-center gap-1.5 text-[11px] font-medium" style={{ color: CORAL }}>
-              <span className="inline-block size-1.5 animate-pulse rounded-full" style={{ background: CORAL }} />Live
-            </span>
-          </div>
-          {COMMUNITY.map((item) => (
-            <div key={item.id} className="flex flex-shrink-0 cursor-pointer items-center gap-3 border-b border-white/[0.05] px-6 py-3.5 transition-colors hover:bg-white/[0.025]">
-              <div className="flex size-11 flex-shrink-0 items-center justify-center rounded-lg border border-white/[0.06]" style={{ background: item.bg }}>
-                <Music2 className="size-4 text-white/35" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[13.5px] font-medium text-white">{item.title}</p>
-                <p className="mt-0.5 text-[12px] text-white/45">{item.artist}</p>
-                <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-white/30">
-                  <span>@{item.user}</span>
-                  <span className="inline-block size-[3px] rounded-full bg-white/20" />
-                  <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-px text-[10px]">{item.genre}</span>
-                </div>
-              </div>
-              <span className="flex-shrink-0 font-mono text-[10.5px] text-white/25">{item.time}</span>
-            </div>
-          ))}
         </div>
       </div>
 

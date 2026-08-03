@@ -140,6 +140,7 @@ export interface RailItemData {
   subtitle: string;
   artGradient: string;
   emoji: string;
+  artUrl?: string;
   rank?: number;
   trend?: string;
 }

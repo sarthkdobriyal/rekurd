@@ -1,23 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import kyInstance from "@/lib/ky";
+import type { DashboardRailsResponse } from "@/app/api/scans/dashboard/route";
 import ClusterHeader from "./ClusterHeader";
 import EmptyDashboardState from "./EmptyDashboardState";
 import FilterPills from "./FilterPills";
 import QuickScanBar from "./QuickScanBar";
 import { RailSection } from "./RightRail";
 import ScanCard from "./ScanCard";
-import {
-  FilterKey,
-  friendsFeed,
-  nearbyFeed,
-  nearbyTonight,
-  recentlyScanned,
-  trendingScans,
-} from "./mock-data";
+import { FilterKey, friendsFeed, nearbyFeed, nearbyTonight } from "./mock-data";
 
 export default function DashboardFeed() {
   const [active, setActive] = useState<FilterKey>("friends");
+
+  const { data: rails } = useQuery({
+    queryKey: ["dashboard-rails"],
+    queryFn: () =>
+      kyInstance.get("/api/scans/dashboard").json<DashboardRailsResponse>(),
+  });
 
   return (
     <div className="mx-auto flex w-full max-w-[1080px] gap-7 px-4 pb-16 pt-6 sm:px-7">
@@ -53,8 +55,12 @@ export default function DashboardFeed() {
           <RailSection title="Tonight · nearby" linkLabel="Map view" items={nearbyTonight} />
         ) : (
           <>
-            <RailSection title="Recently scanned by you" linkLabel="View all" items={recentlyScanned} />
-            <RailSection title="Trending scans" linkLabel="More" items={trendingScans} />
+            {!!rails?.recent.length && (
+              <RailSection title="Recently scanned by you" linkLabel="View all" items={rails.recent} />
+            )}
+            {!!rails?.trending.length && (
+              <RailSection title="Trending scans" linkLabel="More" items={rails.trending} />
+            )}
           </>
         )}
       </div>
