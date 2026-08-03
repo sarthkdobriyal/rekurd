@@ -2,13 +2,10 @@ import ConnectionCount from "@/components/ConnectionCount";
 import { ConnectionInfo, UserData } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
 import EditProfileButton from "./EditProfileButton";
-import ConnectionButton from "@/components/ConnectionButton";
 import Linkify from "@/components/Linkify";
 import UserAvatar from "@/components/UserAvatar";
 import { formatDate } from "date-fns";
-import MessagesButton from "@/components/MessagesButton";
-import { Button } from "@/components/ui/button";
-import ViewConversation from "@/components/ViewConversation";
+import ProfileConnectionActions from "./ProfileConnectionActions";
 
 interface UserProfileProps {
   user: UserData;
@@ -54,129 +51,128 @@ export default function UserProfile({
     ),
   };
 
-  
+  const isSelf = user.id === loggedInUserId;
+  const info = user.musicalInfo;
+  const years = Number(info?.yearsOfExperience ?? 0);
 
   return (
-    <div className="h-fit w-full space-y-5 rounded-2xl  px-5 py-5 shadow-sm">
-      <div className="flex items-center justify-between">
-        <UserAvatar
-          avatarUrl={user.avatarUrl}
-          size={150}
-          className="max-h-60 max-w-60 rounded-full"
-        />
+    <div className="overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0f0f0f]">
+      <div className="h-24 w-full bg-[radial-gradient(circle_at_20%_20%,rgba(232,98,58,0.22),transparent_60%),linear-gradient(135deg,#180a0a,#0a0a0a)]" />
 
-        <div className="flex w-full flex-col flex-wrap justify-center gap-3 pl-5 sm:flex-nowrap">
-          <div className="space-y-2">
-            <div className="flex w-full">
-              <div className="flex flex-1 justify-center">
-                <span className="flex flex-col items-center">
-                  <span className="text-2xl font-semibold">
-                    {formatNumber(user._count.posts)}
-                  </span>
-                  Posts
-                </span>
-              </div>
-              <div className="flex flex-1 justify-center">
-                <ConnectionCount
-                  userId={user.id}
-                  username={user.username}
-                  initialState={connectionInfo}
-                />
-                {/* <FollowerCount userId={user.id} username={user.username} initialState={followerInfo} /> */}
-              </div>
-            </div>
-
-            <div className="flex flex-col xl:pl-10">
-              <h1 className="text-3xl font-bold">{user.displayName}</h1>
-              <div className="text-muted-foreground">@{user.username}</div>
-              <div>
-                Member since {formatDate(user.createdAt, "MMM d, yyyy")}
-              </div>
+      <div className="px-5 pb-5 sm:px-6">
+        <div className="-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex items-end gap-4">
+            <UserAvatar
+              avatarUrl={user.avatarUrl}
+              size={96}
+              className="h-24 w-24 rounded-full border-4 border-[#0f0f0f] bg-[#0f0f0f]"
+            />
+            <div className="pb-1">
+              <h1 className="font-display text-[26px] italic leading-tight text-white">
+                {user.displayName}
+              </h1>
+              <div className="text-[13px] text-white/40">@{user.username}</div>
             </div>
           </div>
 
-          {user.id === loggedInUserId ? (
-            <EditProfileButton user={user} />
-          ) : (
-            <>
-              {connectionInfo.isUserConnected && (
-                <ViewConversation externalUserId={user.id} />
-              )}
-
-              <ConnectionButton
+          <div className="flex items-center gap-2.5">
+            {isSelf ? (
+              <EditProfileButton user={user} />
+            ) : (
+              <ProfileConnectionActions
                 userId={user.id}
                 initialState={connectionInfo}
               />
-            </>
-          )}
+            )}
+          </div>
         </div>
+
+        <div className="mt-4 flex items-center gap-6 text-[13px]">
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold text-white">
+              {formatNumber(user._count.posts)}
+            </span>
+            <span className="text-white/40">Posts</span>
+          </div>
+          <ConnectionCount
+            userId={user.id}
+            username={user.username}
+            initialState={connectionInfo}
+          />
+          <span className="text-white/26">
+            Since {formatDate(user.createdAt, "MMM yyyy")}
+          </span>
+        </div>
+
+        {info?.title && (
+          <p className="mt-4 font-display text-[18px] italic text-[#e8623a]">
+            {info.title}
+          </p>
+        )}
+
+        {info && (years > 0 || info.primaryInstrument?.name) && (
+          <p className="mt-1 text-[13px] text-white/52">
+            {years > 0
+              ? `${years} ${years > 1 ? "years" : "year"} of ${info.primaryInstrument?.name ?? "music"}`
+              : `${info.primaryInstrument?.name} enthusiast`}
+          </p>
+        )}
+
+        {(!!info?.instruments?.length || !!info?.genres?.length) && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {[
+              ...(info?.instruments ?? []),
+              ...(info?.genres ?? []),
+            ].map((tag, i) => (
+              <span
+                key={`${tag}-${i}`}
+                className="rounded-full border border-white/[0.07] bg-white/[0.04] px-2.5 py-0.5 text-[11px] font-medium text-white/52"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {info?.bio && (
+          <div className="mt-4">
+            <div className="mb-1 text-[10.5px] font-bold uppercase tracking-[0.14em] text-white/40">
+              Musical journey
+            </div>
+            <Linkify>
+              <p className="whitespace-pre-line break-words text-[13px] leading-relaxed text-white/70">
+                {info.bio}
+              </p>
+            </Linkify>
+          </div>
+        )}
+
+        {(info?.interestedInLearning || info?.interestedInTutoring) && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {info.interestedInLearning && (
+              <span className="rounded-full border border-[#4ec26e]/30 bg-[#4ec26e]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#4ec26e]">
+                Open to jam &amp; learn
+              </span>
+            )}
+            {info.interestedInTutoring && (
+              <span className="rounded-full border border-[#7c9ee8]/30 bg-[#7c9ee8]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#7c9ee8]">
+                Open to tutor
+              </span>
+            )}
+          </div>
+        )}
+
+        {user.bio && (
+          <>
+            <hr className="my-4 border-white/[0.07]" />
+            <Linkify>
+              <div className="whitespace-pre-line break-words text-[13px] leading-relaxed text-white/70">
+                {user.bio}
+              </div>
+            </Linkify>
+          </>
+        )}
       </div>
-
-      {user.musicalInfo && (
-        <section className="w-full">
-          <p className="mb-2 text-3xl font-bold italic tracking-widest">
-            {user.musicalInfo.title}
-          </p>
-          <p className="mb-2 text-lg italic">
-            {user.musicalInfo.yearsOfExperience} Years of{" "}
-            {user.musicalInfo.primaryInstrument?.name} Mastery
-          </p>
-         
-          {user.musicalInfo.instruments && (
-            <div className="mb-2 flex flex-col gap-1 text-lg italic">
-              <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
-                Also Plays
-              </span>
-              <span className="">
-                {user.musicalInfo.instruments.join(", ")}
-              </span>
-            </div>
-          )}
-          {user.musicalInfo.genres && (
-            <div className="mb-2 flex flex-col gap-1 text-lg italic">
-              <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
-                🎼 Genres:
-              </span>{" "}
-              <span>{user.musicalInfo.genres.join(", ")}</span>
-            </div>
-          )}
-          {user.musicalInfo.bio && (
-            <div className="mb-4 flex flex-col gap-1 text-lg italic">
-              <span className="text-sm font-semibold tracking-tighter text-muted-foreground">
-                🎤 Musical Journey:
-              </span>
-              <Linkify>
-                <p className="flex flex-wrap overflow-hidden whitespace-pre-line break-words px-4">
-                  {user.musicalInfo.bio}
-                </p>
-              </Linkify>
-            </div>
-          )}
-          {user.musicalInfo.interestedInLearning && (
-            <p className="mb-2 text-lg italic text-green-600">
-              📚 Available to jam and learn from fellow musicians
-            </p>
-          )}
-          {user.musicalInfo.interestedInTutoring ? (
-            <p className="mb-2 text-lg italic text-blue-600">
-              📢 Available to share the groove with others
-            </p>
-          ) : (
-            <></>
-          )}
-        </section>
-      )}
-
-      {user.bio && (
-        <>
-          <hr />
-          <Linkify>
-            <div className="overflow-hidden whitespace-pre-line break-words">
-              {user.bio}
-            </div>
-          </Linkify>
-        </>
-      )}
     </div>
   );
 }

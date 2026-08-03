@@ -1,4 +1,3 @@
-"use server";
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import { ConnectionInfo } from "@/lib/types";
@@ -75,6 +74,15 @@ export async function POST(
 
     if (loggedInUser.id === userId) {
       return Response.json({ error: "Not Allowed" }, { status: 400 });
+    }
+
+    const targetUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+
+    if (!targetUser) {
+      return Response.json({ error: "User not found" }, { status: 404 });
     }
 
     const existingConnection = await prisma.connection.findFirst({

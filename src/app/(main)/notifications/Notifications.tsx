@@ -48,9 +48,9 @@ export default function Notifications() {
     },
   });
 
-  // useEffect(() => {
-  //   mutate();
-  // }, [mutate]);
+  useEffect(() => {
+    mutate();
+  }, [mutate]);
 
   const notifications = data?.pages.flatMap((page) => page.notifications) || [];
 
@@ -60,27 +60,30 @@ export default function Notifications() {
 
   if (status === "success" && !notifications.length && !hasNextPage) {
     return (
-      <p className="text-center text-muted-foreground">
-        You don&apos;t have any notifications yet.
-      </p>
+      <div className="rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-10 text-center">
+        <p className="font-display text-[18px] italic text-white">
+          Nothing here yet.
+        </p>
+        <p className="mt-1 text-[13px] text-white/40">
+          Jam requests, likes, and comments will show up here.
+        </p>
+      </div>
     );
   }
 
   if (status === "error") {
     return (
-      <p className="text-center text-destructive">
-        An error occurred while loading notifications.
-      </p>
+      <div className="rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-8 text-center text-[13px] text-white/52">
+        Couldn&apos;t load your notifications. Try again in a moment.
+      </div>
     );
   }
 
   return (
     <InfiniteScrollContainer
-      className="space-y-5"
+      className="space-y-3"
       onBottomReached={() => {
         if (hasNextPage && !isFetching && !isFetchingNextPage) {
-
-          console.log("fetching next page");
           fetchNextPage();
         }
       }}
@@ -88,7 +91,9 @@ export default function Notifications() {
       {notifications.map((notification) => (
         <Notification key={notification.id} notification={notification} />
       ))}
-      {isFetchingNextPage && <Loader2 className="mx-auto my-3 animate-spin" />}
+      {isFetchingNextPage && (
+        <Loader2 className="mx-auto my-3 animate-spin text-white/40" />
+      )}
     </InfiniteScrollContainer>
   );
 }

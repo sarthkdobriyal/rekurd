@@ -9,8 +9,6 @@ import { connect } from "http2";
 import useConnectionInfo from "@/hooks/useConnectionInfo";
 import { Loader2, Trash2 } from "lucide-react";
 import { useSession } from "@/app/(main)/SessionProvider";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import ViewConversation from "./ViewConversation";
 
 
@@ -27,10 +25,7 @@ export default function ConnectionButton({
 
   const { user: loggedInUser } = useSession();
 
-  const router = useRouter();
   const queryClient = useQueryClient();
-
-  const [decision, setDecision] = useState("");
 
   const { data, isLoading: isConnectionInfoLoading } = useConnectionInfo(userId, initialState);
 
@@ -50,23 +45,48 @@ export default function ConnectionButton({
             (isLoggedInUserSender && data.isConnectionPending)
           ? kyInstance.delete(`/api/users/${userId}/connection`)
           : kyInstance.post(`/api/users/${userId}/connection`),
-    onMutate: async () => {
+    onMutate: async (decision: string) => {
       await queryClient.cancelQueries({ queryKey });
       const previousState = queryClient.getQueryData<ConnectionInfo>(queryKey);
+      const prev: ConnectionInfo = previousState ?? {
+        connections: 0,
+        isUserConnected: false,
+        isConnectionPending: false,
+        isLoggedInUserSender: false,
+        isLoggedInUserReciepient: false,
+      };
 
-      queryClient.setQueryData<ConnectionInfo>(queryKey, () => ({
-        connections:
-          (previousState?.connections || 0) +
-          (decision === "accept"
-            ? 1 : 
-            previousState?.isUserConnected ? -1 
-            : 0),
-        isUserConnected:previousState?.isUserConnected ? !previousState?.isUserConnected : isLoggedInUserReciepient && decision !== "reject",
-        isConnectionPending: !previousState?.isUserConnected && !previousState?.isConnectionPending,
-        isLoggedInUserReciepient: previousState?.isUserConnected ? false :  !!previousState?.isLoggedInUserReciepient && decision !=="reject",
-        isLoggedInUserSender: !previousState?.isUserConnected && !previousState?.isLoggedInUserReciepient && !previousState?.isLoggedInUserSender,
-      }));
+      const cleared = {
+        isUserConnected: false,
+        isConnectionPending: false,
+        isLoggedInUserSender: false,
+        isLoggedInUserReciepient: false,
+      };
 
+      let next: ConnectionInfo;
+      if (prev.isUserConnected) {
+        // Disconnecting from an existing connection.
+        next = { ...cleared, connections: Math.max(prev.connections - 1, 0) };
+      } else if (prev.isLoggedInUserReciepient && decision !== "reject") {
+        // Accepting an incoming request.
+        next = { ...cleared, isUserConnected: true, connections: prev.connections + 1 };
+      } else if (
+        (prev.isLoggedInUserReciepient && decision === "reject") ||
+        (prev.isLoggedInUserSender && prev.isConnectionPending)
+      ) {
+        // Rejecting an incoming request or cancelling our own pending one.
+        next = { ...cleared, connections: prev.connections };
+      } else {
+        // Sending a fresh JAM request.
+        next = {
+          ...cleared,
+          isConnectionPending: true,
+          isLoggedInUserSender: true,
+          connections: prev.connections,
+        };
+      }
+
+      queryClient.setQueryData<ConnectionInfo>(queryKey, next);
       return { previousState };
     },
     onError(error, variables, context) {
@@ -96,20 +116,14 @@ export default function ConnectionButton({
         <div className="flex w-full justify-center gap-4">
           <Button
             variant={"default"}
-            onClick={() => {
-              setDecision("accept");
-              mutate("accept");
-            }}
+            onClick={() => mutate("accept")}
             className="bg-secondary"
           >
             Accept
           </Button>
           <Button
             variant={"destructive"}
-            onClick={() => {
-              setDecision("reject");
-              mutate("reject");
-            }}
+            onClick={() => mutate("reject")}
           >
             Reject
           </Button>
