@@ -7,10 +7,11 @@ import type { DashboardRailsResponse } from "@/app/api/scans/dashboard/route";
 import ClusterHeader from "./ClusterHeader";
 import EmptyDashboardState from "./EmptyDashboardState";
 import FilterPills from "./FilterPills";
+import FriendsFeed from "./FriendsFeed";
 import QuickScanBar from "./QuickScanBar";
 import { RailSection } from "./RightRail";
 import ScanCard from "./ScanCard";
-import { FilterKey, friendsFeed, nearbyFeed, nearbyTonight } from "./mock-data";
+import { FilterKey, nearbyFeed, nearbyTonight } from "./mock-data";
 
 export default function DashboardFeed() {
   const [active, setActive] = useState<FilterKey>("friends");
@@ -27,8 +28,7 @@ export default function DashboardFeed() {
         <QuickScanBar />
         <FilterPills active={active} onChange={setActive} />
 
-        {active === "friends" &&
-          friendsFeed.map((scan) => <ScanCard key={scan.id} scan={scan} />)}
+        {active === "friends" && <FriendsFeed />}
 
         {active === "nearby" && (
           <>
